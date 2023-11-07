@@ -6,6 +6,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
+#メモ：環境以下の通りになってる">=2.17.5 <3.0.0"
 environment:
   sdk: '3.1.5'
 
@@ -17,13 +18,23 @@ dependencies:
 
 
   cupertino_icons: ^1.0.2
+
+  #svgファイルを利用する
   flutter_svg: ^2.0.9
+  # yamlにimportするときは、インデントも揃えないとエラーになる
+  # カメラと写真を読みこむパッケージ
+  image_picker: ^0.8.4+4a
+  # マップ表示、緯度経度を取得するパッケージ3つ
+  flutter_map: ^2.2.0
+  latlong2: ^0.8.1
+  geolocator: ^9.0.1
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
+  #メモ：2.0.0になっている
   flutter_lints: ^3.0.0
 
 
@@ -33,6 +44,7 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
+  #ロゴやら画像やら何やら(多分)
   assets:
     - assets/Post.svg
     - assets/PostActive.svg
