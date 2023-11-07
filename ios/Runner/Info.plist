@@ -45,5 +45,15 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!--位置情報を取得する-->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open.</string>
+	<!--カメラとアルバムを起動する↓6行分追記-->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires to access your photo library</string>
+  	<key>NSCameraUsageDescription</key>
+  	<string>This app requires to add file to your camera</string>
+  	<key>NSMicrophoneUsageDescription</key>
+  	<string>This app requires to add file to your photo library your microphone</string>
 </dict>
 </plist>
