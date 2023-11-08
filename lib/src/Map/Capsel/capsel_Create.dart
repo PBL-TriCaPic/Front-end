@@ -9,6 +9,10 @@ import 'package:flutter/material.dart';
 //import 'package:flutter_map/flutter_map.dart';
 //import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import '../../theme_setting/Color_Scheme.dart';
+
+final ThemeData lightTheme =
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class capsel_Create extends StatelessWidget {
   const capsel_Create({super.key});
@@ -17,10 +21,7 @@ class capsel_Create extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: lightTheme,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

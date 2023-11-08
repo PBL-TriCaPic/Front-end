@@ -6,6 +6,10 @@ import 'dart:ffi';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import '../theme_setting/Color_Scheme.dart';
+
+final ThemeData lightTheme =
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class MapScreen extends StatelessWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -16,7 +20,7 @@ class MapScreen extends StatelessWidget {
 
     return MaterialApp(
       //theme: themeProvider.selectedTheme,
-      // theme: lightTheme,
+      theme: lightTheme,
       // darkTheme: darkTheme,
       title: 'Flutter Demo',
       home: const HomeScreen(title: 'Flutter Demo Home Page'),
@@ -85,7 +89,9 @@ class _HomeScreen extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData selectedTheme = lightTheme;
     return MaterialApp(
+      theme: selectedTheme,
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true,
