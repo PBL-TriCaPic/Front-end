@@ -140,9 +140,9 @@ class _HomeScreen extends State<HomeScreen> {
           //Iconの部分を書き換えるとアイコンのデザイン変更可
           child: SvgPicture.asset(
             'assets/TriCaPicapplogo1.svg',
-            width: 40,
-            height: 40,
-            //color: Colors.white, // カスタムアイコンの色を指定
+            width: 35,
+            height: 35,
+            color: Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
           ),
           onPressed: () {
             Navigator.push(

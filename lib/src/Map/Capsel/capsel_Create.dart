@@ -106,134 +106,160 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     //カメラ表示追記
     final ImagePicker _picker = ImagePicker();
+    var _textEditingController;
     return Scaffold(
-      //キーボードを出した時に、bottom～のトラテープみたいなエラーを封じる
-      resizeToAvoidBottomInset: false,
-      // appBar: AppBar(
-      // ),
+        //キーボードを出した時に、bottom～のトラテープみたいなエラーを封じる
+        resizeToAvoidBottomInset: false,
+        // appBar: AppBar(
+        // ),
 
-      //columnで画面範囲を超えてbottom～エラーが出た時に封じる↓
-      //画面を下に引っ張って更新することは不可?
-      body: SingleChildScrollView(
-        child: Padding(
-          padding:
-              const EdgeInsets.only(top: 40, left: 20, right: 20), //画面全体の余白
+        //columnで画面範囲を超えてbottom～エラーが出た時に封じる↓
+        //画面を下に引っ張って更新することは不可?
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: SingleChildScrollView(
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(top: 40, left: 20, right: 20), //画面全体の余白
 
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start, // 垂直方向上寄せ
-            children: [
-              Container(
-                  child: ButtonBar(
-                      //横並びにする
-                      alignment: MainAxisAlignment.spaceBetween, //幅を等しくする
-                      children: [
-                    //キャンセルボタンを押した時の処理
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            //マップ画面に遷移(Navigatorpopの方がいいかも？)
-                            return MapScreen();
-                          }),
-                        );
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start, // 垂直方向上寄せ
+                children: [
+                  Container(
+                      child: ButtonBar(
+                          //横並びにする
+                          alignment: MainAxisAlignment.spaceBetween, //幅を等しくする
+                          children: [
+                        //キャンセルボタンを押した時の処理
+                        TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  //マップ画面に遷移(Navigatorpopの方がいいかも？)
+                                  return MapScreen();
+                                }),
+                              );
+                            },
+                            child: const Text(
+                              "キャンセル",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            )),
+
+                        //次へボタンを押した時の処理
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                //マップ画面に遷移(Navigatorpopの方がいいかも？)
+                                return Sample2();
+                              }),
+                            );
+                          },
+                          child: const Text("次へ",
+                              style: TextStyle(
+                                fontSize: 16,
+                              )),
+                        ),
+                      ])),
+
+                  //撮影するボタン
+                  Container(
+                    child: Column(children: [
+                      IconButton(
+                        onPressed: () async {
+                          //カメラ撮影画面に遷移
+                          final XFile? image = await _picker.pickImage(
+                            source: ImageSource.camera,
+                          );
+                          if (image != null)
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => done(image),
+                              ),
+                            );
+                        },
+                        icon: Icon(Icons.camera),
+                        iconSize: 50,
+
+                        //child: const Text("撮影する！"),
+                      ),
+                    ]),
+                  ),
+                  Container(
+                    width:
+                        MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'タイトル',
+                      ),
+                      controller: _textEditingController,
+                      maxLines: null, // または必要な行数
+                      keyboardType: TextInputType.multiline,
+                      // テキストフィールドをスクロール可能にするためにSingleChildScrollViewを使用,
+                      onChanged: (text) {
+                        // TODO: ここで取得したtextを使う
+                        title = text;
                       },
-                      child: const Text("キャンセル"),
                     ),
-
-                    //次へボタンを押した時の処理
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            //マップ画面に遷移(Navigatorpopの方がいいかも？)
-                            return Sample2();
-                          }),
-                        );
+                  ),
+                  SizedBox(height: 20.0), // 適切な間隔を設定
+                  Container(
+                    width:
+                        MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: '中身',
+                      ),
+                      controller: _textEditingController,
+                      maxLines: null, // または必要な行数
+                      keyboardType: TextInputType.multiline,
+                      // テキストフィールドをスクロール可能にするためにSingleChildScrollViewを使用,
+                      onChanged: (text) {
+                        // TODO: ここで取得したtextを使う
+                        nakami = text;
                       },
-                      child: const Text("次へ"),
                     ),
-                  ])),
+                  ),
 
-              //撮影するボタン
-              Container(
-                child: Column(children: [
+                  Text("$dateTime", style: TextStyle(fontSize: 25)),
+
                   ElevatedButton(
-                    onPressed: () async {
-                      //カメラ撮影画面に遷移
-                      final XFile? image = await _picker.pickImage(
-                        source: ImageSource.camera,
+                    onPressed: () {
+                      _datePicker(
+                        context,
                       );
-                      if (image != null)
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => done(image),
-                          ),
-                        );
                     },
-                    child: const Text("撮影する！"),
+                    child: const Text("日付を変更"),
                   ),
-                ]),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'タイトル',
+
+                  //位置情報取得ボタン
+                  ElevatedButton(
+                    onPressed: () {
+                      getLocation();
+                    },
+                    child: const Text("位置情報取得"),
                   ),
-                  onChanged: (text) {
-                    // TODO: ここで取得したtextを使う
-                    title = text;
-                  },
-                ),
-              ),
-              SizedBox(height: 20.0), // 適切な間隔を設定
-              Container(
-                width: MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: '中身',
+                  //仮
+                  Image.network(
+                    'https://pbs.twimg.com/media/FfHOaRIagAAxQlC.jpg',
+                    width: 50,
+                    height: 100,
                   ),
-                  onChanged: (text) {
-                    // TODO: ここで取得したtextを使う
-                    nakami = text;
-                  },
-                ),
-              ),
 
-              Text("$dateTime", style: TextStyle(fontSize: 25)),
-
-              ElevatedButton(
-                onPressed: () {
-                  _datePicker(
-                    context,
-                  );
-                },
-                child: const Text("日付を変更"),
+                  //位置情報テキスト
+                  Text('$_location'),
+                ],
               ),
-
-              //位置情報取得ボタン
-              ElevatedButton(
-                onPressed: () {
-                  getLocation();
-                },
-                child: const Text("位置情報取得"),
-              ),
-              //仮
-              Image.network(
-                'https://pbs.twimg.com/media/FfHOaRIagAAxQlC.jpg',
-                width: 50,
-                height: 100,
-              ),
-
-              //位置情報テキスト
-              Text('$_location'),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

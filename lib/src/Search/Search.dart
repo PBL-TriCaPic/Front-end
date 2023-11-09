@@ -75,13 +75,13 @@ class _SearchScreen extends ConsumerWidget {
   }
 
   Widget _searchTextField(WidgetRef ref, TextEditingController textController) {
-    //検索テキストフィールドを描画し、テキストの変更に応じて検索結果を更新します
+    //検索テキストフィールドを描画し、テストの変更に応じて検索結果を更新します
     final searchIndexListNotifier = ref.watch(searchIndexListProvider.notifier);
     final onSearchNotifier =
         ref.read(onSearchProvider.notifier); // onSearchNotifier を読み込む
     return TextField(
       controller: textController,
-      autofocus: true,
+      autofocus: false,
       onChanged: (String text) {
         onSearchNotifier.state = true; // 検索中フラグをtrueに設定
         searchIndexListNotifier.state = [];
@@ -145,6 +145,7 @@ class _SearchScreen extends ConsumerWidget {
               //               SearchDetailPage(title: wordList[index])));
               // },//ここにListViewのTileを押したときの画面遷移をかく。他の人のプロフィール表示
               title: Text(wordList[index]),
+              tileColor: Color.fromARGB(255, 255, 255, 255),
             ),
           );
         });
