@@ -4,6 +4,7 @@ import 'package:flutter_application_develop/src/app.dart';
 //追加import
 import 'dart:ffi';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import '../theme_setting/Color_Scheme.dart';
@@ -137,9 +138,11 @@ class _HomeScreen extends State<HomeScreen> {
         //右下のボタンの処理
         floatingActionButton: FloatingActionButton(
           //Iconの部分を書き換えるとアイコンのデザイン変更可
-          child: Icon(
-            Icons.close,
-            color: Colors.deepPurple,
+          child: SvgPicture.asset(
+            'assets/TriCaPicapplogo1.svg',
+            width: 40,
+            height: 40,
+            //color: Colors.white, // カスタムアイコンの色を指定
           ),
           onPressed: () {
             Navigator.push(

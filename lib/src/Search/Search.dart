@@ -165,6 +165,7 @@ class _SearchScreen extends ConsumerWidget {
             //               SearchDetailPage(title: wordList[index])));
             // },//ここにListViewのTileを押したときの画面遷移をかく。他の人のプロフィール表示
             title: Text(wordList[index]),
+            tileColor: Color.fromARGB(255, 255, 255, 255),
           ),
         );
       },
