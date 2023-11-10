@@ -4,8 +4,13 @@ import 'package:flutter_application_develop/src/app.dart';
 //追加import
 import 'dart:ffi';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import '../theme_setting/Color_Scheme.dart';
+
+final ThemeData lightTheme =
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class MapScreen extends StatelessWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -16,7 +21,7 @@ class MapScreen extends StatelessWidget {
 
     return MaterialApp(
       //theme: themeProvider.selectedTheme,
-      // theme: lightTheme,
+      theme: lightTheme,
       // darkTheme: darkTheme,
       title: 'Flutter Demo',
       home: const HomeScreen(title: 'Flutter Demo Home Page'),
@@ -85,7 +90,9 @@ class _HomeScreen extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData selectedTheme = lightTheme;
     return MaterialApp(
+      theme: selectedTheme,
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -131,9 +138,11 @@ class _HomeScreen extends State<HomeScreen> {
         //右下のボタンの処理
         floatingActionButton: FloatingActionButton(
           //Iconの部分を書き換えるとアイコンのデザイン変更可
-          child: Icon(
-            Icons.close,
-            color: Colors.deepPurple,
+          child: SvgPicture.asset(
+            'assets/TriCaPicapplogo1.svg',
+            width: 35,
+            height: 35,
+            color: Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
           ),
           onPressed: () {
             Navigator.push(

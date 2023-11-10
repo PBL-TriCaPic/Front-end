@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../theme_setting/Color_Scheme.dart';
+
+final ThemeData lightTheme =
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 // テキスト入力フィールドのコントローラ
 TextEditingController _textController = TextEditingController();
@@ -41,6 +45,7 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       child: MaterialApp(
+        theme: lightTheme,
         home: const _SearchScreen(),
       ),
     );
@@ -56,6 +61,8 @@ class _SearchScreen extends ConsumerWidget {
 
     return Scaffold(
         appBar: AppBar(
+          elevation: 3,
+          shadowColor: Colors.black,
           title: _searchTextField(ref, _textController),
         ),
         body: GestureDetector(
@@ -68,13 +75,13 @@ class _SearchScreen extends ConsumerWidget {
   }
 
   Widget _searchTextField(WidgetRef ref, TextEditingController textController) {
-    //検索テキストフィールドを描画し、テキストの変更に応じて検索結果を更新します
+    //検索テキストフィールドを描画し、テストの変更に応じて検索結果を更新します
     final searchIndexListNotifier = ref.watch(searchIndexListProvider.notifier);
     final onSearchNotifier =
         ref.read(onSearchProvider.notifier); // onSearchNotifier を読み込む
     return TextField(
       controller: textController,
-      autofocus: true,
+      autofocus: false,
       onChanged: (String text) {
         onSearchNotifier.state = true; // 検索中フラグをtrueに設定
         searchIndexListNotifier.state = [];
@@ -103,12 +110,16 @@ class _SearchScreen extends ConsumerWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(50),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(
+            //color: Colors.blue, // 枠線の色
+            width: 0.8, // 枠線の太さ
+            style: BorderStyle.solid, // 枠線のスタイル（実線）
+          ),
         ),
         hintStyle: TextStyle(fontSize: 18, color: Colors.grey.shade600),
         hintText: "検索",
       ),
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.black,
         fontSize: 20,
         fontWeight: FontWeight.bold,
@@ -134,6 +145,7 @@ class _SearchScreen extends ConsumerWidget {
               //               SearchDetailPage(title: wordList[index])));
               // },//ここにListViewのTileを押したときの画面遷移をかく。他の人のプロフィール表示
               title: Text(wordList[index]),
+              tileColor: Color.fromARGB(255, 255, 255, 255),
             ),
           );
         });
@@ -154,6 +166,7 @@ class _SearchScreen extends ConsumerWidget {
             //               SearchDetailPage(title: wordList[index])));
             // },//ここにListViewのTileを押したときの画面遷移をかく。他の人のプロフィール表示
             title: Text(wordList[index]),
+            tileColor: Color.fromARGB(255, 255, 255, 255),
           ),
         );
       },

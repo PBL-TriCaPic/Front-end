@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'Setting_email_password.dart';
 import 'Setting_default.dart';
 import 'Setting_privacy.dart';
+import '../theme_setting/Color_Scheme.dart';
+
+final ThemeData lightTheme =
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({Key? key}) : super(key: key);
@@ -9,6 +13,7 @@ class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: lightTheme,
       home: MyHomePage(),
     );
   }
@@ -29,7 +34,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData selectedTheme = lightTheme;
     return MaterialApp(
+        theme: selectedTheme,
         home: Scaffold(
             appBar: AppBar(
               centerTitle: true,
@@ -88,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
             body: Column(
               children: [
                 const Center(
-                    child: Text('Map画面', style: TextStyle(fontSize: 32.0))),
+                    child: Text('プロフィール画面', style: TextStyle(fontSize: 32.0))),
               ],
             )));
   }
