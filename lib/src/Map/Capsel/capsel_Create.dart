@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             )),
 
                         //次へボタンを押した時の処理
-                        TextButton(
+                        IconButton(
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -162,10 +162,13 @@ class _MyHomePageState extends State<MyHomePage> {
                               }),
                             );
                           },
-                          child: const Text("次へ",
-                              style: TextStyle(
-                                fontSize: 16,
-                              )),
+                          icon: Icon(Icons.keyboard_double_arrow_right),
+                          iconSize: 30,
+                          color: Color.fromARGB(255, 142, 189, 237),
+                          // child: const Text("次へ",
+                          //     style: TextStyle(
+                          //       fontSize: 16,
+                          //     )),
                         ),
                       ])),
 
