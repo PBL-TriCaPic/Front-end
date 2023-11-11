@@ -62,7 +62,7 @@ class _SearchScreen extends ConsumerWidget {
           behavior: HitTestBehavior.opaque,
           onTap: () {
             FocusScope.of(context).unfocus();
-          },
+          }, //キーボードを閉じるコード
           child: onSearch ? _searchListView(ref) : _defaultListView(),
         ));
   }
