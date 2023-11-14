@@ -42,9 +42,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    // ユーザー統計情報のデフォルト値を初期化
     followingCount = 100;
     followersCount = 100;
     postsCount = 100;
+    // ユーザーの設定をロードし、プロファイル画像を設定
     _loadPreferences();
     setImage();
   }
@@ -58,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+// タップ時にプロファイル画像を拡大表示するダイアログを表示
   void _showEnlargeDialog() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -65,13 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
     if (pickedFile != null) {
       final image = File(pickedFile.path);
 
-      // 画像を保存
+      // 選択された画像を保存し、ステートを更新
       await _saveImage(image);
 
       setState(() {
         imageFile = image;
       });
-
+      // 拡大表示されたプロファイル画像を含むダイアログを表示
       showDialog<void>(
         context: context,
         builder: (_) {
@@ -96,12 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+// 選択した画像をアプリの内部ストレージとSharedPreferencesに保存
   Future<void> _saveImage(File imageFile) async {
     // 切り抜かれた画像をアプリ内に保存（必要に応じてパスを変更）
     final appDir = await getApplicationDocumentsDirectory();
     final fileName = 'profile_image.jpg';
     final localFile = await imageFile.copy('${appDir.path}/$fileName');
-
     // SharedPreferencesに画像のパスを保存
     await prefs.setString('imagePath', localFile.path);
   }
@@ -222,6 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     )
         .then((result) {
+      // 編集後、変更をSharedPreferencesに保存
       if (result != null && result is Map<String, dynamic>) {
         _saveChanges(
           result['userName'],
@@ -235,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // 変更を保存する関数
+  // 変更をSharedPreferencesに保存する関数
   void _saveChanges(
     String? newUserName,
     String? newUserID,
@@ -253,9 +257,10 @@ class _MyHomePageState extends State<MyHomePage> {
       await prefs.setInt('followersCount', newFollowersCount);
     if (newPostsCount != null) await prefs.setInt('postsCount', newPostsCount);
 
-    _loadPreferences();
+    _loadPreferences(); // 変更後の設定を再読み込み
   }
 
+// プロファイル画像を設定する関数
   Future<void> setImage() async {
     await getSharedPreference();
     final String? imagePath = prefs.getString('imagePath');
@@ -265,6 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+// SharedPreferencesを取得する関数
   Future<void> getSharedPreference() async {
     prefs = await SharedPreferences.getInstance();
   }

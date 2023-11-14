@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:path/path.dart' as path;
 
 class EditProfileScreen extends StatefulWidget {
   final String? initialUserName; // Nullable
   final String? initialUserID; // Nullable
   final String? initialBio; // Nullable
-  //final int? initialFollowingCount; // Nullable
-  //final int? initialFollowersCount; // Nullable
-  //final int? initialPostsCount; // Nullable
 
   EditProfileScreen({
     this.initialUserName,
     this.initialUserID,
     this.initialBio,
-    //this.initialFollowingCount,
-    //this.initialFollowersCount,
-    //this.initialPostsCount,
   });
 
   @override
@@ -27,9 +19,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _userNameController;
   late TextEditingController _userIDController;
   late TextEditingController _bioController;
-  // late TextEditingController _followingController;
-  // late TextEditingController _followersController;
-  // late TextEditingController _postsController;
 
   @override
   void initState() {
@@ -38,12 +27,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         TextEditingController(text: widget.initialUserName ?? '');
     _userIDController = TextEditingController(text: widget.initialUserID ?? '');
     _bioController = TextEditingController(text: widget.initialBio ?? '');
-    // _followingController = TextEditingController(
-    //     text: widget.initialFollowingCount?.toString() ?? '');
-    // _followersController = TextEditingController(
-    //     text: widget.initialFollowersCount?.toString() ?? '');
-    // _postsController =
-    //     TextEditingController(text: widget.initialPostsCount?.toString() ?? '');
   }
 
   @override
@@ -83,14 +66,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   keyboardType: TextInputType.multiline,
                 ),
                 SizedBox(height: 16),
-                // Text('フォロー数'),
-                // TextField(controller: _followingController),
-                // SizedBox(height: 16),
-                // Text('フォロワー数'),
-                // TextField(controller: _followersController),
-                // SizedBox(height: 16),
-                // Text('投稿数'),
-                // TextField(controller: _postsController),
               ],
             ),
           ),
@@ -106,18 +81,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _userIDController.text.isNotEmpty ? _userIDController.text : null;
     String? newBio =
         _bioController.text.isNotEmpty ? _bioController.text : null;
-    // int? newFollowingCount = int.tryParse(_followingController.text);
-    // int? newFollowersCount = int.tryParse(_followersController.text);
-    // int? newPostsCount = int.tryParse(_postsController.text);
 
     // プロフィール編集画面からデータを元の画面に渡す
     Navigator.of(context).pop({
       'userName': newUserName,
       'userID': newUserID,
       'bio': newBio,
-      // 'followingCount': newFollowingCount,
-      // 'followersCount': newFollowersCount,
-      // 'postsCount': newPostsCount,
     });
   }
 
@@ -126,9 +95,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _userNameController.dispose();
     _userIDController.dispose();
     _bioController.dispose();
-    // _followingController.dispose();
-    // _followersController.dispose();
-    // _postsController.dispose();
     super.dispose();
   }
 }
