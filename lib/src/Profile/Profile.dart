@@ -1,15 +1,12 @@
 import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'Setting.dart';
-import 'profile_edit.dart';
-import '../theme_setting/Color_Scheme.dart';
 import 'dart:ui';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_application_develop/src/Profile/Setting.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image_cropper/image_cropper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'profile_edit.dart';
+import '../theme_setting/Color_Scheme.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -33,98 +30,69 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late SharedPreferences prefs;
-  late File _image = File('');
-  // ユーザー名、ユーザID、自己紹介文、フォロー数、フォロワー数、投稿数の変数を追加
-  String? userName; // 変更
-  String? userID; // 変更
-  String? bio; // 変更
-  int? followingCount; // 変更
-  int? followersCount; // 変更
-  int? postsCount; // 変更
+  File? imageFile;
+  String? message = '画像';
+  String? userName;
+  String? userID;
+  String? bio;
+  int? followingCount;
+  int? followersCount;
+  int? postsCount;
 
   @override
   void initState() {
     super.initState();
-    followingCount = 100; // 初期化をここで行う
-    followersCount = 100; // 初期化をここで行う
-    postsCount = 100; // 初期化をここで行う
+    followingCount = 100;
+    followersCount = 100;
+    postsCount = 100;
     _loadPreferences();
+    setImage();
   }
 
-  // SharedPreferencesからデータを読み込む関数
   Future<void> _loadPreferences() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('userName') ?? 'ユーザー名';
       userID = prefs.getString('userID') ?? 'ユーザーID';
-      bio = prefs.getString('bio') ?? 'ここに自己紹介文が入ります。ここに自己紹介文が入ります。';
-      // followingCount = prefs.getInt('followingCount') ?? followingCount;
-      // followersCount = prefs.getInt('followersCount') ?? followersCount;
-      // postsCount = prefs.getInt('postsCount') ?? postsCount;
+      bio = prefs.getString('bio') ?? 'ここに自己紹介文が入ります。';
     });
   }
 
-  Future<CroppedFile?> _cropImage(File imageFile) async {
-    final imageCropper = ImageCropper(); // ImageCropper クラスのインスタンスを作成
-    CroppedFile? croppedFile = await imageCropper
-        .cropImage(sourcePath: imageFile.path, aspectRatioPresets: [
-      CropAspectRatioPreset.square,
-    ], uiSettings: [
-      AndroidUiSettings(
-        toolbarTitle: '画像を切り抜く',
-        toolbarColor: Colors.blue,
-        toolbarWidgetColor: Colors.white,
-        initAspectRatio: CropAspectRatioPreset.square,
-        lockAspectRatio: true,
-      ),
-      IOSUiSettings(
-        title: '画像を切り抜く',
-      ),
-    ]);
-
-    return croppedFile;
-  }
-
-// 画像を拡大表示するためのダイアログを表示する関数
   void _showEnlargeDialog() async {
-    // 画像を選択する
     final pickedFile =
-        await ImagePicker().getImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      // 選択された画像を切り抜く
-      File? croppedFile = (await _cropImage(File(pickedFile.path))) as File?;
+      final image = File(pickedFile.path);
 
-      if (croppedFile != null) {
-        setState(() {
-          _image = croppedFile;
-        });
+      // 画像を保存
+      await _saveImage(image);
 
-        // 切り抜かれた画像をアプリ内に保存
-        await _saveImage(_image);
+      setState(() {
+        imageFile = image;
+      });
 
-        showDialog<void>(
-          context: context,
-          builder: (_) {
-            return BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: AlertDialog(
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                content: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop(); // タップでダイアログを閉じる
-                  },
-                  child: CircleAvatar(
-                    radius: MediaQuery.of(context).size.width / 1.8,
-                    backgroundImage: FileImage(_image),
-                  ),
+      showDialog<void>(
+        context: context,
+        builder: (_) {
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: AlertDialog(
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              content: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop(); // タップでダイアログを閉じる
+                },
+                child: CircleAvatar(
+                  radius: MediaQuery.of(context).size.width / 1.8,
+                  backgroundImage: FileImage(imageFile!),
                 ),
               ),
-            );
-          },
-        );
-      }
+            ),
+          );
+        },
+      );
     }
   }
 
@@ -134,8 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final fileName = 'profile_image.jpg';
     final localFile = await imageFile.copy('${appDir.path}/$fileName');
 
-    // SharedPreferencesなどを使用して、画像のパスや必要な情報を保存することもできます。
-    // 例えば、prefs.setString('imagePath', localFile.path);
+    // SharedPreferencesに画像のパスを保存
+    await prefs.setString('imagePath', localFile.path);
   }
 
   @override
@@ -162,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     userName ?? '',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  Spacer(), // 中間に空白を挿入
+                  Spacer(),
                   IconButton(
                     icon: Icon(Icons.edit),
                     onPressed: () {
@@ -179,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: CircleAvatar(
                     radius: 60,
                     backgroundImage:
-                        _image.existsSync() ? FileImage(_image) : null,
+                        imageFile != null ? FileImage(imageFile!) : null,
                   ),
                 ),
                 Column(
@@ -189,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
-                      '$postsCount', // 投稿数を表示
+                      '$postsCount',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -202,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
-                      '$followersCount', // 投稿数を表示
+                      '$followersCount',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -216,7 +184,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     Text(
                       '$followingCount',
-// 投稿数を表示
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -230,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: 16),
               Text(
-                bio ?? '', // 自己紹介文を表示
+                bio ?? '',
                 style: TextStyle(fontSize: 16),
               ),
             ],
@@ -243,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // プロフィール編集画面に遷移する関数
   void _editProfile(BuildContext context) {
     _loadPreferences();
-    userName = prefs.getString('userName'); // 変更
+    userName = prefs.getString('userName');
     Navigator.of(context)
         .push(
       MaterialPageRoute(
@@ -251,14 +218,10 @@ class _MyHomePageState extends State<MyHomePage> {
           initialUserName: userName,
           initialUserID: userID,
           initialBio: bio,
-          // initialFollowingCount: followingCount,
-          // initialFollowersCount: followersCount,
-          // initialPostsCount: postsCount,
         ),
       ),
     )
         .then((result) {
-      // 編集画面から戻ったときの処理
       if (result != null && result is Map<String, dynamic>) {
         _saveChanges(
           result['userName'],
@@ -281,7 +244,6 @@ class _MyHomePageState extends State<MyHomePage> {
     int? newFollowersCount,
     int? newPostsCount,
   ) async {
-    // 保存処理
     if (newUserName != null) await prefs.setString('userName', newUserName);
     if (newUserID != null) await prefs.setString('userID', newUserID);
     if (newBio != null) await prefs.setString('bio', newBio);
@@ -291,7 +253,19 @@ class _MyHomePageState extends State<MyHomePage> {
       await prefs.setInt('followersCount', newFollowersCount);
     if (newPostsCount != null) await prefs.setInt('postsCount', newPostsCount);
 
-    // SharedPreferencesからデータを読み込み、UIを更新
     _loadPreferences();
+  }
+
+  Future<void> setImage() async {
+    await getSharedPreference();
+    final String? imagePath = prefs.getString('imagePath');
+    if (imagePath != null) {
+      imageFile = File(imagePath);
+      setState(() {});
+    }
+  }
+
+  Future<void> getSharedPreference() async {
+    prefs = await SharedPreferences.getInstance();
   }
 }
