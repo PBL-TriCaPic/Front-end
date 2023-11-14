@@ -1,8 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Setting.dart';
 import 'profile_edit.dart';
 import '../theme_setting/Color_Scheme.dart';
+import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -26,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late SharedPreferences prefs;
+  late File _image = File('');
   // ユーザー名、ユーザID、自己紹介文、フォロー数、フォロワー数、投稿数の変数を追加
   String? userName; // 変更
   String? userID; // 変更
@@ -37,6 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    followingCount = 100; // 初期化をここで行う
+    followersCount = 100; // 初期化をここで行う
+    postsCount = 100; // 初期化をここで行う
     _loadPreferences();
   }
 
@@ -47,10 +58,84 @@ class _MyHomePageState extends State<MyHomePage> {
       userName = prefs.getString('userName') ?? 'ユーザー名';
       userID = prefs.getString('userID') ?? 'ユーザーID';
       bio = prefs.getString('bio') ?? 'ここに自己紹介文が入ります。ここに自己紹介文が入ります。';
-      followingCount = prefs.getInt('followingCount') ?? 0;
-      followersCount = prefs.getInt('followersCount') ?? 0;
-      postsCount = prefs.getInt('postsCount') ?? 0;
+      // followingCount = prefs.getInt('followingCount') ?? followingCount;
+      // followersCount = prefs.getInt('followersCount') ?? followersCount;
+      // postsCount = prefs.getInt('postsCount') ?? postsCount;
     });
+  }
+
+  Future<CroppedFile?> _cropImage(File imageFile) async {
+    final imageCropper = ImageCropper(); // ImageCropper クラスのインスタンスを作成
+    CroppedFile? croppedFile = await imageCropper
+        .cropImage(sourcePath: imageFile.path, aspectRatioPresets: [
+      CropAspectRatioPreset.square,
+    ], uiSettings: [
+      AndroidUiSettings(
+        toolbarTitle: '画像を切り抜く',
+        toolbarColor: Colors.blue,
+        toolbarWidgetColor: Colors.white,
+        initAspectRatio: CropAspectRatioPreset.square,
+        lockAspectRatio: true,
+      ),
+      IOSUiSettings(
+        title: '画像を切り抜く',
+      ),
+    ]);
+
+    return croppedFile;
+  }
+
+// 画像を拡大表示するためのダイアログを表示する関数
+  void _showEnlargeDialog() async {
+    // 画像を選択する
+    final pickedFile =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      // 選択された画像を切り抜く
+      File? croppedFile = (await _cropImage(File(pickedFile.path))) as File?;
+
+      if (croppedFile != null) {
+        setState(() {
+          _image = croppedFile;
+        });
+
+        // 切り抜かれた画像をアプリ内に保存
+        await _saveImage(_image);
+
+        showDialog<void>(
+          context: context,
+          builder: (_) {
+            return BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: AlertDialog(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                content: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop(); // タップでダイアログを閉じる
+                  },
+                  child: CircleAvatar(
+                    radius: MediaQuery.of(context).size.width / 1.8,
+                    backgroundImage: FileImage(_image),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }
+    }
+  }
+
+  Future<void> _saveImage(File imageFile) async {
+    // 切り抜かれた画像をアプリ内に保存（必要に応じてパスを変更）
+    final appDir = await getApplicationDocumentsDirectory();
+    final fileName = 'profile_image.jpg';
+    final localFile = await imageFile.copy('${appDir.path}/$fileName');
+
+    // SharedPreferencesなどを使用して、画像のパスや必要な情報を保存することもできます。
+    // 例えば、prefs.setString('imagePath', localFile.path);
   }
 
   @override
@@ -87,10 +172,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                CircleAvatar(
-                  radius: 60,
-                  backgroundImage: NetworkImage(
-                    'https://pbs.twimg.com/media/FfHOaRIagAAxQlC.jpg',
+                GestureDetector(
+                  onTap: () {
+                    _showEnlargeDialog();
+                  },
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                        _image.existsSync() ? FileImage(_image) : null,
                   ),
                 ),
                 Column(
@@ -162,9 +251,9 @@ class _MyHomePageState extends State<MyHomePage> {
           initialUserName: userName,
           initialUserID: userID,
           initialBio: bio,
-          initialFollowingCount: followingCount,
-          initialFollowersCount: followersCount,
-          initialPostsCount: postsCount,
+          // initialFollowingCount: followingCount,
+          // initialFollowersCount: followersCount,
+          // initialPostsCount: postsCount,
         ),
       ),
     )
