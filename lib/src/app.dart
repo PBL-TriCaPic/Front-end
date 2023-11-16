@@ -1,57 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'Profile/Profile.dart';
 import 'Map/Map.dart';
 import 'Search/Search.dart';
 import 'Timeline/Timeline.dart';
+
+final baseTabViewProvider = StateProvider<ViewType>((ref) => ViewType.map);
+
+enum ViewType { map, timeline, search, profile }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      home: const MyStatefulWidget(),
+    return ProviderScope(
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        home: MyStatefulWidget(),
+      ),
     );
   }
 }
 
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key? key}) : super(key: key);
+class MyStatefulWidget extends ConsumerWidget {
+  MyStatefulWidget({Key? key}) : super(key: key);
 
-  @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
-}
+  //@override
+  //State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
 
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  static const _screens = [
-    MapScreen(),
-    TimelineScreen(),
-    SearchScreen(),
-    AccountScreen()
+  final widgets = [
+    const MapScreen(),
+    const TimelineScreen(),
+    const SearchScreen(),
+    const AccountScreen(),
   ];
 
-  int _selectedIndex = 0;
+// class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+//   static const _screens = [
+//     MapScreen(),
+//     TimelineScreen(),
+//     SearchScreen(),
+//     AccountScreen()
+//   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+//   int _selectedIndex = 0;
+
+//   void _onItemTapped(int index) {
+//     setState(() {
+//       _selectedIndex = index;
+//     });
+//   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     //ThemeData selectedTheme = Provider.of<ThemeProvider>(context).selectedTheme;
+    //int currentIndex = 0;
+    final view = ref.watch(baseTabViewProvider.state);
     return Scaffold(
-        body: _screens[_selectedIndex],
+        body: widgets[view.state.index],
         bottomNavigationBar: Theme(
             data: ThemeData(splashFactory: NoSplash.splashFactory),
             child: BottomNavigationBar(
               //backgroundColor: selectedTheme.primaryColor,
-              currentIndex: _selectedIndex,
-              onTap: _onItemTapped,
+              currentIndex: view.state.index,
+              onTap: (int index) =>
+                  view.update((state) => ViewType.values[index]),
               unselectedItemColor: Colors.grey, //Colors.grey,
               selectedItemColor:
                   Color.fromARGB(255, 0, 0, 0), //Color.fromARGB(255, 0, 0, 0),

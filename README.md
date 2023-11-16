@@ -61,3 +61,7 @@ developブランチから切り、「feature/#(イシュー番号)_わかりや�
 8.pull requestをする。GitHub上にその通知が来てたらそこから。来てなければNew pull requestから自分の作ったブランチを選択してCreate。
 
 9.プルリクを送ったらDiscordのフロントエンドに報告
+
+## 最初buildするとき
+
+flutter pub run flutter_launcher_icons:main

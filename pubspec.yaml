@@ -15,8 +15,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  cached_network_image: ^3.3.0
 
-
+#プロフィール写真の拡大に必要
   cupertino_icons: ^1.0.2
 
   #svgファイルを利用する
@@ -30,6 +31,15 @@ dependencies:
   geolocator: ^9.0.1
 
   flutter_riverpod: ^2.4.5
+  shared_preferences: ^2.2.2
+
+#アプリアイコンのためのパッケージ
+  flutter_launcher_icons: ^0.13.1
+#プロフィールの選択
+  #image_picker: ^1.0.4
+  path_provider: ^2.1.1
+  image_cropper: ^4.0.1
+  geocoding: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +47,12 @@ dev_dependencies:
 
   #メモ：2.0.0になっている
   flutter_lints: ^3.0.0
+
+#アプリアイコンの変更
+flutter_icons:       
+  android: true
+  ios: true
+  image_path: "assets/TriCaPic_icon.png"
 
 
 flutter:
@@ -51,6 +67,7 @@ flutter:
     - assets/PostActive.svg
     - assets/TriCaPic_logo.png
     - assets/TriCaPicapplogo1.svg
+    - assets/TriCaPic_icon.png
 
 
 
