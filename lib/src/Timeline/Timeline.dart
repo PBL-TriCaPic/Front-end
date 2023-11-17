@@ -27,7 +27,11 @@ class _timelinePageState extends State<_timeline> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('タイムライン画面'),
+        title: Image.asset(
+          'assets/TriCaPic_logo.png',
+          height: 200,
+          width: 200,
+        ),
         elevation: 3,
         shadowColor: Colors.black,
       ),

@@ -181,6 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           final XFile? image = await _picker.pickImage(
                             source: ImageSource.camera,
                           );
+                          Navigator.pop(context);
                           if (image != null)
                             Navigator.push(
                               context,

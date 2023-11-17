@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_develop/src/Profile/Setting.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:flutter_application_develop/src/Profile/Setting.dart';
+//import 'package:image_picker/image_picker.dart';
+//import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../Timeline/Timeline.dart';

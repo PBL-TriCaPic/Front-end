@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../theme_setting/SharedPreferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../theme_setting/HTTP_request.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String? initialUserName; // Nullable
@@ -22,6 +26,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _userIDController;
   late TextEditingController _bioController;
 
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  String message = ''; //簡易ログイン
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         appBar: AppBar(
           title: const Text('プロフィール編集'),
           actions: [
+            Text(message),
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: () {
@@ -68,6 +77,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   keyboardType: TextInputType.multiline,
                 ),
                 const SizedBox(height: 16),
+                const Text('メールアドレス'),
+                TextField(controller: emailController),
+                const SizedBox(height: 16),
+                const Text('パスワード'),
+                TextField(controller: passwordController),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -77,15 +92,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // 変更を保存する関数
   Future<void> _saveChanges(BuildContext context) async {
     // // 保存処理
-    String? newUserName =
-        _userNameController.text.isNotEmpty ? _userNameController.text : null;
-    String? newUserID =
-        _userIDController.text.isNotEmpty ? _userIDController.text : null;
-    String? newBio =
-        _bioController.text.isNotEmpty ? _bioController.text : null;
-    if (newUserName != null) await SharedPrefs.setUsername(newUserName);
-    if (newUserID != null) await SharedPrefs.setUserId(newUserID);
-    if (newBio != null) await SharedPrefs.setMyBio(newBio);
-    Navigator.of(context).pop({});
+    try {
+      final email = emailController.text;
+      final password = passwordController.text;
+      final userData = await ApiService.loginUser(email, password);
+
+      String? newBio =
+          _bioController.text.isNotEmpty ? _bioController.text : null;
+      // if (newUserName != null)
+      await SharedPrefs.setUsername(userData['username']);
+      // if (newUserID != null)
+      await SharedPrefs.setUserId(userData['userId']);
+      if (newBio != null) await SharedPrefs.setMyBio(newBio);
+      final List<int> capsulesIdList =
+          List<int>.from(userData['capsulesIdList'] ?? []);
+      final List<double> capsulesLatList =
+          List<double>.from(userData['capsuleLatList'] ?? []);
+      final List<double> capsulesLonList =
+          List<double>.from(userData['capsuleLonList'] ?? []);
+      await SharedPrefs.setCapsulesIdList(capsulesIdList);
+      await SharedPrefs.setCapsulesLatList(capsulesLatList);
+      await SharedPrefs.setCapsulesLonList(capsulesLonList);
+      Navigator.of(context).pop({print(userData['username'])});
+    } catch (e) {
+      setState(() {
+        message = 'Login failed. Please check your credentials.';
+      });
+    }
   }
 }

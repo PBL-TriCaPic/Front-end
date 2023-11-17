@@ -8,6 +8,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:geocoding/geocoding.dart' as geoCoding;
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -39,6 +46,9 @@ class MyHomePageState extends State<MyHomePage> {
   int? followingCount;
   int? followersCount;
   int? postsCount;
+  List<int> capsulesIdList = [];
+  List<double> capsuleLatList = [];
+  List<double> capsuleLonList = [];
 
   @override
   void initState() {
@@ -62,10 +72,26 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _loadPreferences() async {
-    setState(() async {
-      userName = await SharedPrefs.getUsername();
-      userId = await SharedPrefs.getUserId();
-      bio = await SharedPrefs.getMyBio();
+    final userNameValue = await SharedPrefs.getUsername();
+    final userIdValue = await SharedPrefs.getUserId();
+    final bioValue = await SharedPrefs.getMyBio();
+    final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
+    final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
+    final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
+
+    print('userName: $userNameValue');
+    print('userId: $userIdValue');
+    print('bio: $bioValue');
+    print('capsulesIdList: $capsulesIdListValue');
+    print('capsulesLatList: $capsulesLatListValue');
+    print('capsulesLonList: $capsulesLonListValue');
+    setState(() {
+      userName = userNameValue;
+      userId = userIdValue;
+      bio = bioValue;
+      capsulesIdList = capsulesIdListValue;
+      capsuleLatList = capsulesLatListValue.cast<double>();
+      capsuleLonList = capsulesLonListValue.cast<double>();
     });
   }
 
@@ -202,11 +228,81 @@ class MyHomePageState extends State<MyHomePage> {
                 bio ?? '',
                 style: const TextStyle(fontSize: 16),
               ),
+              const SizedBox(height: 16),
+              Text(
+                'Capsules ID List: ${capsulesIdList.join(", ")}', // joinを使ってリストを文字列に変換
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Capsules ID List: ${capsuleLatList.join(", ")}', // joinを使ってリストを文字列に変換
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Capsules ID List: ${capsuleLonList.join(", ")}', // joinを使ってリストを文字列に変換
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              // 新しく追加されたウィジェット
+              FutureBuilder<List<String>>(
+                future: _getCityNames(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      final cityNames = snapshot.data as List<String>;
+                      final cityNamesText = cityNames
+                          .map((cityName) => '市区町村名: $cityName')
+                          .join('\n');
+
+                      return Text(
+                        cityNamesText,
+                        style: const TextStyle(fontSize: 16),
+                      );
+                    } else {
+                      return Text(
+                        'データがありません',
+                        style: const TextStyle(fontSize: 16),
+                      );
+                    }
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                },
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<List<String>> _getCityNames() async {
+    List<String> cityNames = [];
+
+    for (int i = 0; i < capsulesIdList.length; i++) {
+      double latitude = capsuleLatList[i];
+      double longitude = capsuleLonList[i];
+
+      // ここで latitude と longitude を使って市区町村名を取得する処理を実行
+      String cityName = await _getCityNameFromCoordinates(latitude, longitude);
+
+      // 結果をリストに追加
+      cityNames.add('$capsulesIdList[$i] $cityName');
+    }
+
+    return cityNames;
+  }
+
+  // 任意のAPIやサービスを使って、座標から市区町村名を取得する関数
+  Future<String> _getCityNameFromCoordinates(
+      double latitude, double longitude) async {
+    // ここに座標から市区町村名を取得するためのAPI呼び出しやロジックを実装
+    // この例ではダミーのデータを返す
+    final placeMarks =
+        await geoCoding.placemarkFromCoordinates(latitude, longitude);
+    final placeMark = placeMarks.isNotEmpty ? placeMarks.first : null;
+    return placeMark?.locality ?? 'Unknown City';
   }
 
   // プロフィール編集画面に遷移する関数

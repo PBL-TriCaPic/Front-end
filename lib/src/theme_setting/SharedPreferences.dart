@@ -1,3 +1,7 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'dart:convert';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
@@ -61,5 +65,68 @@ class SharedPrefs {
   static Future<String?> getMyBio() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('bio');
+  }
+
+  static Future<void> setCapsulesIdList(List<int> capsulesIdList) async {
+    final prefs = await SharedPreferences.getInstance();
+    // リストを文字列に変換して保存
+    final jsonString = jsonEncode(capsulesIdList);
+    await prefs.setString('capsulesIdList', jsonString);
+    print("capsulesIdListをSharedPreferencesに保存しました");
+  }
+
+  static Future<List<int>> getCapsulesIdList() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 文字列からリストに変換して取得
+    final jsonString = prefs.getString('capsulesIdList');
+    if (jsonString != null) {
+      final dynamic decodedList = jsonDecode(jsonString);
+      if (decodedList is List) {
+        return List<int>.from(decodedList);
+      }
+    }
+    return []; // デフォルト値を返す場合
+  }
+
+  static Future<void> setCapsulesLatList(List<double> capsulesLatList) async {
+    final prefs = await SharedPreferences.getInstance();
+    // リストを文字列に変換して保存
+    final jsonString = jsonEncode(capsulesLatList);
+    await prefs.setString('capsulesLatList', jsonString);
+    print("capsulesLatnListをSharedPreferencesに保存しました");
+  }
+
+  static Future<List<double>> getCapsulesLatList() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 文字列からリストに変換して取得
+    final jsonString = prefs.getString('capsulesLatList');
+    if (jsonString != null) {
+      final dynamic LatList = jsonDecode(jsonString);
+      if (LatList is List) {
+        return List<double>.from(LatList);
+      }
+    }
+    return []; // デフォルト値を返す場合
+  }
+
+  static Future<void> setCapsulesLonList(List<double> capsulesLonList) async {
+    final prefs = await SharedPreferences.getInstance();
+    // リストを文字列に変換して保存
+    final jsonString = jsonEncode(capsulesLonList);
+    await prefs.setString('capsulesLonList', jsonString);
+    print("capsulesLonListをSharedPreferencesに保存しました");
+  }
+
+  static Future<List<double>> getCapsulesLonList() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 文字列からリストに変換して取得
+    final jsonString = prefs.getString('capsulesLonList');
+    if (jsonString != null) {
+      final dynamic LonList = jsonDecode(jsonString);
+      if (LonList is List) {
+        return List<double>.from(LonList);
+      }
+    }
+    return []; // デフォルト値を返す場合
   }
 }
