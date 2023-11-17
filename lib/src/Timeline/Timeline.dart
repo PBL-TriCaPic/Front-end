@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme_setting/Color_Scheme.dart';
+import '../Capsule_open/CapContents.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -30,8 +31,27 @@ class _timelinePageState extends State<_timeline> {
         elevation: 3,
         shadowColor: Colors.black,
       ),
-      body: const Center(
-          child: Text('タイムライン画面', style: TextStyle(fontSize: 32.0))),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('タイムライン画面', style: TextStyle(fontSize: 32.0)),
+            SizedBox(height: 20.0), // Add some spacing
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    //カプセル作成画面に遷移
+                    return CapContentsScreen();
+                  }),
+                );
+              },
+              child: Text('ボタン'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

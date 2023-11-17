@@ -3,16 +3,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Profile/Setting.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit.dart';
 import '../theme_setting/Color_Scheme.dart';
+import '../theme_setting/SharedPreferences.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class AccountScreen extends StatelessWidget {
-  const AccountScreen({Key? key}) : super(key: key);
+  const AccountScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +26,15 @@ class AccountScreen extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   late SharedPreferences prefs;
   File? imageFile;
   String? message = '画像';
   String? userName;
-  String? userID;
+  String? userId;
   String? bio;
   int? followingCount;
   int? followersCount;
@@ -48,15 +49,23 @@ class _MyHomePageState extends State<MyHomePage> {
     postsCount = 100;
     // ユーザーの設定をロードし、プロファイル画像を設定
     _loadPreferences();
-    setImage();
+    // 非同期で画像のパスを取得し、それが完了したら処理を行う
+    Future.delayed(Duration.zero, () async {
+      String? imagePath = await SharedPrefs.getImagePath();
+      if (imagePath != null) {
+        setState(() {
+          imageFile = File(imagePath);
+        });
+      }
+    });
+    //setImage();
   }
 
   Future<void> _loadPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = prefs.getString('userName') ?? 'ユーザー名';
-      userID = prefs.getString('userID') ?? 'ユーザーID';
-      bio = prefs.getString('bio') ?? 'ここに自己紹介文が入ります。';
+    setState(() async {
+      userName = await SharedPrefs.getUsername();
+      userId = await SharedPrefs.getUserId();
+      bio = await SharedPrefs.getMyBio();
     });
   }
 
@@ -68,12 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (pickedFile != null) {
       final image = File(pickedFile.path);
 
-      // 選択された画像を保存し、ステートを更新
-      await _saveImage(image);
-
       setState(() {
         imageFile = image;
       });
+
+      // 選択された画像を保存し、ステートを更新
+      await SharedPrefs.setImage(imageFile!);
       // 拡大表示されたプロファイル画像を含むダイアログを表示
       showDialog<void>(
         context: context,
@@ -97,16 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       );
     }
-  }
-
-// 選択した画像をアプリの内部ストレージとSharedPreferencesに保存
-  Future<void> _saveImage(File imageFile) async {
-    // 切り抜かれた画像をアプリ内に保存（必要に応じてパスを変更）
-    final appDir = await getApplicationDocumentsDirectory();
-    final fileName = 'profile_image.jpg';
-    final localFile = await imageFile.copy('${appDir.path}/$fileName');
-    // SharedPreferencesに画像のパスを保存
-    await prefs.setString('imagePath', localFile.path);
   }
 
   @override
@@ -155,53 +154,53 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Column(
                   children: [
-                    Text(
+                    const Text(
                       '投稿',
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
                       '$postsCount',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 Column(
                   children: [
-                    Text(
+                    const Text(
                       'フォロワー',
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
                       '$followersCount',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 Column(
                   children: [
-                    Text(
+                    const Text(
                       'フォロー数',
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
                       '$followingCount',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
               ]),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
-                userID ?? '',
-                style: TextStyle(fontSize: 16),
+                userId ?? '',
+                style: const TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 bio ?? '',
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             ],
           ),
@@ -213,65 +212,39 @@ class _MyHomePageState extends State<MyHomePage> {
   // プロフィール編集画面に遷移する関数
   void _editProfile(BuildContext context) {
     _loadPreferences();
-    userName = prefs.getString('userName');
+    //userName = prefs.getString('userName');
     Navigator.of(context)
         .push(
       MaterialPageRoute(
         builder: (context) => EditProfileScreen(
           initialUserName: userName,
-          initialUserID: userID,
+          initialUserID: userId,
           initialBio: bio,
         ),
       ),
     )
         .then((result) {
-      // 編集後、変更をSharedPreferencesに保存
-      if (result != null && result is Map<String, dynamic>) {
-        _saveChanges(
-          result['userName'],
-          result['userID'],
-          result['bio'],
-          result['followingCount'],
-          result['followersCount'],
-          result['postsCount'],
-        );
-      }
+      setState(() {
+        // 編集後、変更をSharedPreferencesに保存
+        _loadPreferences();
+      });
     });
   }
 
-  // 変更をSharedPreferencesに保存する関数
+  // 変更をSharedPreferencesに保存する関数(フォローフォロワー投稿数)
   void _saveChanges(
-    String? newUserName,
-    String? newUserID,
-    String? newBio,
     int? newFollowingCount,
     int? newFollowersCount,
     int? newPostsCount,
   ) async {
-    if (newUserName != null) await prefs.setString('userName', newUserName);
-    if (newUserID != null) await prefs.setString('userID', newUserID);
-    if (newBio != null) await prefs.setString('bio', newBio);
-    if (newFollowingCount != null)
+    if (newFollowingCount != null) {
       await prefs.setInt('followingCount', newFollowingCount);
-    if (newFollowersCount != null)
+    }
+    if (newFollowersCount != null) {
       await prefs.setInt('followersCount', newFollowersCount);
+    }
     if (newPostsCount != null) await prefs.setInt('postsCount', newPostsCount);
 
     _loadPreferences(); // 変更後の設定を再読み込み
-  }
-
-// プロファイル画像を設定する関数
-  Future<void> setImage() async {
-    await getSharedPreference();
-    final String? imagePath = prefs.getString('imagePath');
-    if (imagePath != null) {
-      imageFile = File(imagePath);
-      setState(() {});
-    }
-  }
-
-// SharedPreferencesを取得する関数
-  Future<void> getSharedPreference() async {
-    prefs = await SharedPreferences.getInstance();
   }
 }
