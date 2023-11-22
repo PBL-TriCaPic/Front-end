@@ -55,7 +55,8 @@ class CityButtonsWidget extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => CapContentsScreen(
-                capsuleId: capsuleId[index], cityName: cityNames[index]),
+                capsuleId: capsuleId[index],
+                cityName: cityNames[index]), //掘り起こす演出このへん
           ),
         );
       },
