@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_develop/src/Map/Capsel/Picture_Check.dart';
+import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
 import 'package:flutter_application_develop/src/app.dart';
 //追加import
+import 'package:image_picker/image_picker.dart';
 import 'dart:ffi';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/Color_Scheme.dart';
 
 final ThemeData lightTheme =
@@ -44,6 +50,11 @@ class _HomeScreen extends State<HomeScreen> {
   var currentPosition; //メモ：現在地を取得する変数
   var currentHeading;
   LatLng? tapLatLng; //メモ：?はnullも許容
+  //画像保存用のpreference
+  late SharedPreferences pref;
+  late XFile image;
+
+  File? imageFile;
 
   List<Marker> markers = [];
 
@@ -90,6 +101,8 @@ class _HomeScreen extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //カメラ表示追記1行
+    final ImagePicker _picker = ImagePicker();
     ThemeData selectedTheme = lightTheme;
     return MaterialApp(
       theme: selectedTheme,
@@ -117,7 +130,7 @@ class _HomeScreen extends State<HomeScreen> {
                   tapLatLng = latLng;
                   print(tapLatLng);
                   print("↑ピンを押したところの緯度経度");
-                  //cleatePin(tapLatLng!);
+                  cleatePin(tapLatLng!);
                 }),
             layers: [
               //背景地図読み込み (OSM)
@@ -135,6 +148,7 @@ class _HomeScreen extends State<HomeScreen> {
             ],
           ),
         ),
+
         //右下のボタンの処理
         floatingActionButton: FloatingActionButton(
           //Iconの部分を書き換えるとアイコンのデザイン変更可
@@ -144,33 +158,39 @@ class _HomeScreen extends State<HomeScreen> {
             height: 35,
             color: Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
           ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) {
-                //カプセル作成画面に遷移
-                return capsel_Create();
-              }),
+          onPressed: () async {
+            //カメラ撮影画面に遷移
+            final XFile? image = await _picker.pickImage(
+              source: ImageSource.camera,
             );
+            if (image != null) {
+              /*final pref = await SharedPreferences.getInstance();
+              pref.setString('imagePath', image!.path);
+              print('${image.path}の値はこれです');
+              setState(() {});*/
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PictureCheck(image),
+                ),
+              );
+              print("遷移できる");
+            }
+            /*else if (image == null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => capsel_Check(),
+                ),
+              );
+            }*/
           },
         ),
-        /*Column(
-              children: [
-                const Center(
-                    child: Text('Map画面', style: TextStyle(fontSize: 32.0))),
-                 Switch(
-                   value: _light,
-                   onChanged: (bool value) {
-                     _toggleTheme();
-                   },
-                 ),
-              ],
-            )*/
       ),
     );
   }
 
-  //ピンを作成する(現時点では表示はされない)
+  //ピンを作成する
   void cleatePin(LatLng tapLatLng) {
     Marker marker = Marker(
       point: tapLatLng,
@@ -189,6 +209,7 @@ class _HomeScreen extends State<HomeScreen> {
         ),
       ),
     );
+    //BottomNavigatorを押しまくった時に、エラーが出るのを防いでくれるかもしれない記述
     markers.add(marker);
     if (mounted) {
       setState(() {});
@@ -241,4 +262,26 @@ class _HomeScreen extends State<HomeScreen> {
   }
 
   void pinSizeChange() {}
+
+  //撮影した写真をプリファレンスに保存
+  Future<void> saveImagePath() async {
+    if (image != null) {
+      await pref.setString('imagePath', image!.path);
+      setState(() {});
+    }
+  }
+
+  Future<void> getSharedPreference() async {
+    pref = await SharedPreferences.getInstance();
+  }
+
+//画像をセット？表示する
+  Future<void> setImage() async {
+    await getSharedPreference();
+    final String? imagePath = pref.getString('imagePath');
+    if (imagePath != null) {
+      imageFile = File(imagePath);
+      setState(() {});
+    }
+  }
 }

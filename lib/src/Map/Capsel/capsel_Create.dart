@@ -1,7 +1,8 @@
 import 'dart:ffi';
 //import 'dart:html';
+import 'package:flutter_application_develop/src/Map/Capsel/Picture_Check.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
-import 'package:flutter_application_develop/src/Map/Capsel/pucture_View.dart';
+import 'package:flutter_application_develop/src/Map/Capsel/picture_Check.dart';
 import 'package:flutter_application_develop/src/Map/Map.dart';
 import 'package:flutter_application_develop/src/app.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +11,10 @@ import 'package:flutter/material.dart';
 //import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../theme_setting/Color_Scheme.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -33,18 +38,20 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   /*image_pickerを利用するためのコード
   File _image;
   final picker = ImagePicker();*/
 
   String _apptitle = 'カプセル埋める';
-  String title = '';
-  String nakami = '';
+  //タイトルと中身を保存する変数 pref
+  late SharedPreferences pref;
+  String capsel_title = '';
+  String capsel_nakami = '';
 
   /*カメラ画面を表示する
   Future Camera_Show() async {
@@ -82,10 +89,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   dynamic dateTime;
 
+  //ロード時に読み込まれる関数たち
   @override
   void initState() {
     super.initState();
     dateTime = DateTime.now();
+    loadPref();
   }
 
 //DatePicker設定画面
@@ -102,6 +111,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //この画面を読み込んだ時に保存したタイトルや中身を読み込んでる
+  Future<void> loadPref() async {
+    pref = await SharedPreferences.getInstance();
+    setState(() {
+      capsel_title = pref.getString('title')!;
+      capsel_nakami = pref.getString('nakami')!;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     //カメラ表示追記
@@ -110,8 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         //キーボードを出した時に、bottom～のトラテープみたいなエラーを封じる
         resizeToAvoidBottomInset: false,
-        // appBar: AppBar(
-        // ),
 
         //columnで画面範囲を超えてbottom～エラーが出た時に封じる↓
         //画面を下に引っ張って更新することは不可?
@@ -129,10 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.start, // 垂直方向上寄せ
                 children: [
                   Container(
-                      child: ButtonBar(
-                          //横並びにする
-                          alignment: MainAxisAlignment.spaceBetween, //幅を等しくする
-                          children: [
+                    child: ButtonBar(
+                      //横並びにする
+                      alignment: MainAxisAlignment.spaceBetween, //幅を等しくする
+                      children: [
                         //キャンセルボタンを押した時の処理
                         TextButton(
                             onPressed: () {
@@ -153,27 +169,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
                         //次へボタンを押した時の処理
                         IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                //マップ画面に遷移(Navigatorpopの方がいいかも？)
-                                return Sample2();
-                              }),
-                            );
-                          },
-                          icon: Icon(Icons.keyboard_double_arrow_right),
-                          iconSize: 30,
-                          color: Color.fromARGB(255, 142, 189, 237),
-                          // child: const Text("次へ",
-                          //     style: TextStyle(
-                          //       fontSize: 16,
-                          //     )),
-                        ),
-                      ])),
+                            onPressed: () async {
+                              //プリファレンスに保存している
+                              final title_pref =
+                                  await SharedPreferences.getInstance();
+                              title_pref.setString('title', capsel_title);
+
+                              final nakami_pref =
+                                  await SharedPreferences.getInstance();
+                              nakami_pref.setString('nakami', capsel_nakami);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  //カプセル確認画面に遷移
+                                  return capsel_Check();
+                                }),
+                              );
+                            },
+                            icon: Icon(Icons.keyboard_double_arrow_right),
+                            iconSize: 30,
+                            color: Color.fromARGB(255, 142, 189, 237)),
+                      ],
+                    ),
+                  ),
 
                   //撮影するボタン
-                  Container(
+                  /*Container(
                     child: Column(children: [
                       IconButton(
                         onPressed: () async {
@@ -195,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         //child: const Text("撮影する！"),
                       ),
                     ]),
-                  ),
+                  ),*/
                   Container(
                     width:
                         MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
@@ -209,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       // テキストフィールドをスクロール可能にするためにSingleChildScrollViewを使用,
                       onChanged: (text) {
                         // TODO: ここで取得したtextを使う
-                        title = text;
+                        capsel_title = text;
                       },
                     ),
                   ),
@@ -227,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       // テキストフィールドをスクロール可能にするためにSingleChildScrollViewを使用,
                       onChanged: (text) {
                         // TODO: ここで取得したtextを使う
-                        nakami = text;
+                        capsel_nakami = text;
                       },
                     ),
                   ),
@@ -250,19 +271,78 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     child: const Text("位置情報取得"),
                   ),
-                  //仮
+                  /*ボンドの画像
                   Image.network(
                     'https://pbs.twimg.com/media/FfHOaRIagAAxQlC.jpg',
                     width: 50,
                     height: 100,
-                  ),
+                  ),*/
 
                   //位置情報テキスト
                   Text('$_location'),
+                  //保存したプリファレンスを表示する
+                  //Text(capsel_title, style: const TextStyle(fontSize: 30)),
+                  //Text(capsel_nakami, style: const TextStyle(fontSize: 30)),
                 ],
               ),
             ),
           ),
         ));
+  }
+
+  /*Future<ApiResults> data_Return() async {
+    var url = "";
+    var request = new data_Request(
+        title: capsel_title,
+        nakami: capsel_nakami,
+        dateTime: dateTime,
+        location: _location);
+    final response = await http.post(url,
+        body: json.encode(request.toJson()),
+        headers: {"Content-Type": "application/json"});
+    if (response.statusCode == 200) {
+      return ApiResults.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('失敗した');
+    }
+  }*/
+} //クラス終わり
+
+//サーバにリクエストする為のデータクラス
+class data_Request {
+  final String title;
+  final String nakami;
+  final dynamic dateTime;
+  final String location;
+  data_Request({
+    this.title = "",
+    this.nakami = "",
+    this.dateTime,
+    this.location = "",
+  });
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'nakami': nakami,
+      };
+}
+
+class ApiResults {
+  final String title;
+  final String nakami;
+  final dynamic dateTime;
+  final String location;
+  ApiResults({
+    this.title = "",
+    this.nakami = "",
+    this.dateTime,
+    this.location = "",
+  });
+  factory ApiResults.fromJson(Map<String, dynamic> json) {
+    return ApiResults(
+      title: json['title'],
+      nakami: json['nakami'],
+      dateTime: json['dateTime'],
+      location: json['location'],
+    );
   }
 }
