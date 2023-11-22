@@ -3,16 +3,20 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Profile/Setting.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+//import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit.dart';
 import '../theme_setting/Color_Scheme.dart';
+import '../theme_setting/SharedPreferences.dart';
+import 'dart:async';
+import 'package:geocoding/geocoding.dart' as geoCoding;
+//import '../Timeline/TimlineButton.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class AccountScreen extends StatelessWidget {
-  const AccountScreen({Key? key}) : super(key: key);
+  const AccountScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +29,22 @@ class AccountScreen extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   late SharedPreferences prefs;
   File? imageFile;
   String? message = '画像';
   String? userName;
-  String? userID;
+  String? userId;
   String? bio;
   int? followingCount;
   int? followersCount;
   int? postsCount;
+  List<String> capsulesIdList = [];
+  List<double> capsuleLatList = [];
+  List<double> capsuleLonList = [];
 
   @override
   void initState() {
@@ -48,15 +55,43 @@ class _MyHomePageState extends State<MyHomePage> {
     postsCount = 100;
     // ユーザーの設定をロードし、プロファイル画像を設定
     _loadPreferences();
-    setImage();
+    // 非同期で画像のパスを取得し、それが完了したら処理を行う
+    Future.delayed(Duration.zero, () async {
+      String? imagePath = await SharedPrefs.getImagePath();
+      if (imagePath != null) {
+        setState(() {
+          imageFile = File(imagePath);
+        });
+      }
+    });
+    //setImage();
   }
 
   Future<void> _loadPreferences() async {
-    prefs = await SharedPreferences.getInstance();
+    final userNameValue = await SharedPrefs.getUsername();
+    final userIdValue = await SharedPrefs.getUserId();
+    final bioValue = await SharedPrefs.getMyBio();
+    final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
+    final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
+    final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
+
+    // List<int> を List<String> に変換
+    final capsulesIdListAsString =
+        capsulesIdListValue.map((id) => id.toString()).toList();
+
+    print('userName: $userNameValue');
+    print('userId: $userIdValue');
+    print('bio: $bioValue');
+    print('capsulesIdList: $capsulesIdListValue');
+    print('capsulesLatList: $capsulesLatListValue');
+    print('capsulesLonList: $capsulesLonListValue');
     setState(() {
-      userName = prefs.getString('userName') ?? 'ユーザー名';
-      userID = prefs.getString('userID') ?? 'ユーザーID';
-      bio = prefs.getString('bio') ?? 'ここに自己紹介文が入ります。';
+      userName = userNameValue;
+      userId = userIdValue;
+      bio = bioValue;
+      capsulesIdList = capsulesIdListAsString;
+      capsuleLatList = capsulesLatListValue.cast<double>();
+      capsuleLonList = capsulesLonListValue.cast<double>();
     });
   }
 
@@ -68,12 +103,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (pickedFile != null) {
       final image = File(pickedFile.path);
 
-      // 選択された画像を保存し、ステートを更新
-      await _saveImage(image);
-
       setState(() {
         imageFile = image;
       });
+
+      // 選択された画像を保存し、ステートを更新
+      await SharedPrefs.setImage(imageFile!);
       // 拡大表示されたプロファイル画像を含むダイアログを表示
       showDialog<void>(
         context: context,
@@ -99,16 +134,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-// 選択した画像をアプリの内部ストレージとSharedPreferencesに保存
-  Future<void> _saveImage(File imageFile) async {
-    // 切り抜かれた画像をアプリ内に保存（必要に応じてパスを変更）
-    final appDir = await getApplicationDocumentsDirectory();
-    final fileName = 'profile_image.jpg';
-    final localFile = await imageFile.copy('${appDir.path}/$fileName');
-    // SharedPreferencesに画像のパスを保存
-    await prefs.setString('imagePath', localFile.path);
-  }
-
   @override
   Widget build(BuildContext context) {
     ThemeData selectedTheme = lightTheme;
@@ -122,156 +147,314 @@ class _MyHomePageState extends State<MyHomePage> {
           shadowColor: Colors.black,
         ),
         endDrawer: CustomDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    userName ?? '',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Spacer(),
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      _editProfile(context);
-                    },
-                  ),
-                ],
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                GestureDetector(
-                  onTap: () {
-                    _showEnlargeDialog();
-                  },
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage:
-                        imageFile != null ? FileImage(imageFile!) : null,
-                  ),
-                ),
-                Column(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
                     Text(
-                      '投稿',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '$postsCount',
+                      userName ?? '',
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        _editProfile(context);
+                      },
                     ),
                   ],
                 ),
-                Column(
-                  children: [
-                    Text(
-                      'フォロワー',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '$followersCount',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _showEnlargeDialog();
+                        },
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundImage:
+                              imageFile != null ? FileImage(imageFile!) : null,
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            '投稿',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            '$postsCount',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            'フォロワー',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            '$followersCount',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            'フォロー数',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            '$followingCount',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ]),
+                const SizedBox(height: 16),
+                Text(
+                  userId ?? '',
+                  style: const TextStyle(fontSize: 16),
                 ),
-                Column(
-                  children: [
-                    Text(
-                      'フォロー数',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '$followingCount',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                const SizedBox(height: 16),
+                Text(
+                  bio ?? '',
+                  style: const TextStyle(fontSize: 16),
                 ),
-              ]),
-              SizedBox(height: 16),
-              Text(
-                userID ?? '',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 16),
-              Text(
-                bio ?? '',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
+                // const SizedBox(height: 16),
+                // Text(
+                //   'Capsules ID List: ${capsulesIdList.join(", ")}', // joinを使ってリストを文字列に変換
+                //   style: const TextStyle(fontSize: 16),
+                // ),
+                // const SizedBox(height: 16),
+                // Text(
+                //   'Capsules ID List: ${capsuleLatList.join(", ")}', // joinを使ってリストを文字列に変換
+                //   style: const TextStyle(fontSize: 16),
+                // ),
+                // const SizedBox(height: 16),
+                // Text(
+                //   'Capsules ID List: ${capsuleLonList.join(", ")}', // joinを使ってリストを文字列に変換
+                //   style: const TextStyle(fontSize: 16),
+                // ),
+                const SizedBox(height: 16),
+                // 新しく追加されたウィジェット
+                // FutureBuilder<List<String>>(
+                //   future: _getCityNames(),
+                //   builder: (context, snapshot) {
+                //     if (snapshot.connectionState == ConnectionState.done) {
+                //       if (snapshot.hasData) {
+                //         final cityNames = snapshot.data as List<String>;
+                //         final cityNamesText = cityNames
+                //             .map((cityName) => '市区町村名: $cityName')
+                //             .join('\n');
+                // FutureBuilder<List<String>>(
+                //   future: _getCityNames(),
+                //   builder: (context, snapshot) {
+                //     if (snapshot.connectionState == ConnectionState.done) {
+                //       if (snapshot.hasData) {
+                //         final cityNames = snapshot.data as List<String>;
+
+                //         return SingleChildScrollView(
+                //           child: Column(
+                //             crossAxisAlignment: CrossAxisAlignment.start,
+                //             children: [
+                //               // 他のウィジェット
+                //               const SizedBox(height: 16),
+                //               CityButtonsWidget(
+                //                 cityNames: cityNames,
+                //                 userNames: userName != null
+                //                     ? List.filled(cityNames.length, userName!)
+                //                     : [],
+                //                 userIds: userId != null
+                //                     ? List.filled(cityNames.length, userId!)
+                //                     : [],
+                //                 capsuleId: capsulesIdList,
+                //                 capsuleLatList: capsuleLatList,
+                //                 capsuleLonList: capsuleLonList,
+                //               ),
+                //             ],
+                //           ),
+                //         );
+                //       } else {
+                //         return Text(
+                //           'データがありません',
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       }
+                //     } else {
+                //       return CircularProgressIndicator();
+                //     }
+                //   },
+                // ),
+                //         return Text(
+                //           cityNamesText,
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       } else {
+                //         return Text(
+                //           'データがありません',
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       }
+                //     } else {
+                //       return CircularProgressIndicator();
+                //     }
+                //   },
+                // ),
+
+                // FutureBuilder<List<String>>(
+                //   future: _getAddressInfo(),
+                //   builder: (context, snapshot) {
+                //     if (snapshot.connectionState == ConnectionState.done) {
+                //       if (snapshot.hasData) {
+                //         final addressInfo = snapshot.data as List<String>;
+                //         final addressInfoText =
+                //             addressInfo.map((info) => '住所情報: $info').join('\n');
+
+                //         return Text(
+                //           addressInfoText,
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       } else {
+                //         return Text(
+                //           'データがありません',
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       }
+                //     } else {
+                //       return CircularProgressIndicator();
+                //     }
+                //   },
+                // ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  // Future<List<String>> _getAddressInfo() async {
+  //   List<String> addressInfo = [];
+
+  //   for (int i = 0; i < capsuleLatList.length; i++) {
+  //     double latitude = capsuleLatList[i];
+  //     double longitude = capsuleLonList[i];
+
+  //     // ここで latitude と longitude を使って住所情報を取得する処理を実行
+  //     String info = await _getAddressInfoFromCoordinates(latitude, longitude);
+
+  //     // 結果をリストに追加
+  //     addressInfo.add('$capsulesIdList[$i] $info');
+  //   }
+
+  //   return addressInfo;
+  // }
+
+  // Future<String> _getAddressInfoFromCoordinates(
+  //     double latitude, double longitude) async {
+  //   // ここに座標から住所情報を取得するためのAPI呼び出しやロジックを実装
+  //   final placeMarks =
+  //       await geoCoding.placemarkFromCoordinates(latitude, longitude);
+  //   final placeMark = placeMarks.isNotEmpty ? placeMarks.first : null;
+
+  //   // ダミーデータを実際のデータに置き換える
+  //   String addressInfo = '';
+  //   if (placeMark != null) {
+  //     addressInfo = '''
+  //     国: ${placeMark.country}
+  //     県: ${placeMark.administrativeArea}
+  //     都市: ${placeMark.locality}
+  //     市区町村: ${placeMark.subLocality}
+  //     地区: ${placeMark.subLocality}
+  //     通り: ${placeMark.thoroughfare}
+  //     番地: ${placeMark.subThoroughfare}
+  //     郵便番号: ${placeMark.postalCode}
+  //     地名: ${placeMark.name}
+  //     地番: ${placeMark.subAdministrativeArea}
+  //   ''';
+  //   } else {
+  //     addressInfo = 'Unknown Address';
+  //   }
+
+  //   return addressInfo;
+  // }
+  Future<List<String>> _getCityNames() async {
+    List<String> cityNames = [];
+
+    for (int CaCount = 0; CaCount < capsulesIdList.length; CaCount++) {
+      double latitude = capsuleLatList[CaCount];
+      double longitude = capsuleLonList[CaCount];
+
+      // ここで latitude と longitude を使って市区町村名を取得する処理を実行
+      String cityName = await _getCityNameFromCoordinates(latitude, longitude);
+
+      // 結果をリストに追加
+      cityNames.add(
+          cityName); //cityNames.add('$capsulesIdList[$CaCount] $cityName');
+    }
+
+    return cityNames;
+  }
+
+  // 任意のAPIやサービスを使って、座標から市区町村名を取得する関数
+  Future<String> _getCityNameFromCoordinates(
+      double latitude, double longitude) async {
+    // ここに座標から市区町村名を取得するためのAPI呼び出しやロジックを実装
+    // この例ではダミーのデータを返す
+    final placeMarks =
+        await geoCoding.placemarkFromCoordinates(latitude, longitude);
+    final placeMark = placeMarks.isNotEmpty ? placeMarks.first : null;
+    return placeMark?.locality ?? 'Unknown City';
+  }
+
   // プロフィール編集画面に遷移する関数
   void _editProfile(BuildContext context) {
     _loadPreferences();
-    userName = prefs.getString('userName');
+    //userName = prefs.getString('userName');
     Navigator.of(context)
         .push(
       MaterialPageRoute(
         builder: (context) => EditProfileScreen(
           initialUserName: userName,
-          initialUserID: userID,
+          initialUserID: userId,
           initialBio: bio,
         ),
       ),
     )
         .then((result) {
-      // 編集後、変更をSharedPreferencesに保存
-      if (result != null && result is Map<String, dynamic>) {
-        _saveChanges(
-          result['userName'],
-          result['userID'],
-          result['bio'],
-          result['followingCount'],
-          result['followersCount'],
-          result['postsCount'],
-        );
-      }
+      setState(() {
+        // 編集後、変更をSharedPreferencesに保存
+        _loadPreferences();
+      });
     });
   }
 
-  // 変更をSharedPreferencesに保存する関数
+  // 変更をSharedPreferencesに保存する関数(フォローフォロワー投稿数)
   void _saveChanges(
-    String? newUserName,
-    String? newUserID,
-    String? newBio,
     int? newFollowingCount,
     int? newFollowersCount,
     int? newPostsCount,
   ) async {
-    if (newUserName != null) await prefs.setString('userName', newUserName);
-    if (newUserID != null) await prefs.setString('userID', newUserID);
-    if (newBio != null) await prefs.setString('bio', newBio);
-    if (newFollowingCount != null)
+    if (newFollowingCount != null) {
       await prefs.setInt('followingCount', newFollowingCount);
-    if (newFollowersCount != null)
+    }
+    if (newFollowersCount != null) {
       await prefs.setInt('followersCount', newFollowersCount);
+    }
     if (newPostsCount != null) await prefs.setInt('postsCount', newPostsCount);
 
     _loadPreferences(); // 変更後の設定を再読み込み
-  }
-
-// プロファイル画像を設定する関数
-  Future<void> setImage() async {
-    await getSharedPreference();
-    final String? imagePath = prefs.getString('imagePath');
-    if (imagePath != null) {
-      imageFile = File(imagePath);
-      setState(() {});
-    }
-  }
-
-// SharedPreferencesを取得する関数
-  Future<void> getSharedPreference() async {
-    prefs = await SharedPreferences.getInstance();
   }
 }

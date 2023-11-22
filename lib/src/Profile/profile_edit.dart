@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import '../theme_setting/SharedPreferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../theme_setting/HTTP_request.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String? initialUserName; // Nullable
   final String? initialUserID; // Nullable
   final String? initialBio; // Nullable
 
-  EditProfileScreen({
+  const EditProfileScreen({
+    super.key,
     this.initialUserName,
     this.initialUserID,
     this.initialBio,
@@ -20,6 +26,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _userIDController;
   late TextEditingController _bioController;
 
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  String message = ''; //簡易ログイン
+
   @override
   void initState() {
     super.initState();
@@ -33,10 +43,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('プロフィール編集'),
+          title: const Text('プロフィール編集'),
           actions: [
+            Text(message),
             IconButton(
-              icon: Icon(Icons.check),
+              icon: const Icon(Icons.check),
               onPressed: () {
                 // 保存ボタンが押されたときの処理
                 _saveChanges(context);
@@ -54,18 +65,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('ユーザー名'),
+                const Text('ユーザー名'),
                 TextField(controller: _userNameController),
-                SizedBox(height: 16),
-                Text('ユーザーID'),
+                const SizedBox(height: 16),
+                const Text('ユーザーID'),
                 TextField(controller: _userIDController),
-                SizedBox(height: 16),
-                Text('自己紹介'),
+                const SizedBox(height: 16),
+                const Text('自己紹介'),
                 TextField(
                   controller: _bioController, maxLines: null, // または必要な行数
                   keyboardType: TextInputType.multiline,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
+                const Text('メールアドレス'),
+                TextField(controller: emailController),
+                const SizedBox(height: 16),
+                const Text('パスワード'),
+                TextField(controller: passwordController),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -73,28 +90,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   // 変更を保存する関数
-  void _saveChanges(BuildContext context) {
-    // 保存処理
-    String? newUserName =
-        _userNameController.text.isNotEmpty ? _userNameController.text : null;
-    String? newUserID =
-        _userIDController.text.isNotEmpty ? _userIDController.text : null;
-    String? newBio =
-        _bioController.text.isNotEmpty ? _bioController.text : null;
+  Future<void> _saveChanges(BuildContext context) async {
+    // // 保存処理
+    try {
+      final email = emailController.text;
+      final password = passwordController.text;
+      final userData = await ApiService.loginUser(email, password);
 
-    // プロフィール編集画面からデータを元の画面に渡す
-    Navigator.of(context).pop({
-      'userName': newUserName,
-      'userID': newUserID,
-      'bio': newBio,
-    });
-  }
-
-  @override
-  void dispose() {
-    _userNameController.dispose();
-    _userIDController.dispose();
-    _bioController.dispose();
-    super.dispose();
+      String? newBio =
+          _bioController.text.isNotEmpty ? _bioController.text : null;
+      // if (newUserName != null)
+      await SharedPrefs.setUsername(userData['username']);
+      // if (newUserID != null)
+      await SharedPrefs.setUserId(userData['userId']);
+      if (newBio != null) await SharedPrefs.setMyBio(newBio);
+      final List<int> capsulesIdList =
+          List<int>.from(userData['capsulesIdList'] ?? []);
+      final List<double> capsulesLatList =
+          List<double>.from(userData['capsuleLatList'] ?? []);
+      final List<double> capsulesLonList =
+          List<double>.from(userData['capsuleLonList'] ?? []);
+      await SharedPrefs.setCapsulesIdList(capsulesIdList);
+      await SharedPrefs.setCapsulesLatList(capsulesLatList);
+      await SharedPrefs.setCapsulesLonList(capsulesLonList);
+      Navigator.of(context).pop({print(userData['username'])});
+    } catch (e) {
+      setState(() {
+        message = 'Login failed. Please check your credentials.';
+      });
+    }
   }
 }
