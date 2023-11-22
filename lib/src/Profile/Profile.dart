@@ -9,12 +9,8 @@ import 'profile_edit.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
 import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
+//import '../Timeline/TimlineButton.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -46,7 +42,7 @@ class MyHomePageState extends State<MyHomePage> {
   int? followingCount;
   int? followersCount;
   int? postsCount;
-  List<int> capsulesIdList = [];
+  List<String> capsulesIdList = [];
   List<double> capsuleLatList = [];
   List<double> capsuleLonList = [];
 
@@ -79,6 +75,10 @@ class MyHomePageState extends State<MyHomePage> {
     final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
     final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
 
+    // List<int> を List<String> に変換
+    final capsulesIdListAsString =
+        capsulesIdListValue.map((id) => id.toString()).toList();
+
     print('userName: $userNameValue');
     print('userId: $userIdValue');
     print('bio: $bioValue');
@@ -89,7 +89,7 @@ class MyHomePageState extends State<MyHomePage> {
       userName = userNameValue;
       userId = userIdValue;
       bio = bioValue;
-      capsulesIdList = capsulesIdListValue;
+      capsulesIdList = capsulesIdListAsString;
       capsuleLatList = capsulesLatListValue.cast<double>();
       capsuleLonList = capsulesLonListValue.cast<double>();
     });
@@ -147,148 +147,262 @@ class MyHomePageState extends State<MyHomePage> {
           shadowColor: Colors.black,
         ),
         endDrawer: CustomDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    userName ?? '',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Spacer(),
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      _editProfile(context);
-                    },
-                  ),
-                ],
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                GestureDetector(
-                  onTap: () {
-                    _showEnlargeDialog();
-                  },
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage:
-                        imageFile != null ? FileImage(imageFile!) : null,
-                  ),
-                ),
-                Column(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    const Text(
-                      '投稿',
-                      style: TextStyle(fontSize: 16),
-                    ),
                     Text(
-                      '$postsCount',
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      userName ?? '',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        _editProfile(context);
+                      },
                     ),
                   ],
                 ),
-                Column(
-                  children: [
-                    const Text(
-                      'フォロワー',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '$followersCount',
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _showEnlargeDialog();
+                        },
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundImage:
+                              imageFile != null ? FileImage(imageFile!) : null,
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            '投稿',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            '$postsCount',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            'フォロワー',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            '$followersCount',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            'フォロー数',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            '$followingCount',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ]),
+                const SizedBox(height: 16),
+                Text(
+                  userId ?? '',
+                  style: const TextStyle(fontSize: 16),
                 ),
-                Column(
-                  children: [
-                    const Text(
-                      'フォロー数',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '$followingCount',
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                const SizedBox(height: 16),
+                Text(
+                  bio ?? '',
+                  style: const TextStyle(fontSize: 16),
                 ),
-              ]),
-              const SizedBox(height: 16),
-              Text(
-                userId ?? '',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                bio ?? '',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Capsules ID List: ${capsulesIdList.join(", ")}', // joinを使ってリストを文字列に変換
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Capsules ID List: ${capsuleLatList.join(", ")}', // joinを使ってリストを文字列に変換
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Capsules ID List: ${capsuleLonList.join(", ")}', // joinを使ってリストを文字列に変換
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              // 新しく追加されたウィジェット
-              FutureBuilder<List<String>>(
-                future: _getCityNames(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      final cityNames = snapshot.data as List<String>;
-                      final cityNamesText = cityNames
-                          .map((cityName) => '市区町村名: $cityName')
-                          .join('\n');
+                // const SizedBox(height: 16),
+                // Text(
+                //   'Capsules ID List: ${capsulesIdList.join(", ")}', // joinを使ってリストを文字列に変換
+                //   style: const TextStyle(fontSize: 16),
+                // ),
+                // const SizedBox(height: 16),
+                // Text(
+                //   'Capsules ID List: ${capsuleLatList.join(", ")}', // joinを使ってリストを文字列に変換
+                //   style: const TextStyle(fontSize: 16),
+                // ),
+                // const SizedBox(height: 16),
+                // Text(
+                //   'Capsules ID List: ${capsuleLonList.join(", ")}', // joinを使ってリストを文字列に変換
+                //   style: const TextStyle(fontSize: 16),
+                // ),
+                const SizedBox(height: 16),
+                // 新しく追加されたウィジェット
+                // FutureBuilder<List<String>>(
+                //   future: _getCityNames(),
+                //   builder: (context, snapshot) {
+                //     if (snapshot.connectionState == ConnectionState.done) {
+                //       if (snapshot.hasData) {
+                //         final cityNames = snapshot.data as List<String>;
+                //         final cityNamesText = cityNames
+                //             .map((cityName) => '市区町村名: $cityName')
+                //             .join('\n');
+                // FutureBuilder<List<String>>(
+                //   future: _getCityNames(),
+                //   builder: (context, snapshot) {
+                //     if (snapshot.connectionState == ConnectionState.done) {
+                //       if (snapshot.hasData) {
+                //         final cityNames = snapshot.data as List<String>;
 
-                      return Text(
-                        cityNamesText,
-                        style: const TextStyle(fontSize: 16),
-                      );
-                    } else {
-                      return Text(
-                        'データがありません',
-                        style: const TextStyle(fontSize: 16),
-                      );
-                    }
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
-              ),
-            ],
+                //         return SingleChildScrollView(
+                //           child: Column(
+                //             crossAxisAlignment: CrossAxisAlignment.start,
+                //             children: [
+                //               // 他のウィジェット
+                //               const SizedBox(height: 16),
+                //               CityButtonsWidget(
+                //                 cityNames: cityNames,
+                //                 userNames: userName != null
+                //                     ? List.filled(cityNames.length, userName!)
+                //                     : [],
+                //                 userIds: userId != null
+                //                     ? List.filled(cityNames.length, userId!)
+                //                     : [],
+                //                 capsuleId: capsulesIdList,
+                //                 capsuleLatList: capsuleLatList,
+                //                 capsuleLonList: capsuleLonList,
+                //               ),
+                //             ],
+                //           ),
+                //         );
+                //       } else {
+                //         return Text(
+                //           'データがありません',
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       }
+                //     } else {
+                //       return CircularProgressIndicator();
+                //     }
+                //   },
+                // ),
+                //         return Text(
+                //           cityNamesText,
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       } else {
+                //         return Text(
+                //           'データがありません',
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       }
+                //     } else {
+                //       return CircularProgressIndicator();
+                //     }
+                //   },
+                // ),
+
+                // FutureBuilder<List<String>>(
+                //   future: _getAddressInfo(),
+                //   builder: (context, snapshot) {
+                //     if (snapshot.connectionState == ConnectionState.done) {
+                //       if (snapshot.hasData) {
+                //         final addressInfo = snapshot.data as List<String>;
+                //         final addressInfoText =
+                //             addressInfo.map((info) => '住所情報: $info').join('\n');
+
+                //         return Text(
+                //           addressInfoText,
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       } else {
+                //         return Text(
+                //           'データがありません',
+                //           style: const TextStyle(fontSize: 16),
+                //         );
+                //       }
+                //     } else {
+                //       return CircularProgressIndicator();
+                //     }
+                //   },
+                // ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  // Future<List<String>> _getAddressInfo() async {
+  //   List<String> addressInfo = [];
+
+  //   for (int i = 0; i < capsuleLatList.length; i++) {
+  //     double latitude = capsuleLatList[i];
+  //     double longitude = capsuleLonList[i];
+
+  //     // ここで latitude と longitude を使って住所情報を取得する処理を実行
+  //     String info = await _getAddressInfoFromCoordinates(latitude, longitude);
+
+  //     // 結果をリストに追加
+  //     addressInfo.add('$capsulesIdList[$i] $info');
+  //   }
+
+  //   return addressInfo;
+  // }
+
+  // Future<String> _getAddressInfoFromCoordinates(
+  //     double latitude, double longitude) async {
+  //   // ここに座標から住所情報を取得するためのAPI呼び出しやロジックを実装
+  //   final placeMarks =
+  //       await geoCoding.placemarkFromCoordinates(latitude, longitude);
+  //   final placeMark = placeMarks.isNotEmpty ? placeMarks.first : null;
+
+  //   // ダミーデータを実際のデータに置き換える
+  //   String addressInfo = '';
+  //   if (placeMark != null) {
+  //     addressInfo = '''
+  //     国: ${placeMark.country}
+  //     県: ${placeMark.administrativeArea}
+  //     都市: ${placeMark.locality}
+  //     市区町村: ${placeMark.subLocality}
+  //     地区: ${placeMark.subLocality}
+  //     通り: ${placeMark.thoroughfare}
+  //     番地: ${placeMark.subThoroughfare}
+  //     郵便番号: ${placeMark.postalCode}
+  //     地名: ${placeMark.name}
+  //     地番: ${placeMark.subAdministrativeArea}
+  //   ''';
+  //   } else {
+  //     addressInfo = 'Unknown Address';
+  //   }
+
+  //   return addressInfo;
+  // }
   Future<List<String>> _getCityNames() async {
     List<String> cityNames = [];
 
-    for (int i = 0; i < capsulesIdList.length; i++) {
-      double latitude = capsuleLatList[i];
-      double longitude = capsuleLonList[i];
+    for (int CaCount = 0; CaCount < capsulesIdList.length; CaCount++) {
+      double latitude = capsuleLatList[CaCount];
+      double longitude = capsuleLonList[CaCount];
 
       // ここで latitude と longitude を使って市区町村名を取得する処理を実行
       String cityName = await _getCityNameFromCoordinates(latitude, longitude);
 
       // 結果をリストに追加
-      cityNames.add('$capsulesIdList[$i] $cityName');
+      cityNames.add(
+          cityName); //cityNames.add('$capsulesIdList[$CaCount] $cityName');
     }
 
     return cityNames;
