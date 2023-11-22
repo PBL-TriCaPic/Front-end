@@ -1,8 +1,7 @@
 import 'dart:ffi';
 //import 'dart:html';
-import 'package:flutter_application_develop/src/Map/Capsel/Picture_Check.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
-import 'package:flutter_application_develop/src/Map/Capsel/picture_Check.dart';
+import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
 import 'package:flutter_application_develop/src/Map/Map.dart';
 import 'package:flutter_application_develop/src/app.dart';
 import 'package:image_picker/image_picker.dart';
