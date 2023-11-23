@@ -3,8 +3,8 @@ import '../theme_setting/Color_Scheme.dart';
 //import '../Capsule_open/CapContents.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/SharedPreferences.dart';
-//import 'TimlineButton.dart'; //なんでも開ける方
-import 'newTimlineButton.dart'; //位置情報で500m以内か検知する方
+import 'TimlineButton.dart'; //なんでも開ける方
+//import 'newTimlineButton.dart'; //位置情報で500m以内か検知する方
 import 'dart:async';
 import 'package:geocoding/geocoding.dart' as geoCoding;
 import '../theme_setting/HTTP_request.dart';
