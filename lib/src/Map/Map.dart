@@ -174,10 +174,6 @@ class _HomeScreen extends State<HomeScreen> {
               source: ImageSource.camera,
             );
             if (image != null) {
-              /*final pref = await SharedPreferences.getInstance();
-              pref.setString('imagePath', image!.path);
-              print('${image.path}の値はこれです');
-              setState(() {});*/
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -185,14 +181,6 @@ class _HomeScreen extends State<HomeScreen> {
                 ),
               );
             }
-            /*else if (image == null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => capsel_Check(),
-                ),
-              );
-            }*/
           },
         ),
       ),
@@ -302,26 +290,4 @@ class _HomeScreen extends State<HomeScreen> {
   }
 
   void pinSizeChange() {}
-
-  //撮影した写真をプリファレンスに保存
-  Future<void> saveImagePath() async {
-    if (image != null) {
-      await pref.setString('imagePath', image!.path);
-      setState(() {});
-    }
-  }
-
-  Future<void> getSharedPreference() async {
-    pref = await SharedPreferences.getInstance();
-  }
-
-//画像をセット？表示する
-  Future<void> setImage() async {
-    await getSharedPreference();
-    final String? imagePath = pref.getString('imagePath');
-    if (imagePath != null) {
-      imageFile = File(imagePath);
-      setState(() {});
-    }
-  }
 }

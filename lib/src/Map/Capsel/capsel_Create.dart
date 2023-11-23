@@ -52,18 +52,6 @@ class MyHomePageState extends State<MyHomePage> {
   String capsel_title = '';
   String capsel_nakami = '';
 
-  /*カメラ画面を表示する
-  Future Camera_Show() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('imageが選択されていません');
-      }
-    });
-  }*/
-
   //追記：位置情報取得
   String _location = "";
   Future<void> getLocation() async {
@@ -128,7 +116,7 @@ class MyHomePageState extends State<MyHomePage> {
         //キーボードを出した時に、bottom～のトラテープみたいなエラーを封じる
         resizeToAvoidBottomInset: false,
 
-        //columnで画面範囲を超えてbottom～エラーが出た時に封じる↓
+        //columnで画面範囲を超えてbottom～エラーが出た時に封じるSingleChild～↓
         //画面を下に引っ張って更新することは不可?
         body: GestureDetector(
           behavior: HitTestBehavior.opaque,
