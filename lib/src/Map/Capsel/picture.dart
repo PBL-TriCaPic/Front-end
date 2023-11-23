@@ -12,10 +12,41 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 
-class done extends StatelessWidget {
-  const done(this.image, {Key? key}) : super(key: key);
+class PictureCheck extends StatelessWidget {
+  PictureCheck(this.image, {Key? key}) : super(key: key);
   final XFile image;
+  late SharedPreferences pref;
+  File? imageFile;
+
+/*class MyHomePage extends StatefulWidget {
+  final File image;
+  const MyHomePage({super.key, required this.title, required this.image});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => MyHomePageState();
+}*/
+
+/*@override
+  void initState() {
+    initState();
+    loadPref();
+  }
+
+  Future<void> loadPref() async {
+    late SharedPreferences pref;
+    pref = await SharedPreferences.getInstance();
+    setState(() {
+      image_pref = pref.getString('title')!;
+    });
+  }*/
+//class MyHomePageState extends State<MyHomePage> {
+
+  //late XFile image;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +55,7 @@ class done extends StatelessWidget {
       body: Column(children: [
         Center(
           child: Image.file(
+            //撮影した画像を表示
             File(image.path),
           ),
         ),
@@ -31,25 +63,19 @@ class done extends StatelessWidget {
           padding: const EdgeInsets.all(12),
         ),
         //画像をサーバにアップロード
-        ElevatedButton(
+        /*ElevatedButton(
             child: Text('アップロード'),
             onPressed: () async {
               //awaitの記述は必須 readAsBytesSyncは使えないぽい
               List<int> imageBytes = await image.readAsBytes();
               String base64Image = base64Encode(imageBytes);
+              //print("エンコード関数");
+              print('${base64Image}関数');
               //サーバのURLを指定する
               Uri url = Uri.parse('');
               String body = json.encode({
-                '撮影した画像.jpg?': base64Image,
+                'image.path': base64Image,
               });
-              /*画像をデコードして表示　ここに書くとimage.readAsBytes()がエラー
-              Response response = await http.post(url, body: body);
-              final picture_Data = json.decode(response.body);
-              String imageBase64 = picture_Data['result'];
-              Uint8List bytes = base64Decode(imageBase64);
-              Image image = Image.memory(bytes);
-              Image? picture_Return;
-              picture_Return = image;*/
               /*Navigator.push(
               context,
               MaterialPageRoute(
@@ -58,12 +84,22 @@ class done extends StatelessWidget {
                 },
               ),
             );*/
-            }),
+            }),*/
 
         //カプセル作成画面に遷移
         ElevatedButton(
           child: Text('次へ進む'),
           onPressed: () async {
+            //awaitの記述は必須 readAsBytesSyncは使えないぽい
+            List<int> imageBytes = await image.readAsBytes();
+            String base64Image = base64Encode(imageBytes);
+            //写真をエンコードして、文字列をプリファレンスに保存
+            print('${base64Image}関数');
+            final imagepref = await SharedPreferences.getInstance();
+            imagepref.setString('image', base64Image);
+            File aFile = File(image.path);
+            await saveImagePath(aFile);
+            //setState();
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -85,6 +121,32 @@ class done extends StatelessWidget {
         ),
       ]),
     );
+  }
+
+  Future<void> saveImagePath(File File) async {
+    getSharedPref();
+    //if (image != null) {
+    //await pref.setString('imagepath', image!.path);
+    //setState(() {});
+    final appDir = await getApplicationDocumentsDirectory();
+    const fileName = 'profile_image.jpg';
+    final localFile = await File!.copy('${appDir.path}/$fileName');
+    // SharedPreferencesに画像のパスを保存
+    await pref.setString('imagePath', localFile.path);
+    //}
+  }
+
+  Future<void> getSharedPref() async {
+    pref = await SharedPreferences.getInstance();
+  }
+
+  Future<void> setImage() async {
+    await getSharedPref();
+    final String? imagePath = pref.getString('imagepath');
+    if (imagePath != null) {
+      imageFile = File(imagePath);
+      //setState(() {});
+    }
   }
 }
 //kotlinのverを1.7.0に変更(カメラ起動に関係する？)

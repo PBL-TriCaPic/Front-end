@@ -181,10 +181,9 @@ class _HomeScreen extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => done(image),
+                  builder: (context) => PictureCheck(image),
                 ),
               );
-              print("遷移できる");
             }
             /*else if (image == null) {
               Navigator.push(
