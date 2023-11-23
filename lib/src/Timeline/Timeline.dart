@@ -7,6 +7,7 @@ import 'TimlineButton.dart'; //なんでも開ける方
 //import 'newTimlineButton.dart';//位置情報で500m以内か検知する方
 import 'dart:async';
 import 'package:geocoding/geocoding.dart' as geoCoding;
+import '../theme_setting/HTTP_request.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -46,7 +47,8 @@ class _timelinePageState extends State<_timeline> {
   Future<void> _loadPreferences() async {
     final userNameValue = await SharedPrefs.getUsername();
     final userIdValue = await SharedPrefs.getUserId();
-    final bioValue = await SharedPrefs.getMyBio();
+    //final bioValue = await SharedPrefs.getMyBio();
+
     final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
     final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
     final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
@@ -54,12 +56,12 @@ class _timelinePageState extends State<_timeline> {
     final capsulesIdListAsString =
         capsulesIdListValue.map((id) => id.toString()).toList();
 
-    print('userName: $userNameValue');
-    print('userId: $userIdValue');
-    print('bio: $bioValue');
-    print('capsulesIdList: $capsulesIdListValue');
-    print('capsulesLatList: $capsulesLatListValue');
-    print('capsulesLonList: $capsulesLonListValue');
+    // print('userName: $userNameValue');
+    // print('userId: $userIdValue');
+    // print('bio: $bioValue');
+    // print('capsulesIdList: $capsulesIdListValue');
+    // print('capsulesLatList: $capsulesLatListValue');
+    // print('capsulesLonList: $capsulesLonListValue');
     setState(() {
       userName = userNameValue;
       userId = userIdValue;
@@ -70,7 +72,37 @@ class _timelinePageState extends State<_timeline> {
   }
 
   Future<void> _refreshData() async {
-    await _loadPreferences();
+    await _loadPreference();
+  }
+
+  Future<void> _loadPreference() async {
+    final Email = await SharedPrefs.getEmail();
+    final Password = await SharedPrefs.getPassward();
+
+    if (Email == null || Password == null) {
+      // Email または Password が null の場合の処理を追加
+      return;
+    }
+    final userData = await ApiService.loginUser(Email!, Password!);
+    final List<int> capsulesIdListnew =
+        List<int>.from(userData['capsulesIdList'] ?? []);
+    final List<double> capsulesLatListnew =
+        List<double>.from(userData['capsuleLatList'] ?? []);
+    final List<double> capsulesLonListnew =
+        List<double>.from(userData['capsuleLonList'] ?? []);
+    await SharedPrefs.setCapsulesIdList(capsulesIdListnew);
+    await SharedPrefs.setCapsulesLatList(capsulesLatListnew);
+    await SharedPrefs.setCapsulesLonList(capsulesLonListnew);
+
+    print('capsulesIdList: $capsulesIdListnew');
+    print('capsulesLatList: $capsulesLatListnew');
+    print('capsulesLonList: $capsulesLonListnew');
+
+    setState(() {
+      capsulesIdList = capsulesIdListnew.cast<String>();
+      capsuleLatList = capsulesLatListnew.cast<double>();
+      capsuleLonList = capsulesLonListnew.cast<double>();
+    });
   }
 
   @override

@@ -122,12 +122,12 @@ class _HomeScreen extends State<HomeScreen> {
               interactiveFlags: InteractiveFlag.all,
               enableScrollWheel: true,
               scrollWheelVelocity: 0.00001,
-              onTap: (tapPosition, latLng) {
-                tapLatLng = latLng;
-                print(tapLatLng);
-                print("↑ピンを押したところの緯度経度");
-                cleatePin(tapLatLng!);
-              },
+              // onTap: (tapPosition, latLng) {
+              //   tapLatLng = latLng;
+              //   print(tapLatLng);
+              //   print("↑ピンを押したところの緯度経度");
+              //   cleatePin(tapLatLng!);
+              // },
             ),
             layers: [
               //背景地図読み込み (OSM)

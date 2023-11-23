@@ -67,6 +67,28 @@ class SharedPrefs {
     return prefs.getString('bio');
   }
 
+  static Future<void> setEmail(String Email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('Email', Email);
+    print("EmailをSharedPreferencesに保存しました");
+  }
+
+  static Future<String?> getEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('Email');
+  }
+
+  static Future<void> setPassward(String Passward) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('Passward', Passward);
+    print("PasswardをSharedPreferencesに保存しました");
+  }
+
+  static Future<String?> getPassward() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('Passward');
+  }
+
   static Future<void> setCapsulesIdList(List<int> capsulesIdList) async {
     final prefs = await SharedPreferences.getInstance();
     // リストを文字列に変換して保存

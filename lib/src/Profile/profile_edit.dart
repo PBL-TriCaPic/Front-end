@@ -96,7 +96,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final email = emailController.text;
       final password = passwordController.text;
       final userData = await ApiService.loginUser(email, password);
-
+      await SharedPrefs.setEmail(email);
+      await SharedPrefs.setPassward(password);
       String? newBio =
           _bioController.text.isNotEmpty ? _bioController.text : null;
       // if (newUserName != null)
@@ -104,6 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // if (newUserID != null)
       await SharedPrefs.setUserId(userData['userId']);
       if (newBio != null) await SharedPrefs.setMyBio(newBio);
+
       final List<int> capsulesIdList =
           List<int>.from(userData['capsulesIdList'] ?? []);
       final List<double> capsulesLatList =
