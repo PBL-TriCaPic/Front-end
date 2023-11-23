@@ -60,32 +60,47 @@ class CityButtonsWidget extends StatelessWidget {
           ),
         );
       },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center, // 垂直方向に中央寄せ
-        children: [
-          Text(
-            '${userNames[index]}',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20), // テキストサイズを指定
-          ),
-          Text(
-            '${userIds[index]}',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15), // テキストサイズを指定
-          ),
-          Text(
-            '${cityNames[index]}',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20), // テキストサイズを指定
-          ),
-        ],
-      ),
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(16), // パディング
-        minimumSize: Size(10, 10), // 最小サイズ
+        padding: EdgeInsets.all(16),
+        minimumSize: Size(100, 100),
         shape: CircleBorder(),
-        elevation: 10, // 影の大きさ
-        primary: Colors.white, // 背景色
+        elevation: 10,
+        //primary: Colors.transparent, // 背景色を透明に設定
+      ),
+      child: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+              'assets/TimeCapsule.PNG',
+            ), // 画像のパス
+            fit: BoxFit.cover, // 画像をボタンにフィットさせるかどうか
+          ),
+        ),
+        width: 250, // 任意の幅を指定
+        height: 250, // 任意の高さを指定
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // 垂直方向に中央寄せ
+          children: [
+            Text(
+              '${userNames[index]}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
+            ),
+            Text(
+              '${userIds[index]}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 15, fontWeight: FontWeight.bold), // テキストサイズを指定
+            ),
+            Text(
+              '${cityNames[index]}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
+            ),
+          ],
+        ),
       ),
     );
   }

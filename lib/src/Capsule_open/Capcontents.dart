@@ -112,72 +112,128 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
             },
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                userName ?? '',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundImage:
-                          imageFile != null ? FileImage(imageFile!) : null,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userName ?? '',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      child: CircleAvatar(
+                        radius: 60,
+                        backgroundImage:
+                            imageFile != null ? FileImage(imageFile!) : null,
+                      ),
                     ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        '埋めた日',
-                        style: TextStyle(fontSize: 16),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          '埋めた日',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          formattedCapsuleDate(),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const Text(
+                          '場所',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          place ?? '',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Text(
+                  userId ?? '',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  textData ?? '', // 中身の表示
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(height: 16),
+                // imageDataがデコードされていれば、画像を表示
+                if (decodedImageData != null)
+                  GestureDetector(
+                    onTap: () {
+                      // ここで写真のプレビューを表示します
+                      showGeneralDialog(
+                        transitionDuration: Duration(milliseconds: 1000),
+                        barrierDismissible: true,
+                        barrierLabel: '',
+                        context: context,
+                        pageBuilder: (context, animation1, animation2) {
+                          return Material(
+                            // ここにMaterialウィジェットを追加
+                            type: MaterialType.transparency,
+                            child: DefaultTextStyle(
+                              style:
+                                  Theme.of(context).primaryTextTheme.bodyText1!,
+                              child: Center(
+                                child: Container(
+                                  height: 500,
+                                  width: 500,
+                                  child: Column(
+                                    children: [
+                                      // バツボタンを追加
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(Icons.close),
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // プレビュー画面を閉じる
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      SingleChildScrollView(
+                                        child: InteractiveViewer(
+                                          minScale: 0.1,
+                                          maxScale: 5,
+                                          child: Container(
+                                            child: Image.memory(
+                                              decodedImageData!,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Center(
+                      child: Image.memory(
+                        decodedImageData!,
+                        width: MediaQuery.of(context).size.width * 0.9,
                       ),
-                      Text(
-                        formattedCapsuleDate(),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const Text(
-                        '場所',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Text(
-                        place ?? '',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Text(
-                userId ?? '',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 16),
-              Text(
-                textData ?? '', // 中身の表示
-                style: TextStyle(fontSize: 20),
-              ),
-              SizedBox(height: 16),
-              // imageDataがデコードされていれば、画像を表示
-              if (decodedImageData != null)
-                Center(
-                  child: Image.memory(
-                    decodedImageData!,
-                    width: MediaQuery.of(context).size.width *
-                        0.9, // Set width to 90% of device width
-                    //height: MediaQuery.of(context).size.width * 0.9
-                  ),
-                )
-            ],
+                    ),
+                  )
+              ],
+            ),
           ),
         ),
       ),
