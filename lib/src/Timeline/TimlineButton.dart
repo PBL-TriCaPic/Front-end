@@ -1,14 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'Timeline.dart';
 import '../Capsule_open/Capcontents.dart';
 
 class CityButtonsWidget extends StatelessWidget {
   final List<String> cityNames;
   final List<String> userNames;
   final List<String> userIds;
-  final List<String> capsuleId;
+  final List<int> capsuleId;
   final List<double> capsuleLatList;
   final List<double> capsuleLonList;
 
@@ -47,15 +44,17 @@ class CityButtonsWidget extends StatelessWidget {
 
   Widget _buildCityButton(BuildContext context, int index) {
     //final int currentCapsuleId = timelinePageState.getCapsulesIdList()[index];
+    //print('capsuleId[$index]: ${capsuleId[index]}'); // デバッグプリントを追加
     return ElevatedButton(
       onPressed: () async {
-        print('Selected Capsule ID: ${capsuleId[index]}'); // 追加
+        //print('Selected Capsule ID: ${capsuleId[index]}'); // 追加
         //await _handleButtonPress(context, index);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => CapContentsScreen(
-                capsuleId: capsuleId[index],
+                capsuleId:
+                    capsuleId[index].toString(), // toString()で明示的にString型に変換
                 cityName: cityNames[index]), //掘り起こす演出このへん
           ),
         );
@@ -105,11 +104,3 @@ class CityButtonsWidget extends StatelessWidget {
     );
   }
 }
-
-// Future<void> _handleButtonPress(BuildContext context, int index) async {
-//   // 非同期処理をここに書く
-//   // 例: 非同期処理が終わるまで待つ
-//   await Future.delayed(Duration(seconds: 2));
-//   // ボタンを有効にする
-//   (context as Element).markNeedsBuild();
-// }

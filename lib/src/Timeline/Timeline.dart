@@ -3,8 +3,8 @@ import '../theme_setting/Color_Scheme.dart';
 //import '../Capsule_open/CapContents.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/SharedPreferences.dart';
-import 'TimlineButton.dart'; //なんでも開ける方
-//import 'newTimlineButton.dart';//位置情報で500m以内か検知する方
+//import 'TimlineButton.dart'; //なんでも開ける方
+import 'newTimlineButton.dart'; //位置情報で500m以内か検知する方
 import 'dart:async';
 import 'package:geocoding/geocoding.dart' as geoCoding;
 import '../theme_setting/HTTP_request.dart';
@@ -32,7 +32,7 @@ class _timelinePageState extends State<_timeline> {
   late SharedPreferences prefs;
   String? userName;
   String? userId;
-  List<String> capsulesIdList = [];
+  List<int> capsulesIdList = [];
   List<double> capsuleLatList = [];
   List<double> capsuleLonList = [];
   // List<int> getCapsulesIdList() {
@@ -52,20 +52,11 @@ class _timelinePageState extends State<_timeline> {
     final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
     final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
     final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
-    // List<int> を List<String> に変換
-    final capsulesIdListAsString =
-        capsulesIdListValue.map((id) => id.toString()).toList();
 
-    // print('userName: $userNameValue');
-    // print('userId: $userIdValue');
-    // print('bio: $bioValue');
-    // print('capsulesIdList: $capsulesIdListValue');
-    // print('capsulesLatList: $capsulesLatListValue');
-    // print('capsulesLonList: $capsulesLonListValue');
     setState(() {
       userName = userNameValue;
       userId = userIdValue;
-      capsulesIdList = capsulesIdListAsString;
+      capsulesIdList = capsulesIdListValue;
       capsuleLatList = capsulesLatListValue.cast<double>();
       capsuleLonList = capsulesLonListValue.cast<double>();
     });
@@ -99,7 +90,7 @@ class _timelinePageState extends State<_timeline> {
     print('capsulesLonList: $capsulesLonListnew');
 
     setState(() {
-      capsulesIdList = capsulesIdListnew.cast<String>();
+      capsulesIdList = capsulesIdListnew.cast<int>();
       capsuleLatList = capsulesLatListnew.cast<double>();
       capsuleLonList = capsulesLonListnew.cast<double>();
     });
@@ -129,7 +120,7 @@ class _timelinePageState extends State<_timeline> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        final cityNames = snapshot.data as List<String>;
+                        final cityNames = snapshot.data as List<String>? ?? [];
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
