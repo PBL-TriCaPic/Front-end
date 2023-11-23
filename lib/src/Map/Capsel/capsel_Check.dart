@@ -41,6 +41,7 @@ class MyHomePageState extends State<MyHomePage> {
   late SharedPreferences pref;
   String capsel_title = '';
   String audio_data = '';
+  String image_pref = '';
   Image? picture_Return;
   File? imageFile;
   late Future<ApiResults> res;
@@ -57,7 +58,9 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       capsel_title = pref.getString('title')!;
       audio_data = pref.getString('nakami')!;
-      final String? imagePath = pref.getString('imagePath');
+      //image_pref = pref.getString('image');
+
+      final String? imagePath = pref.getString('imagepath');
       print('loadPref関数起動');
       if (imagePath != null) {
         imageFile = File(imagePath);
@@ -66,13 +69,13 @@ class MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<void> getSharedPreference() async {
+  Future<void> getSharedPref() async {
     pref = await SharedPreferences.getInstance();
   }
 
-  Future<void> setImage() async {
-    await getSharedPreference();
-  }
+  /*Future<void> setImage() async {
+    await getSharedPref();
+  }*/
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,13 +126,12 @@ class MyHomePageState extends State<MyHomePage> {
           ElevatedButton(
             child: Text('画像読み込み'),
             onPressed: () async {
-              await getSharedPreference();
-              final String? imagePath = pref.getString('imagePath');
+              await getSharedPref();
+              final String? imagePath = pref.getString('imagepath');
               if (imagePath != null) {
                 imageFile = File(imagePath);
                 imageFile;
                 print('${imageFile} はボタン関数');
-                setState(() {});
               }
             },
           ),
@@ -137,6 +139,8 @@ class MyHomePageState extends State<MyHomePage> {
           Text(capsel_title),
           Text('-中身-'),
           Text(audio_data),
+          Text('エンコード画像'),
+          Text(image_pref),
         ]),
       ),
     );
