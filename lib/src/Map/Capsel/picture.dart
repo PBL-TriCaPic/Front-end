@@ -8,6 +8,7 @@ import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
 import 'package:flutter_application_develop/src/Map/Map.dart';
 import 'package:flutter_application_develop/src/Profile/Profile.dart';
 import 'package:flutter_application_develop/src/app.dart';
+import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:http/http.dart' as http;
@@ -41,17 +42,7 @@ class PictureCheck extends StatelessWidget {
         ElevatedButton(
           child: Text('次へ進む'),
           onPressed: () async {
-            //awaitの記述は必須 readAsBytesSyncは使えないぽい
-            List<int> imageBytes = await image.readAsBytes();
-            String base64Image = base64Encode(imageBytes);
-            //写真をエンコードして、文字列をプリファレンスに保存
-            print('${base64Image}関数');
-
-            final imagepref = await SharedPreferences.getInstance();
-            imagepref.setString('image', base64Image);
-            File aFile = File(image.path);
-            //await saveImagePath(aFile);
-            //setState();
+            await SharedPrefs.setTakeImage(image);
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -69,6 +60,14 @@ class PictureCheck extends StatelessWidget {
             final XFile? image = await _picker.pickImage(
               source: ImageSource.camera,
             );
+            if (image != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PictureCheck(image),
+                ),
+              );
+            }
           },
         ),
       ]),
@@ -88,17 +87,12 @@ class PictureCheck extends StatelessWidget {
     //}
   }*/
 
-  Future<void> getSharedPref() async {
+  /*Future<void> setTakeImage() async {
     pref = await SharedPreferences.getInstance();
-  }
-
-  Future<void> setTakeImage() async {
-    await getSharedPref();
     final String? image_Path = pref.getString('imagepath');
     if (image_Path != null) {
       image_File = File(image_Path);
-      //setState(() {});
     }
-  }
+  }*/
 }
 //kotlinのverを1.7.0に変更(カメラ起動に関係する？)

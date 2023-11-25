@@ -2,9 +2,11 @@
 
 import 'dart:convert';
 
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class SharedPrefs {
   static late SharedPreferences prefs;
@@ -150,5 +152,37 @@ class SharedPrefs {
       }
     }
     return []; // デフォルト値を返す場合
+  }
+
+//カメラで撮影した写真を保存する
+  static Future<void> setTakeImage(XFile image) async {
+    //awaitの記述は必須 readAsBytesSyncは使えないぽい
+    List<int> imageBytes = await image.readAsBytes();
+    String base64Image = base64Encode(imageBytes);
+    //写真をエンコードして、文字列をプリファレンスに保存
+    print('${base64Image}関数');
+
+    final imagepref = await SharedPreferences.getInstance();
+    imagepref.setString('image', base64Image);
+    File aFile = File(image.path);
+    //await saveImagePath(aFile);
+  }
+
+  //カプセルの中身を保存する
+  static Future<void> setCapselText(String capsel_nakami) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('nakami', capsel_nakami);
+  }
+
+  //保存したカプセルの中身のテキストを呼び出す
+  static Future<String?> getCapselText() async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.getString('nakami');
+  }
+
+  //エンコードした写真の文字列データを呼び出す
+  static Future<String?> getTakeImage() async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.getString('image');
   }
 }

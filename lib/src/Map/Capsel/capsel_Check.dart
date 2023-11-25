@@ -5,7 +5,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
+import 'package:flutter_application_develop/src/Map/Map.dart';
+import 'package:flutter_application_develop/src/Profile/profile_edit.dart';
 import 'package:flutter_application_develop/src/app.dart';
+import 'package:flutter_application_develop/src/theme_setting/HTTP_request.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -16,6 +19,9 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
+
+final ThemeData lightTheme =
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class capsel_Check extends StatelessWidget {
   const capsel_Check({super.key});
@@ -54,8 +60,8 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   late SharedPreferences pref;
-  String capsel_title = '';
-  String audio_data = '';
+  //String capsel_title = '';
+  String? text_data;
   String? image_pref = '';
   String? userId;
   late double capselLat;
@@ -63,22 +69,23 @@ class MyHomePageState extends State<MyHomePage> {
   late Uint8List decode_Image;
   Image? picture_Return;
   File? imageFile;
-  late Future<ApiResults> res;
   @override
   void initState() {
     super.initState();
     loadPref();
-    //Future<ApiResults> res = dataSend();
   }
 
   Future<void> loadPref() async {
     pref = await SharedPreferences.getInstance();
     final userIdValue = await SharedPrefs.getUserId();
+    final nakami = await SharedPrefs.getCapselText();
+    final impref = await SharedPrefs.getTakeImage();
     setState(() {
-      capsel_title = pref.getString('title')!;
-      audio_data = pref.getString('nakami')!;
-      image_pref = pref.getString('image');
       userId = userIdValue;
+      //final text_data = nakami;
+      //ここでgetStringしないと中身nullになる
+      text_data = pref.getString('nakami');
+      final image_pref = impref;
       //撮影してエンコードした写真のデコード
       if (image_pref != null) {
         decode_Image = base64.decode(image_pref!);
@@ -93,10 +100,6 @@ class MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<void> getSharedPref() async {
-    pref = await SharedPreferences.getInstance();
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -108,10 +111,10 @@ class MyHomePageState extends State<MyHomePage> {
         child: Container(
           child: Column(//縦並び
               children: <Widget>[
-            Text('-タイトル-'),
-            Text(capsel_title),
+            //Text('-タイトル-'),
+            //Text(capsel_title),
             Text('-中身-'),
-            Text(audio_data),
+            Text(text_data ?? 'テキストは空です'),
             Text('撮影した写真'),
             Image.memory(decode_Image),
             Text("以下の内容で埋めてもよろしいですか？"),
@@ -130,8 +133,17 @@ class MyHomePageState extends State<MyHomePage> {
             OutlinedButton(
               onPressed: () async {
                 await getCurrentLocation(); // 位置情報を取得
-                await dataSend();
-                //dataSend();
+                await ApiService.capselSend(
+                    text_data, capselLat, capselLon, userId, image_pref);
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return MapScreen();
+                    },
+                  ),
+                );
                 //カプセルを埋める演出を入れ、埋める
               },
               child: Text('埋める！'),
@@ -140,38 +152,5 @@ class MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
-  }
-
-  Future<void> dataSend() async {
-    // 位置情報を取得
-    await getCurrentLocation();
-
-    final url = Uri.parse('http://192.168.10.104:8081/api/create/capsules');
-    final headers = {'Content-Type': 'application/json'};
-    final body = json.encode({
-      'textData': audio_data,
-      'capsuleLat': capselLat.toString(),
-      'capsuleLon': capselLon.toString(),
-      'userId': userId,
-      'imageDataBase64': image_pref,
-      // 他のデータも追加する
-    });
-
-    try {
-      final response = await http.post(url, headers: headers, body: body);
-
-      if (response.statusCode == 200) {
-        print('カプセル内容のPOSTリクエスト成功');
-        print('サーバーレスポンスは：${response.body}です');
-        //return ApiResults.fromJson(json.decode(response.body));
-      } else {
-        print('サーバに送るのを失敗しました。HTTPステータスコード: ${response.statusCode}');
-        print('サーバーレスポンスは：${response.body}です');
-        throw Exception('サーバに送るのを失敗しました。');
-      }
-    } catch (e) {
-      print('エラーが発生しました: $e');
-      throw Exception('サーバに送るのを失敗しました。');
-    }
   }
 }

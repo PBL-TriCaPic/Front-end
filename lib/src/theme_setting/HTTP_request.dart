@@ -34,4 +34,47 @@ class ApiService {
           'Failed to load capsule data. Status code: ${response.statusCode}');
     }
   } //カプセルget
+
+  //カプセル内容送信
+  static Future<Map<String, dynamic>> capselSend(
+      String? textData,
+      double capselLat,
+      double capselLon,
+      String? userId,
+      String? imageData) async {
+    try {
+      final url = Uri.parse('http://192.168.10.104:8081/api/create/capsule');
+      final headers = {'Content-Type': 'application/json'};
+
+      final Map<String, dynamic> requestBody = {
+        'textData': textData,
+        'capsuleLat': capselLat.toString(),
+        'capsuleLon': capselLon.toString(),
+        'userId': userId,
+        'imageDataBase64': imageData,
+        // 他のデータも追加する
+      };
+
+      final String encodedBody = json.encode(requestBody);
+
+      final response =
+          await http.post(url, headers: headers, body: encodedBody);
+
+      if (response.statusCode == 200) {
+        print('カプセル内容のPOSTリクエスト成功');
+        print('サーバーレスポンスは：${response.body}です');
+        final List<int> bytes = response.bodyBytes;
+        final Map<String, dynamic> capsuleData =
+            jsonDecode(utf8.decode(bytes)); //
+        return capsuleData;
+      } else {
+        print('サーバに送るのを失敗しました。HTTPステータスコード: ${response.statusCode}');
+        print('サーバーレスポンスは：${response.body}です');
+        throw Exception('サーバに送るのを失敗しました。');
+      }
+    } catch (e) {
+      print('エラーが発生しました: $e');
+      throw Exception('サーバに送るのを失敗しました。');
+    }
+  }
 }

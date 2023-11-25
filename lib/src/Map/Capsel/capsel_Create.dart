@@ -4,6 +4,7 @@ import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
 import 'package:flutter_application_develop/src/Map/Map.dart';
 import 'package:flutter_application_develop/src/app.dart';
+import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_map/flutter_map.dart';
@@ -48,7 +49,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   String _apptitle = 'カプセル埋める';
   //タイトルと中身を保存する変数 pref
-  late SharedPreferences pref;
+  //late SharedPreferences pref;
   String capsel_title = '';
   String capsel_nakami = '';
 
@@ -100,10 +101,9 @@ class MyHomePageState extends State<MyHomePage> {
 
   //この画面を読み込んだ時に保存したタイトルや中身を読み込んでる
   Future<void> loadPref() async {
-    pref = await SharedPreferences.getInstance();
+    //pref = await SharedPreferences.getInstance();
     setState(() {
-      capsel_title = pref.getString('title')!;
-      capsel_nakami = pref.getString('nakami')!;
+      SharedPrefs.getCapselText();
     });
   }
 
@@ -158,13 +158,14 @@ class MyHomePageState extends State<MyHomePage> {
                         IconButton(
                             onPressed: () async {
                               //プリファレンスに保存している
-                              final title_pref =
+                              await SharedPrefs.setCapselText(capsel_nakami);
+                              /*final title_pref =
                                   await SharedPreferences.getInstance();
                               title_pref.setString('title', capsel_title);
 
                               final nakami_pref =
                                   await SharedPreferences.getInstance();
-                              nakami_pref.setString('nakami', capsel_nakami);
+                              nakami_pref.setString('nakami', capsel_nakami);*/
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
@@ -268,36 +269,16 @@ class MyHomePageState extends State<MyHomePage> {
 
                   //位置情報テキスト
                   Text('$_location'),
-                  //保存したプリファレンスを表示する
-                  //Text(capsel_title, style: const TextStyle(fontSize: 30)),
-                  //Text(capsel_nakami, style: const TextStyle(fontSize: 30)),
                 ],
               ),
             ),
           ),
         ));
   }
-
-  /*Future<ApiResults> data_Return() async {
-    var url = "";
-    var request = new data_Request(
-        title: capsel_title,
-        nakami: capsel_nakami,
-        dateTime: dateTime,
-        location: _location);
-    final response = await http.post(url,
-        body: json.encode(request.toJson()),
-        headers: {"Content-Type": "application/json"});
-    if (response.statusCode == 200) {
-      return ApiResults.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('失敗した');
-    }
-  }*/
 } //クラス終わり
 
 //サーバにリクエストする為のデータクラス
-class data_Request {
+/*class data_Request {
   final String title;
   final String nakami;
   final dynamic dateTime;
@@ -313,7 +294,6 @@ class data_Request {
         'nakami': nakami,
       };
 }
-
 class ApiResults {
   final String title;
   final String nakami;
@@ -333,4 +313,4 @@ class ApiResults {
       location: json['location'],
     );
   }
-}
+}*/

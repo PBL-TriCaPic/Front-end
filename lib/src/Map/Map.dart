@@ -51,7 +51,7 @@ class _HomeScreen extends State<HomeScreen> {
   double? lng;
   LatLng? tapLatLng; //メモ：?はnullも許容
   //画像保存用のpreference
-  late SharedPreferences pref;
+  //late SharedPreferences pref;
   late XFile image;
 
   File? imageFile;
