@@ -146,7 +146,7 @@ class MyHomePageState extends State<MyHomePage> {
     // 位置情報を取得
     await getCurrentLocation();
 
-    final url = Uri.parse('http://192.168.10.104:8081/api/create/capsules');
+    final url = Uri.parse('http://192.168.10.119:8081/api/create/capsules');
     final headers = {'Content-Type': 'application/json'};
     final body = json.encode({
       'textData': audio_data,
