@@ -43,9 +43,6 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  /*image_pickerを利用するためのコード
-  File _image;
-  final picker = ImagePicker();*/
 
   String _apptitle = 'カプセル埋める';
   //タイトルと中身を保存する変数 pref
@@ -53,7 +50,7 @@ class MyHomePageState extends State<MyHomePage> {
   String capsel_title = '';
   String capsel_nakami = '';
 
-  //追記：位置情報取得
+  /*追記：位置情報取得
   String _location = "";
   Future<void> getLocation() async {
     // 現在の位置を返す
@@ -67,7 +64,7 @@ class MyHomePageState extends State<MyHomePage> {
       _location = position.toString();
     });
   }
-  //追記部終わり
+  追記部終わり*/
 
   void _incrementCounter() {
     setState(() {
@@ -86,7 +83,7 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
 //DatePicker設定画面
-  _datePicker(BuildContext context) async {
+  /*_datePicker(BuildContext context) async {
     final DateTime? datePicked = await showDatePicker(
         context: context,
         initialDate: dateTime,
@@ -97,7 +94,7 @@ class MyHomePageState extends State<MyHomePage> {
         dateTime = datePicked;
       });
     }
-  }
+  }*/
 
   //この画面を読み込んだ時に保存したタイトルや中身を読み込んでる
   Future<void> loadPref() async {
@@ -159,13 +156,6 @@ class MyHomePageState extends State<MyHomePage> {
                             onPressed: () async {
                               //プリファレンスに保存している
                               await SharedPrefs.setCapselText(capsel_nakami);
-                              /*final title_pref =
-                                  await SharedPreferences.getInstance();
-                              title_pref.setString('title', capsel_title);
-
-                              final nakami_pref =
-                                  await SharedPreferences.getInstance();
-                              nakami_pref.setString('nakami', capsel_nakami);*/
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
@@ -180,33 +170,7 @@ class MyHomePageState extends State<MyHomePage> {
                       ],
                     ),
                   ),
-
-                  //撮影するボタン
                   /*Container(
-                    child: Column(children: [
-                      IconButton(
-                        onPressed: () async {
-                          //カメラ撮影画面に遷移
-                          final XFile? image = await _picker.pickImage(
-                            source: ImageSource.camera,
-                          );
-                          Navigator.pop(context);
-                          if (image != null)
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => done(image),
-                              ),
-                            );
-                        },
-                        icon: Icon(Icons.camera),
-                        iconSize: 50,
-
-                        //child: const Text("撮影する！"),
-                      ),
-                    ]),
-                  ),*/
-                  Container(
                     width:
                         MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
                     child: TextField(
@@ -223,7 +187,7 @@ class MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                   ),
-                  SizedBox(height: 20.0), // 適切な間隔を設定
+                  SizedBox(height: 20.0), // 適切な間隔を設定*/
                   Container(
                     width:
                         MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
@@ -241,34 +205,27 @@ class MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                   ),
+                  //Text("$dateTime", style: TextStyle(fontSize: 25)),
 
-                  Text("$dateTime", style: TextStyle(fontSize: 25)),
-
-                  ElevatedButton(
+                  /*ElevatedButton(
                     onPressed: () {
                       _datePicker(
                         context,
                       );
                     },
                     child: const Text("日付を変更"),
-                  ),
+                  ),*/
 
-                  //位置情報取得ボタン
+                  /*位置情報取得ボタン
                   ElevatedButton(
                     onPressed: () {
                       getLocation();
                     },
                     child: const Text("位置情報取得"),
                   ),
-                  /*ボンドの画像
-                  Image.network(
-                    'https://pbs.twimg.com/media/FfHOaRIagAAxQlC.jpg',
-                    width: 50,
-                    height: 100,
-                  ),*/
 
-                  //位置情報テキスト
-                  Text('$_location'),
+                  位置情報テキスト
+                  Text('$_location'),*/
                 ],
               ),
             ),
