@@ -71,7 +71,7 @@ class _timelinePageState extends State<_timeline> {
     if (Email == null || Password == null) {
       return;
     }
-    final userData = await ApiService.loginUser(Email!, Password!);
+    final userData = await ApiService.loginUser(Email, Password);
     final List<int> capsulesIdListnew =
         List<int>.from(userData['capsulesIdList'] ?? []);
     final List<double> capsulesLatListnew =
