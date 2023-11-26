@@ -69,6 +69,7 @@ class MyHomePageState extends State<MyHomePage> {
   Uint8List? decode_Image;
   Image? picture_Return;
   File? imageFile;
+
   @override
   void initState() {
     super.initState();
@@ -134,8 +135,18 @@ class MyHomePageState extends State<MyHomePage> {
             OutlinedButton(
               onPressed: () async {
                 await getCurrentLocation(); // 位置情報を取得
-                await ApiService.capselSend(
+                final userData = await ApiService.capselSend(
                     text_data, capselLat, capselLon, userId, image_pref!);
+
+                final List<int> capsulesIdListnew =
+                    List<int>.from(userData['capsulesIdList'] ?? []);
+                final List<double> capsulesLatListnew =
+                    List<double>.from(userData['capsuleLatList'] ?? []);
+                final List<double> capsulesLonListnew =
+                    List<double>.from(userData['capsuleLonList'] ?? []);
+                await SharedPrefs.setCapsulesIdList(capsulesIdListnew);
+                await SharedPrefs.setCapsulesLatList(capsulesLatListnew);
+                await SharedPrefs.setCapsulesLonList(capsulesLonListnew);
 
                 Navigator.push(
                   context,
