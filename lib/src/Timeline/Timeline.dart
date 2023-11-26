@@ -103,44 +103,43 @@ class _timelinePageState extends State<_timeline> {
           shadowColor: Colors.black,
         ),
         body: RefreshIndicator(
-            onRefresh: _refreshData,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: FutureBuilder<List<String>>(
-                  future: _getCityNames(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasData) {
-                        final cityNames = snapshot.data as List<String>? ?? [];
+          onRefresh: _refreshData,
+          // child: Padding(
+          //   padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: FutureBuilder<List<String>>(
+              future: _getCityNames(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
+                    final cityNames = snapshot.data as List<String>? ?? [];
 
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.zero,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 20.0, // 列間のスペース
-                            mainAxisSpacing: 20.0,
-                          ),
-                          itemCount: cityNames.length,
-                          itemBuilder: (context, index) {
-                            return _buildCityButton(context, index, cityNames);
-                          },
-                        );
-                      } else {
-                        return const Text(
-                          'データがありません',
-                          style: TextStyle(fontSize: 16),
-                        );
-                      }
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                  },
-                ),
-              ),
-            )));
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 20.0, // 列間のスペース
+                        mainAxisSpacing: 20.0,
+                      ),
+                      itemCount: cityNames.length,
+                      itemBuilder: (context, index) {
+                        return _buildCityButton(context, index, cityNames);
+                      },
+                    );
+                  } else {
+                    return const Text(
+                      'データがありません',
+                      style: TextStyle(fontSize: 16),
+                    );
+                  }
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              },
+            ),
+          ),
+        ));
   }
 
   Future<List<String>> _getCityNames() async {
