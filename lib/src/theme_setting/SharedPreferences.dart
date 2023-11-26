@@ -2,9 +2,11 @@
 
 import 'dart:convert';
 
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class SharedPrefs {
   static late SharedPreferences prefs;
@@ -13,20 +15,20 @@ class SharedPrefs {
     prefs = await SharedPreferences.getInstance();
   } //OK　アイコン写真set　初期化
 
-  static Future<SharedPreferences> getSharedPreference() async {
-    return await SharedPreferences.getInstance();
-  } //OK アイコン写真get　初期化
+  static const String _profileImageKey = 'profileImage';
 
-  static Future<void> setImage(File imageFile) async {
-    final prefs = await SharedPreferences.getInstance();
-    // 切り抜かれた画像をアプリ内に保存（必要に応じてパスを変更）
-    final appDir = await getApplicationDocumentsDirectory();
-    const fileName = 'profile_image.jpg';
-    final localFile = await imageFile.copy('${appDir.path}/$fileName');
-    // SharedPreferencesに画像のパスを保存
-    await prefs.setString('imagePath', localFile.path);
-    print("アイコン写真をSharedPreferencesに保存しました");
-  } // 選択した画像をアプリの内部ストレージとSharedPreferencesに保存 0K
+  // Base64エンコードされた画像をSharedPreferencesに保存
+  static Future<void> setProfileImage(String base64Image) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_profileImageKey, base64Image);
+    print("プロフィール写真をSharedPreferencesに保存しました  $base64Image");
+  }
+
+  // Base64エンコードされた画像をSharedPreferencesから取得
+  static Future<String?> getProfileImage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_profileImageKey);
+  }
 
   static Future<String?> getImagePath() async {
     final prefs = await SharedPreferences.getInstance();
@@ -150,5 +152,37 @@ class SharedPrefs {
       }
     }
     return []; // デフォルト値を返す場合
+  }
+
+//カメラで撮影した写真を保存する
+  static Future<void> setTakeImage(XFile image) async {
+    //awaitの記述は必須 readAsBytesSyncは使えないぽい
+    List<int> imageBytes = await image.readAsBytes();
+    String base64Image = base64Encode(imageBytes);
+    //写真をエンコードして、文字列をプリファレンスに保存
+    print('${base64Image}関数');
+
+    final imagepref = await SharedPreferences.getInstance();
+    imagepref.setString('image', base64Image);
+    File aFile = File(image.path);
+    //await saveImagePath(aFile);
+  }
+
+  //カプセルの中身を保存する
+  static Future<void> setCapselText(String capsel_nakami) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('nakami', capsel_nakami);
+  }
+
+  //保存したカプセルの中身のテキストを呼び出す
+  static Future<String?> getCapselText() async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.getString('nakami');
+  }
+
+  //エンコードした写真の文字列データを呼び出す
+  static Future<String?> getTakeImage() async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.getString('image');
   }
 }

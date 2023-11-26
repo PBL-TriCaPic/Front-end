@@ -1,14 +1,20 @@
+import 'dart:io';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
+import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/Color_Scheme.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
 import '../theme_setting/SharedPreferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -44,6 +50,11 @@ class _HomeScreen extends State<HomeScreen> {
   double? lat; //メモ：最初に表示される場所を指定
   double? lng;
   LatLng? tapLatLng; //メモ：?はnullも許容
+  //画像保存用のpreference
+  //late SharedPreferences pref;
+  late XFile image;
+
+  File? imageFile;
   List<Marker> markers = [];
   List<CircleMarker> circleMarkers = []; //中身ないけど、削除すると現在地の●表示されなくなる
   bool isLoading = true; // 追加: ローディング状態を管理
@@ -91,6 +102,8 @@ class _HomeScreen extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //カメラ表示追記1行
+    final ImagePicker _picker = ImagePicker();
     ThemeData selectedTheme = lightTheme;
     // 追加: isLoadingがtrueの場合はローディング表示
     if (isLoading) {
@@ -145,6 +158,7 @@ class _HomeScreen extends State<HomeScreen> {
             ],
           ),
         ),
+
         //右下のボタンの処理
         floatingActionButton: FloatingActionButton(
           //Iconの部分を書き換えるとアイコンのデザイン変更可
@@ -154,21 +168,26 @@ class _HomeScreen extends State<HomeScreen> {
             height: 35,
             color: Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
           ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) {
-                //カプセル作成画面に遷移
-                return capsel_Create();
-              }),
-            ); // 追加ボタンが押されたときの処理を追加
+          onPressed: () async {
+            //カメラ撮影画面に遷移
+            final XFile? image = await _picker.pickImage(
+              source: ImageSource.camera,
+            );
+            if (image != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PictureCheck(image),
+                ),
+              );
+            }
           },
         ),
       ),
     );
   }
 
-  //ピンを作成する(現時点では表示はされない)
+  //ピンを作成する
   void cleatePin(LatLng tapLatLng) {
     Marker marker = Marker(
       point: tapLatLng,
@@ -187,6 +206,7 @@ class _HomeScreen extends State<HomeScreen> {
         ),
       ),
     );
+    //BottomNavigatorを押しまくった時に、エラーが出るのを防いでくれるかもしれない記述
     markers.add(marker);
     if (mounted) {
       setState(() {});
