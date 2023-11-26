@@ -102,7 +102,11 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text('タイムカプセル中身'),
+          title: Image.asset(
+            'assets/TriCaPic_logo.png',
+            height: 200,
+            width: 200,
+          ),
           elevation: 3,
           shadowColor: Colors.black,
           leading: IconButton(
