@@ -15,20 +15,20 @@ class SharedPrefs {
     prefs = await SharedPreferences.getInstance();
   } //OK　アイコン写真set　初期化
 
-  static Future<SharedPreferences> getSharedPreference() async {
-    return await SharedPreferences.getInstance();
-  } //OK アイコン写真get　初期化
+  static const String _profileImageKey = 'profileImage';
 
-  static Future<void> setImage(File imageFile) async {
-    final prefs = await SharedPreferences.getInstance();
-    // 切り抜かれた画像をアプリ内に保存（必要に応じてパスを変更）
-    final appDir = await getApplicationDocumentsDirectory();
-    const fileName = 'profile_image.jpg';
-    final localFile = await imageFile.copy('${appDir.path}/$fileName');
-    // SharedPreferencesに画像のパスを保存
-    await prefs.setString('imagePath', localFile.path);
-    print("アイコン写真をSharedPreferencesに保存しました");
-  } // 選択した画像をアプリの内部ストレージとSharedPreferencesに保存 0K
+  // Base64エンコードされた画像をSharedPreferencesに保存
+  static Future<void> setProfileImage(String base64Image) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_profileImageKey, base64Image);
+    print("プロフィール写真をSharedPreferencesに保存しました  $base64Image");
+  }
+
+  // Base64エンコードされた画像をSharedPreferencesから取得
+  static Future<String?> getProfileImage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_profileImageKey);
+  }
 
   static Future<String?> getImagePath() async {
     final prefs = await SharedPreferences.getInstance();

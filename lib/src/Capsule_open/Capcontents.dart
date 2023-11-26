@@ -17,7 +17,7 @@ class CapContentsScreen extends StatefulWidget {
   final String capsuleId;
   final String cityName;
   const CapContentsScreen(
-      {super.key, required this.capsuleId, required this.cityName});
+      {Key, required this.capsuleId, required this.cityName});
 
   @override
   State<CapContentsScreen> createState() => _CapContentsScreenState();
@@ -37,6 +37,7 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   //String? cityName;
 
   Uint8List? decodedImageData;
+  Uint8List? decodedprofile;
 
   @override
   void initState() {
@@ -52,13 +53,17 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   }
 
   Future<void> _loadImage() async {
-    prefs = await SharedPrefs.getSharedPreference();
-    final String? imagePath = prefs.getString('imagePath');
-    if (imagePath != null) {
-      imageFile = File(imagePath);
-      setState(() {});
-    }
-  }
+    String? base64Image = await SharedPrefs.getProfileImage();
+    //final String? base64Image = prefs.getString('_profileImageKey');
+    print('Base64 Image: $base64Image'); // デバッグログ
+    setState(() {
+      if (base64Image != null) {
+        decodedprofile = base64.decode(base64Image);
+      } else {
+        // imageDataがnullの場合の処理を行います（必要に応じて）。
+      }
+    });
+  } //profile
 
   Future<void> _fetchCapsuleData(String capsuleId) async {
     try {
@@ -128,8 +133,9 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                     GestureDetector(
                       child: CircleAvatar(
                         radius: 60,
-                        backgroundImage:
-                            imageFile != null ? FileImage(imageFile!) : null,
+                        backgroundImage: decodedprofile != null
+                            ? MemoryImage(decodedprofile!)
+                            : null,
                       ),
                     ),
                     Column(

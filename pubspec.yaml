@@ -20,6 +20,8 @@ dependencies:
 #プロフィール写真の拡大に必要
   cupertino_icons: ^1.0.2
 
+  image: ^4.1.3
+
   #svgファイルを利用する
   flutter_svg: ^2.0.9
   # yamlにimportするときは、インデントも揃えないとエラーになる
@@ -41,6 +43,7 @@ dependencies:
   image_cropper: ^4.0.1
   geocoding: ^2.1.1
   http: ^0.13.6
+  flutter_image_compress: ^2.1.0
 
 dev_dependencies:
   flutter_test:

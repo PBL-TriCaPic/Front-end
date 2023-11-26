@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Profile/Setting.dart';
@@ -11,12 +12,13 @@ import '../theme_setting/SharedPreferences.dart';
 import 'dart:async';
 import 'package:geocoding/geocoding.dart' as geoCoding;
 //import '../Timeline/TimlineButton.dart';
+import 'dart:convert';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class AccountScreen extends StatelessWidget {
-  const AccountScreen({super.key});
+  const AccountScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> {
   late SharedPreferences prefs;
-  File? imageFile;
+  //File? imageFile;
   String? message = '画像';
   String? userName;
   String? userId;
@@ -46,6 +48,8 @@ class MyHomePageState extends State<MyHomePage> {
   List<double> capsuleLatList = [];
   List<double> capsuleLonList = [];
 
+  Uint8List? decodedprofile;
+
   @override
   void initState() {
     super.initState();
@@ -55,44 +59,6 @@ class MyHomePageState extends State<MyHomePage> {
     postsCount = 100;
     // ユーザーの設定をロードし、プロファイル画像を設定
     _loadPreferences();
-    // 非同期で画像のパスを取得し、それが完了したら処理を行う
-    Future.delayed(Duration.zero, () async {
-      String? imagePath = await SharedPrefs.getImagePath();
-      if (imagePath != null) {
-        setState(() {
-          imageFile = File(imagePath);
-        });
-      }
-    });
-    //setImage();
-  }
-
-  Future<void> _loadPreferences() async {
-    final userNameValue = await SharedPrefs.getUsername();
-    final userIdValue = await SharedPrefs.getUserId();
-    final bioValue = await SharedPrefs.getMyBio();
-    final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
-    final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
-    final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
-
-    // List<int> を List<String> に変換
-    final capsulesIdListAsString =
-        capsulesIdListValue.map((id) => id.toString()).toList();
-
-    print('userName: $userNameValue');
-    print('userId: $userIdValue');
-    print('bio: $bioValue');
-    print('capsulesIdList: $capsulesIdListValue');
-    print('capsulesLatList: $capsulesLatListValue');
-    print('capsulesLonList: $capsulesLonListValue');
-    setState(() {
-      userName = userNameValue;
-      userId = userIdValue;
-      bio = bioValue;
-      capsulesIdList = capsulesIdListAsString;
-      capsuleLatList = capsulesLatListValue.cast<double>();
-      capsuleLonList = capsulesLonListValue.cast<double>();
-    });
   }
 
 // タップ時にプロファイル画像を拡大表示するダイアログを表示
@@ -103,12 +69,21 @@ class MyHomePageState extends State<MyHomePage> {
     if (pickedFile != null) {
       final image = File(pickedFile.path);
 
+      // 画像をBase64文字列にエンコード
+      List<int> imageBytes = await image.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+
+      // Base64エンコードされた画像をSharedPreferencesに保存
+      await SharedPrefs.setProfileImage(base64Image);
+
+      await _loadPreferences();
+
       setState(() {
-        imageFile = image;
+        decodedprofile = base64Image as Uint8List?;
       });
 
       // 選択された画像を保存し、ステートを更新
-      await SharedPrefs.setImage(imageFile!);
+      //await SharedPrefs.setImage(imageFile!);
       // 拡大表示されたプロファイル画像を含むダイアログを表示
       showDialog<void>(
         context: context,
@@ -124,7 +99,7 @@ class MyHomePageState extends State<MyHomePage> {
                 },
                 child: CircleAvatar(
                   radius: MediaQuery.of(context).size.width / 1.8,
-                  backgroundImage: FileImage(imageFile!),
+                  backgroundImage: FileImage(image),
                 ),
               ),
             ),
@@ -133,6 +108,60 @@ class MyHomePageState extends State<MyHomePage> {
       );
     }
   }
+
+  Future<void> _loadPreferences() async {
+    final userNameValue = await SharedPrefs.getUsername();
+    final userIdValue = await SharedPrefs.getUserId();
+    final bioValue = await SharedPrefs.getMyBio();
+    final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
+    final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
+    final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
+    String? base64Image = await SharedPrefs.getProfileImage();
+    print('Base64 Image: $base64Image'); // デバッグログ
+    // if (base64Image != null) {
+    //   List<int> imageBytes = base64Decode(base64Image);
+    //   print('デコードされた画像バイト: $imageBytes');
+    //   Uint8List imageData = Uint8List.fromList(imageBytes);
+    //   //print('Base64 Image: $base64Image'); // デバッグログ
+    //   setState(() {
+    //     imageFile = File.fromRawPath(imageData);
+    //   });
+    // }
+
+    // List<int> を List<String> に変換
+    final capsulesIdListAsString =
+        capsulesIdListValue.map((id) => id.toString()).toList();
+
+    // print('userName: $userNameValue');
+    // print('userId: $userIdValue');
+    // print('bio: $bioValue');
+    // print('capsulesIdList: $capsulesIdListValue');
+    // print('capsulesLatList: $capsulesLatListValue');
+    // print('capsulesLonList: $capsulesLonListValue');
+    setState(() {
+      userName = userNameValue;
+      userId = userIdValue;
+      bio = bioValue;
+      capsulesIdList = capsulesIdListAsString;
+      capsuleLatList = capsulesLatListValue.cast<double>();
+      capsuleLonList = capsulesLonListValue.cast<double>();
+      if (base64Image != null) {
+        decodedprofile = base64.decode(base64Image);
+      } else {
+        // imageDataがnullの場合の処理を行います（必要に応じて）。
+      }
+    });
+  }
+
+  // Widget _buildImageWidget() {
+  //   return imageFile != null
+  //       ? Image.memory(
+  //           Uint8List.fromList(imageFile!.readAsBytesSync()),
+  //           height: 100, // 画像の高さを適切に設定
+  //           width: 100, // 画像の幅を適切に設定
+  //         )
+  //       : Container(); // 画像がない場合は空のContainerを表示
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -178,8 +207,14 @@ class MyHomePageState extends State<MyHomePage> {
                         },
                         child: CircleAvatar(
                           radius: 60,
-                          backgroundImage:
-                              imageFile != null ? FileImage(imageFile!) : null,
+                          backgroundImage: decodedprofile != null
+                              ? MemoryImage(decodedprofile!)
+                              : null,
+                          // child: Image.memory(
+                          //   Uint8List.fromList(imageFile!.readAsBytesSync()),
+                          //   height: 100,
+                          //   width: 100,
+                          // ),
                         ),
                       ),
                       Column(
@@ -232,191 +267,13 @@ class MyHomePageState extends State<MyHomePage> {
                   bio ?? '',
                   style: const TextStyle(fontSize: 16),
                 ),
-                // const SizedBox(height: 16),
-                // Text(
-                //   'Capsules ID List: ${capsulesIdList.join(", ")}', // joinを使ってリストを文字列に変換
-                //   style: const TextStyle(fontSize: 16),
-                // ),
-                // const SizedBox(height: 16),
-                // Text(
-                //   'Capsules ID List: ${capsuleLatList.join(", ")}', // joinを使ってリストを文字列に変換
-                //   style: const TextStyle(fontSize: 16),
-                // ),
-                // const SizedBox(height: 16),
-                // Text(
-                //   'Capsules ID List: ${capsuleLonList.join(", ")}', // joinを使ってリストを文字列に変換
-                //   style: const TextStyle(fontSize: 16),
-                // ),
                 const SizedBox(height: 16),
-                // 新しく追加されたウィジェット
-                // FutureBuilder<List<String>>(
-                //   future: _getCityNames(),
-                //   builder: (context, snapshot) {
-                //     if (snapshot.connectionState == ConnectionState.done) {
-                //       if (snapshot.hasData) {
-                //         final cityNames = snapshot.data as List<String>;
-                //         final cityNamesText = cityNames
-                //             .map((cityName) => '市区町村名: $cityName')
-                //             .join('\n');
-                // FutureBuilder<List<String>>(
-                //   future: _getCityNames(),
-                //   builder: (context, snapshot) {
-                //     if (snapshot.connectionState == ConnectionState.done) {
-                //       if (snapshot.hasData) {
-                //         final cityNames = snapshot.data as List<String>;
-
-                //         return SingleChildScrollView(
-                //           child: Column(
-                //             crossAxisAlignment: CrossAxisAlignment.start,
-                //             children: [
-                //               // 他のウィジェット
-                //               const SizedBox(height: 16),
-                //               CityButtonsWidget(
-                //                 cityNames: cityNames,
-                //                 userNames: userName != null
-                //                     ? List.filled(cityNames.length, userName!)
-                //                     : [],
-                //                 userIds: userId != null
-                //                     ? List.filled(cityNames.length, userId!)
-                //                     : [],
-                //                 capsuleId: capsulesIdList,
-                //                 capsuleLatList: capsuleLatList,
-                //                 capsuleLonList: capsuleLonList,
-                //               ),
-                //             ],
-                //           ),
-                //         );
-                //       } else {
-                //         return Text(
-                //           'データがありません',
-                //           style: const TextStyle(fontSize: 16),
-                //         );
-                //       }
-                //     } else {
-                //       return CircularProgressIndicator();
-                //     }
-                //   },
-                // ),
-                //         return Text(
-                //           cityNamesText,
-                //           style: const TextStyle(fontSize: 16),
-                //         );
-                //       } else {
-                //         return Text(
-                //           'データがありません',
-                //           style: const TextStyle(fontSize: 16),
-                //         );
-                //       }
-                //     } else {
-                //       return CircularProgressIndicator();
-                //     }
-                //   },
-                // ),
-
-                // FutureBuilder<List<String>>(
-                //   future: _getAddressInfo(),
-                //   builder: (context, snapshot) {
-                //     if (snapshot.connectionState == ConnectionState.done) {
-                //       if (snapshot.hasData) {
-                //         final addressInfo = snapshot.data as List<String>;
-                //         final addressInfoText =
-                //             addressInfo.map((info) => '住所情報: $info').join('\n');
-
-                //         return Text(
-                //           addressInfoText,
-                //           style: const TextStyle(fontSize: 16),
-                //         );
-                //       } else {
-                //         return Text(
-                //           'データがありません',
-                //           style: const TextStyle(fontSize: 16),
-                //         );
-                //       }
-                //     } else {
-                //       return CircularProgressIndicator();
-                //     }
-                //   },
-                // ),
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  // Future<List<String>> _getAddressInfo() async {
-  //   List<String> addressInfo = [];
-
-  //   for (int i = 0; i < capsuleLatList.length; i++) {
-  //     double latitude = capsuleLatList[i];
-  //     double longitude = capsuleLonList[i];
-
-  //     // ここで latitude と longitude を使って住所情報を取得する処理を実行
-  //     String info = await _getAddressInfoFromCoordinates(latitude, longitude);
-
-  //     // 結果をリストに追加
-  //     addressInfo.add('$capsulesIdList[$i] $info');
-  //   }
-
-  //   return addressInfo;
-  // }
-
-  // Future<String> _getAddressInfoFromCoordinates(
-  //     double latitude, double longitude) async {
-  //   // ここに座標から住所情報を取得するためのAPI呼び出しやロジックを実装
-  //   final placeMarks =
-  //       await geoCoding.placemarkFromCoordinates(latitude, longitude);
-  //   final placeMark = placeMarks.isNotEmpty ? placeMarks.first : null;
-
-  //   // ダミーデータを実際のデータに置き換える
-  //   String addressInfo = '';
-  //   if (placeMark != null) {
-  //     addressInfo = '''
-  //     国: ${placeMark.country}
-  //     県: ${placeMark.administrativeArea}
-  //     都市: ${placeMark.locality}
-  //     市区町村: ${placeMark.subLocality}
-  //     地区: ${placeMark.subLocality}
-  //     通り: ${placeMark.thoroughfare}
-  //     番地: ${placeMark.subThoroughfare}
-  //     郵便番号: ${placeMark.postalCode}
-  //     地名: ${placeMark.name}
-  //     地番: ${placeMark.subAdministrativeArea}
-  //   ''';
-  //   } else {
-  //     addressInfo = 'Unknown Address';
-  //   }
-
-  //   return addressInfo;
-  // }
-  Future<List<String>> _getCityNames() async {
-    List<String> cityNames = [];
-
-    for (int CaCount = 0; CaCount < capsulesIdList.length; CaCount++) {
-      double latitude = capsuleLatList[CaCount];
-      double longitude = capsuleLonList[CaCount];
-
-      // ここで latitude と longitude を使って市区町村名を取得する処理を実行
-      String cityName = await _getCityNameFromCoordinates(latitude, longitude);
-
-      // 結果をリストに追加
-      cityNames.add(
-          cityName); //cityNames.add('$capsulesIdList[$CaCount] $cityName');
-    }
-
-    return cityNames;
-  }
-
-  // 任意のAPIやサービスを使って、座標から市区町村名を取得する関数
-  Future<String> _getCityNameFromCoordinates(
-      double latitude, double longitude) async {
-    // ここに座標から市区町村名を取得するためのAPI呼び出しやロジックを実装
-    // この例ではダミーのデータを返す
-    final placeMarks =
-        await geoCoding.placemarkFromCoordinates(latitude, longitude);
-    final placeMark = placeMarks.isNotEmpty ? placeMarks.first : null;
-    return placeMark?.locality ?? 'Unknown City';
   }
 
   // プロフィール編集画面に遷移する関数
