@@ -66,7 +66,7 @@ class MyHomePageState extends State<MyHomePage> {
   String? userId;
   late double capselLat;
   late double capselLon;
-  late Uint8List decode_Image;
+  Uint8List? decode_Image;
   Image? picture_Return;
   File? imageFile;
   @override
@@ -79,14 +79,15 @@ class MyHomePageState extends State<MyHomePage> {
     pref = await SharedPreferences.getInstance();
     final userIdValue = await SharedPrefs.getUserId();
     final nakami = await SharedPrefs.getCapselText();
-    final impref = await SharedPrefs.getTakeImage();
+    image_pref = await SharedPrefs.getTakeImage();
     setState(() {
       userId = userIdValue;
       //final text_data = nakami;
       //ここでgetStringしないと中身nullになる
       text_data = pref.getString('nakami');
-      final image_pref = impref;
+      //final image_pref = impref;
       //撮影してエンコードした写真のデコード
+      image_pref = image_pref;
       if (image_pref != null) {
         decode_Image = base64.decode(image_pref!);
       }
@@ -116,7 +117,7 @@ class MyHomePageState extends State<MyHomePage> {
             Text('-中身-'),
             Text(text_data ?? 'テキストは空です'),
             Text('撮影した写真'),
-            Image.memory(decode_Image),
+            Image.memory(decode_Image!),
             Text("以下の内容で埋めてもよろしいですか？"),
             OutlinedButton(
               onPressed: () {
@@ -134,7 +135,7 @@ class MyHomePageState extends State<MyHomePage> {
               onPressed: () async {
                 await getCurrentLocation(); // 位置情報を取得
                 await ApiService.capselSend(
-                    text_data, capselLat, capselLon, userId, image_pref);
+                    text_data, capselLat, capselLon, userId, image_pref!);
 
                 Navigator.push(
                   context,
