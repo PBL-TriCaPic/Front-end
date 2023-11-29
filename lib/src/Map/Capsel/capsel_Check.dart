@@ -41,7 +41,7 @@ class MyHomePage extends StatefulWidget {
       : super(key: key);
 
   final String title;
-  final String? nakami;
+  final String nakami;
 
   @override
   State<MyHomePage> createState() => MyHomePageState();

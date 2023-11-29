@@ -1,4 +1,6 @@
 import 'dart:ffi';
+import 'dart:io';
+import 'dart:typed_data';
 //import 'dart:html';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
@@ -46,9 +48,12 @@ class MyHomePageState extends State<MyHomePage> {
 
   String _apptitle = 'カプセル埋める';
   //タイトルと中身を保存する変数 pref
-  //late SharedPreferences pref;
+  late SharedPreferences pref;
   String capsel_title = '';
   String capsel_nakami = '';
+  File? imageFile;
+  Uint8List? decode_Image;
+  String? image_pref = '';
 
   /*追記：位置情報取得
   String _location = "";
@@ -98,9 +103,19 @@ class MyHomePageState extends State<MyHomePage> {
 
   //この画面を読み込んだ時に保存したタイトルや中身を読み込んでる
   Future<void> loadPref() async {
-    //pref = await SharedPreferences.getInstance();
+    pref = await SharedPreferences.getInstance();
+    image_pref = await SharedPrefs.getTakeImage();
     setState(() {
-      SharedPrefs.getCapselText();
+      image_pref = image_pref;
+      if (image_pref != null) {
+        decode_Image = base64.decode(image_pref!);
+      }
+
+      final String? imagePath = pref.getString('imagepath');
+      print('loadPref関数起動');
+      if (imagePath != null) {
+        imageFile = File(imagePath);
+      }
     });
   }
 
@@ -204,6 +219,9 @@ class MyHomePageState extends State<MyHomePage> {
                         capsel_nakami = text;
                       },
                     ),
+                  ),
+                  Container(
+                    child: Image.memory(decode_Image!),
                   ),
                   //Text("$dateTime", style: TextStyle(fontSize: 25)),
 
