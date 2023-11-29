@@ -24,22 +24,24 @@ final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class capsel_Check extends StatelessWidget {
-  const capsel_Check({super.key});
+  const capsel_Check({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: lightTheme,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page', nakami: ''),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({Key? key, required this.title, required this.nakami})
+      : super(key: key);
 
   final String title;
+  final String nakami;
 
   @override
   State<MyHomePage> createState() => MyHomePageState();

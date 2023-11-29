@@ -164,7 +164,7 @@ class SharedPrefs {
 
     final imagepref = await SharedPreferences.getInstance();
     imagepref.setString('image', base64Image);
-    File aFile = File(image.path);
+    //File aFile = File(image.path);
     //await saveImagePath(aFile);
   }
 
