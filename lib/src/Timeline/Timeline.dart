@@ -262,12 +262,12 @@ class _timelinePageState extends State<_timeline> {
             context: context,
             builder: (BuildContext context) {
               double distanceToShow = distanceInMeters;
-              String distanceUnit = 'メートル';
+              String distanceUnit = 'm';
 
               if (distanceInMeters >= 1000) {
                 // 1000メートル以上なら1キロメートルに変換
                 distanceToShow = distanceInMeters / 1000;
-                distanceUnit = 'キロメートル';
+                distanceUnit = 'km';
               }
               return AlertDialog(
                 title: const Text('注意'),
