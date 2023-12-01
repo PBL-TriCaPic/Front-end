@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
+  static const String baseApiUrl = 'http://192.168.10.119:8081/api';
+
   static Future<Map<String, dynamic>> loginUser(
       String email, String password) async {
     final response = await http.post(
-      Uri.parse('http://172.20.10.9:8081/api/login'), //エミュレータは　10.0.2.2
+      Uri.parse('$baseApiUrl/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
@@ -17,32 +19,30 @@ class ApiService {
     } else {
       throw Exception('ログインに失敗しました。資格情報を確認してください。');
     }
-  } //ログイン
+  }
 
   static Future<Map<String, dynamic>> fetchCapsuleData(String capsuleId) async {
     final response = await http.get(
-      Uri.parse('http://172.20.10.9:8081/api/get/capsules/$capsuleId'),
+      Uri.parse('$baseApiUrl/get/capsules/$capsuleId'),
     );
 
     if (response.statusCode == 200) {
       final List<int> bytes = response.bodyBytes;
-      final Map<String, dynamic> capsuleData =
-          jsonDecode(utf8.decode(bytes)); //
-      return capsuleData; //
+      final Map<String, dynamic> capsuleData = jsonDecode(utf8.decode(bytes));
+      return capsuleData;
     } else {
       throw Exception(
           'Failed to load capsule data. Status code: ${response.statusCode}');
     }
-  } //カプセルget
+  }
 
-  //カプセル内容送信
   static Future<Map<String, dynamic>> capselSend(
       String? text_Data,
       double capselLat,
       double capselLon,
       String? userId,
       String? image_pref) async {
-    final url = Uri.parse('http://172.20.10.9:8081/api/create/capsule');
+    final url = Uri.parse('$baseApiUrl/create/capsule');
     final headers = {'Content-Type': 'application/json'};
 
     final Map<String, dynamic> requestBody = {
@@ -51,7 +51,6 @@ class ApiService {
       'capsuleLon': capselLon.toString(),
       'userId': userId,
       'imageDataBase64': image_pref,
-      // 他のデータも追加する
     };
 
     final String encodedBody = json.encode(requestBody);
@@ -64,8 +63,7 @@ class ApiService {
         print('サーバーレスポンスは：${response.body}です');
         print('あああ${encodedBody}');
         final List<int> bytes = response.bodyBytes;
-        final Map<String, dynamic> capsuleData =
-            jsonDecode(utf8.decode(bytes)); //
+        final Map<String, dynamic> capsuleData = jsonDecode(utf8.decode(bytes));
         return capsuleData;
       } else {
         print('サーバに送るのを失敗しました。HTTPステータスコード: ${response.statusCode}');
