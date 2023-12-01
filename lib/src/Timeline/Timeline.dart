@@ -261,6 +261,14 @@ class _timelinePageState extends State<_timeline> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
+              double distanceToShow = distanceInMeters;
+              String distanceUnit = 'メートル';
+
+              if (distanceInMeters >= 1000) {
+                // 1000メートル以上なら1キロメートルに変換
+                distanceToShow = distanceInMeters / 1000;
+                distanceUnit = 'キロメートル';
+              }
               return AlertDialog(
                 title: const Text('注意'),
                 content: Column(
@@ -270,6 +278,9 @@ class _timelinePageState extends State<_timeline> {
                       'assets/Capsule_Not_Found.json', // Lottie アニメーションのファイルパス
                     ),
                     const Text('このカプセルは遠すぎて開けられないよ！'),
+                    const SizedBox(height: 10), // 適切なスペースを追加
+                    Text(
+                        'カプセルまであと ${distanceToShow.toStringAsFixed(2)} $distanceUnit'),
                   ],
                 ),
                 actions: <Widget>[
