@@ -75,6 +75,8 @@ flutter:
     - assets/TriCaPic_icon.png
     - assets/TimeCapsule.PNG
     - assets/Capsule_Filling_Animation.json
+    - assets/Capsule_Not_Found.json
+    - assets/Capsule_Not_Found2.json
 
 
 

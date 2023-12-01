@@ -97,7 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final password = passwordController.text;
       final userData = await ApiService.loginUser(email, password);
       await SharedPrefs.setEmail(email);
-      await SharedPrefs.setPassward(password);
+      await SharedPrefs.setPassword(password);
       String? newBio =
           _bioController.text.isNotEmpty ? _bioController.text : null;
       // if (newUserName != null)

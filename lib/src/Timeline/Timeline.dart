@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import '../theme_setting/Color_Scheme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/SharedPreferences.dart';
@@ -64,8 +65,10 @@ class _timelinePageState extends State<_timeline> {
   }
 
   Future<void> _loadPreference() async {
+    // ignore: non_constant_identifier_names
     final Email = await SharedPrefs.getEmail();
-    final Password = await SharedPrefs.getPassward();
+    // ignore: non_constant_identifier_names
+    final Password = await SharedPrefs.getPassword();
 
     if (Email == null || Password == null) {
       return;
@@ -109,12 +112,12 @@ class _timelinePageState extends State<_timeline> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
-                  final cityNames = snapshot.data as List<String>? ?? [];
-
+                  final cityNames = snapshot.data ?? [];
                   return GridView.builder(
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 20.0,
                       mainAxisSpacing: 20.0,
@@ -245,6 +248,7 @@ class _timelinePageState extends State<_timeline> {
         // 距離が500メートル以内なら通常の画面表示
         if (distanceInMeters <= 500) {
           //print('Selected Capsule ID: ${capsuleId[index]}');
+          // ignore: use_build_context_synchronously
           screenTransitionAnimation(context, () {
             Navigator.of(context).push(_createRoute(
               capsulesIdList[index],
@@ -253,18 +257,27 @@ class _timelinePageState extends State<_timeline> {
           });
         } else {
           // 500メートル以上ならダイアログ表示
+          // ignore: use_build_context_synchronously
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('注意'),
-                content: Text('ボタンが500メートル以上離れています。'),
+                title: const Text('注意'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Lottie.asset(
+                      'assets/Capsule_Not_Found.json', // Lottie アニメーションのファイルパス
+                    ),
+                    const Text('このカプセルは遠すぎて開けられないよ！'),
+                  ],
+                ),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('OK'),
+                    child: const Text('OK'),
                   ),
                 ],
               );
@@ -273,9 +286,9 @@ class _timelinePageState extends State<_timeline> {
         }
       },
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(16),
-        minimumSize: Size(100, 100),
-        shape: CircleBorder(),
+        padding: const EdgeInsets.all(16),
+        minimumSize: const Size(100, 100),
+        shape: const CircleBorder(),
         elevation: 10,
         //primary: Colors.transparent, // 背景色を透明に設定
       ),
@@ -294,21 +307,21 @@ class _timelinePageState extends State<_timeline> {
           mainAxisAlignment: MainAxisAlignment.center, // 垂直方向に中央寄せ
           children: [
             Text(
-              '${userName ?? ""}',
+              userName ?? "",
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
             ),
             Text(
-              '${userId ?? ""}',
+              userId ?? "",
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 15, fontWeight: FontWeight.bold), // テキストサイズを指定
             ),
             Text(
-              '${cityNames[index]}',
+              cityNames[index],
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
             ),
           ],
