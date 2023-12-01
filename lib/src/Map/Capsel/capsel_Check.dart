@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
-import 'package:flutter_application_develop/src/Map/Map.dart';
+//import 'package:flutter_application_develop/src/Map/Map.dart';
 import 'package:flutter_application_develop/src/Profile/profile_edit.dart';
 import 'package:flutter_application_develop/src/app.dart';
 import 'package:flutter_application_develop/src/theme_setting/HTTP_request.dart';
@@ -19,6 +19,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
+import '../../Animation/Capsule_Filling_Animation.dart';
+import '../Map.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -105,6 +107,26 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   Widget build(BuildContext context) {
+    void _onPressedFunction() async {
+      screenTransitionAnimation(context, () {
+        print("transition started");
+        Navigator.of(context).push(_createRoute());
+      });
+      await getCurrentLocation(); // 位置情報を取得
+      final userData = await ApiService.capselSend(
+          text_data, capselLat, capselLon, userId, image_pref!);
+
+      final List<int> capsulesIdListnew =
+          List<int>.from(userData['capsulesIdList'] ?? []);
+      final List<double> capsulesLatListnew =
+          List<double>.from(userData['capsuleLatList'] ?? []);
+      final List<double> capsulesLonListnew =
+          List<double>.from(userData['capsuleLonList'] ?? []);
+      await SharedPrefs.setCapsulesIdList(capsulesIdListnew);
+      await SharedPrefs.setCapsulesLatList(capsulesLatListnew);
+      await SharedPrefs.setCapsulesLonList(capsulesLonListnew);
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -135,31 +157,7 @@ class MyHomePageState extends State<MyHomePage> {
               child: Text('戻る'),
             ),
             OutlinedButton(
-              onPressed: () async {
-                await getCurrentLocation(); // 位置情報を取得
-                final userData = await ApiService.capselSend(
-                    text_data, capselLat, capselLon, userId, image_pref!);
-
-                final List<int> capsulesIdListnew =
-                    List<int>.from(userData['capsulesIdList'] ?? []);
-                final List<double> capsulesLatListnew =
-                    List<double>.from(userData['capsuleLatList'] ?? []);
-                final List<double> capsulesLonListnew =
-                    List<double>.from(userData['capsuleLonList'] ?? []);
-                await SharedPrefs.setCapsulesIdList(capsulesIdListnew);
-                await SharedPrefs.setCapsulesLatList(capsulesLatListnew);
-                await SharedPrefs.setCapsulesLonList(capsulesLonListnew);
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return MapScreen();
-                    },
-                  ),
-                );
-                //カプセルを埋める演出を入れ、埋める
-              },
+              onPressed: _onPressedFunction,
               child: Text('埋める！'),
             ),
           ]),
@@ -167,4 +165,19 @@ class MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+Route _createRoute() {
+  return PageRouteBuilder(
+      transitionDuration: const Duration(seconds: 1),
+      pageBuilder: ((context, animation, secondaryAnimation) =>
+          const MapScreen()),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        var tween =
+            Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: Curves.linear));
+        return FadeTransition(
+          opacity: animation.drive(tween),
+          child: child,
+        );
+      });
 }
