@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -29,7 +30,7 @@ class _LottieAnimation extends StatefulWidget {
 class _LottieAnimationState extends State<_LottieAnimation>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
-
+  final _audio = AudioPlayer();
   @override
   void initState() {
     super.initState();
@@ -44,6 +45,7 @@ class _LottieAnimationState extends State<_LottieAnimation>
           widget.onAinimCompleted();
         }
       });
+    _audio.play(AssetSource('Capsule_digging.mp3'));
   }
 
   @override

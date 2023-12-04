@@ -47,6 +47,7 @@ dependencies:
   http: ^0.13.6
   flutter_image_compress: ^2.1.0
   lottie: ^2.7.0
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,8 @@ flutter:
     - assets/Capsule_Filling_Animation.json
     - assets/Capsule_Not_Found.json
     - assets/Capsule_Not_Found2.json
+    - assets/
+    #Capsule_digging.mp3
 
 
 
