@@ -10,19 +10,19 @@ final baseTabViewProvider = StateProvider<ViewType>((ref) => ViewType.map);
 
 enum ViewType { map, timeline, search, profile }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+// class MyApp extends StatelessWidget {
+//   const MyApp({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        home: MyStatefulWidget(),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return ProviderScope(
+//       child: MaterialApp(
+//         title: 'Flutter Demo',
+//         home: MyStatefulWidget(),
+//       ),
+//     );
+//   }
+// }
 
 class MyStatefulWidget extends ConsumerWidget {
   MyStatefulWidget({Key? key}) : super(key: key);
