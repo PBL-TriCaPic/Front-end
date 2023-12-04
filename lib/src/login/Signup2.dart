@@ -3,6 +3,10 @@ import '../login/HomeScreen2.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../theme_setting/HTTP_request.dart';
+
+//完了
+
 class Signup2 extends StatefulWidget {
   @override
   _Signup2State createState() => _Signup2State();
@@ -28,29 +32,29 @@ class _Signup2State extends State<Signup2> {
     return passwordRegExp.hasMatch(password);
   }
 
-  Future<bool> createUser() async {
-    final url = Uri.parse('http://10.0.2.2:8081/api/create/user');
-    final headers = {'Content-Type': 'application/json'};
-    final body = json.encode({
-      'userId': userIdController.text,
-      'email': emailController.text,
-      'password': passwordController.text,
-      'name': nameController.text,
-    });
+  // Future<bool> createUser() async {
+  //   final url = Uri.parse('http://192.168.10.119:8081/api/create/user');
+  //   final headers = {'Content-Type': 'application/json'};
+  //   final body = json.encode({
+  //     'userId': userIdController.text,
+  //     'email': emailController.text,
+  //     'password': passwordController.text,
+  //     'name': nameController.text,
+  //   });
 
-    final response = await http.post(url, headers: headers, body: body);
+  //   final response = await http.post(url, headers: headers, body: body);
 
-    if (response.statusCode == 200) {
-      print('POSTリクエストが成功しました');
-      print('サーバーレスポンス: ${response.body}'); // サーバーレスポンスをログに表示
-      return response.body == 'true';
-    } else {
-      throw Exception('Failed to create user');
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     print('POSTリクエストが成功しました');
+  //     print('サーバーレスポンス: ${response.body}'); // サーバーレスポンスをログに表示
+  //     return response.body == 'true';
+  //   } else {
+  //     throw Exception('Failed to create user');
+  //   }
+  // }
 
   void handleclear() async {
-    setState(() {
+    setState(() async {
       if (!isEmailValid(emailController.text)) {
         setState(() {
           emailError = "無効なメールアドレスです";
@@ -70,14 +74,17 @@ class _Signup2State extends State<Signup2> {
           passwordError = "";
         });
       }
-
+      String userID = userIdController.text;
+      String email = emailController.text;
       String password = passwordController.text;
       String rePassword = rePasswordController.text;
+      String name = nameController.text;
 
       if (password == rePassword &&
           passwordError.isEmpty &&
           emailError.isEmpty) {
-        createUser().then((success) {
+        await ApiService.createUser(userID, email, password, name)
+            .then((success) {
           if (success) {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => HomeScreen2()),

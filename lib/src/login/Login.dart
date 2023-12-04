@@ -10,6 +10,8 @@ import '../Map/Map.dart';
 import '../login/Passwordforget.dart';
 import 'package:http/http.dart' as http;
 
+import '../theme_setting/HTTP_request.dart';
+
 class LoginApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -132,7 +134,8 @@ class _LoginState extends State<Login> {
 
       if (isEmailValid(emailController.text) &&
           isPasswordValid(passwordController.text)) {
-        final success = await authenticateUsers(); // サーバーからユーザー情報を取得
+        final success =
+            await ApiService.loginUser(email, password); // サーバーからユーザー情報を取得
       } else {
         showDialog(
           context: context,

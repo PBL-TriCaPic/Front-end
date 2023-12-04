@@ -19,7 +19,29 @@ class ApiService {
     } else {
       throw Exception('ログインに失敗しました。資格情報を確認してください。');
     }
-  }
+  } //login
+
+  static Future<bool> createUser(
+      String userID, String email, String password, String name) async {
+    final url = Uri.parse('$baseApiUrl/create/user');
+    final headers = {'Content-Type': 'application/json'};
+    final body = json.encode({
+      'userId': userID,
+      'email': email,
+      'password': password,
+      'name': name,
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      print('POSTリクエストが成功しました');
+      print('サーバーレスポンス: ${response.body}'); // サーバーレスポンスをログに表示
+      return response.body == 'true';
+    } else {
+      throw Exception('Failed to create user');
+    }
+  } //signup
 
   static Future<Map<String, dynamic>> fetchCapsuleData(String capsuleId) async {
     final response = await http.get(
