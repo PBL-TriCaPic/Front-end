@@ -80,15 +80,15 @@ class SharedPrefs {
     return prefs.getString('Email');
   }
 
-  static Future<void> setPassward(String Passward) async {
+  static Future<void> setPassword(String Passward) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('Passward', Passward);
-    print("PasswardをSharedPreferencesに保存しました");
+    await prefs.setString('Password', Passward);
+    print("PasswordをSharedPreferencesに保存しました");
   }
 
-  static Future<String?> getPassward() async {
+  static Future<String?> getPassword() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('Passward');
+    return prefs.getString('Password');
   }
 
   static Future<void> setCapsulesIdList(List<int> capsulesIdList) async {
