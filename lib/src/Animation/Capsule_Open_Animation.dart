@@ -56,6 +56,7 @@ class _LottieAnimationState extends State<_LottieAnimation>
   Widget build(BuildContext context) {
     return Center(
       child: Column(children: <Widget>[
+        const SizedBox(height: 100),
         Lottie.asset(
           'assets/Capsule_Filling_Animation.json',
           controller: _controller,
