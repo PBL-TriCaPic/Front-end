@@ -59,7 +59,9 @@ class MyApp extends StatelessWidget {
       home: Consumer<AuthProvider>(
         builder: (context, authProvider, _) {
           authProvider.checkAuthentication();
-          return authProvider.isAuthenticated ? MyStatefulWidget() : Start();
+          return authProvider.isAuthenticated
+              ? MyStatefulWidget()
+              : Start(); //現状、MyStatefulWidget()にできない。ここのMyStatefulWidget()をMapScreen()に変えるとマップの画面だけなら表示可能
         },
       ),
     );
