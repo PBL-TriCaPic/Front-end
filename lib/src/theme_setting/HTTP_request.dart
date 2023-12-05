@@ -56,7 +56,7 @@ class ApiService {
       throw Exception(
           'Failed to load capsule data. Status code: ${response.statusCode}');
     }
-  }
+  } //カプセルget
 
   static Future<Map<String, dynamic>> capselSend(
       String? text_Data,
@@ -96,5 +96,5 @@ class ApiService {
       print('エラーが発生しました: $e');
       throw Exception('サーバに送るのを失敗しました。');
     }
-  }
+  } //カプセル埋める
 }

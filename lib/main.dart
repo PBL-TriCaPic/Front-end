@@ -1,16 +1,9 @@
-import 'package:flutter_application_develop/src/Map/Map.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_develop/src/login/start.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import 'src/app.dart';
-import 'src/login/Login.dart';
-import 'src/login/Signup2.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'src/login/homescreen.dart';
-import 'AppStart.dart';
-//import 'src/login/start.dart';
+import 'src/app.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'src/login/start.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,13 +31,13 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    bool isLoggedIn = await SharedPrefs.checkLoginStatus();
     // ログイン状態に応じて画面を切り替え
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => isLoggedIn ? HomeScreen() : LoginScreen(),
+        builder: (context) => isLoggedIn ? Start() : AuthScreen(),
       ),
     );
   }
@@ -79,12 +72,13 @@ class LoginScreen extends StatelessWidget {
   }
 
   void saveLoginStatus(BuildContext context, bool isLoggedIn) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLoggedIn', isLoggedIn);
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.setBool('isLoggedIn', isLoggedIn);
+    await SharedPrefs.saveLoginStatus(context, isLoggedIn);
     // ログイン後に遷移する画面を指定
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => HomeScreen(),
+        builder: (context) => Start(),
       ),
     );
   }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_develop/src/app.dart';
+import 'package:flutter_application_develop/src/login/start.dart';
+import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
+import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
 import '../login/HomeScreen2.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -6,6 +10,9 @@ import 'dart:convert';
 import '../theme_setting/HTTP_request.dart';
 
 //完了
+
+final ThemeData lightTheme =
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class Signup2 extends StatefulWidget {
   @override
@@ -21,6 +28,9 @@ class _Signup2State extends State<Signup2> {
   final TextEditingController nameController = TextEditingController();
   String emailError = "";
   String passwordError = "";
+  List<int> capsulesIdList = [];
+  List<double> capsulesLatList = [];
+  List<double> capsulesLonList = [];
 
   bool isEmailValid(String email) {
     final emailRegExp = RegExp(r"^[\w-+.!#$%&'*/=?^`{|}~]+@[\w-]+(\.[\w-]+)+$");
@@ -53,7 +63,7 @@ class _Signup2State extends State<Signup2> {
   //   }
   // }
 
-  void handleclear() async {
+  void handleclear(BuildContext context, bool isLoggedIn) async {
     setState(() async {
       if (!isEmailValid(emailController.text)) {
         setState(() {
@@ -83,11 +93,19 @@ class _Signup2State extends State<Signup2> {
       if (password == rePassword &&
           passwordError.isEmpty &&
           emailError.isEmpty) {
+        await SharedPrefs.setEmail(email);
+        await SharedPrefs.setPassword(password);
+        await SharedPrefs.setUsername(name);
+        await SharedPrefs.setUserId(userID);
+        await SharedPrefs.setCapsulesIdList(capsulesIdList);
+        await SharedPrefs.setCapsulesLatList(capsulesLatList);
+        await SharedPrefs.setCapsulesLonList(capsulesLonList);
+        await SharedPrefs.saveLoginStatus(context, isLoggedIn);
         await ApiService.createUser(userID, email, password, name)
             .then((success) {
           if (success) {
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => HomeScreen2()),
+              MaterialPageRoute(builder: (context) => Start()),
             );
           } else {
             // ユーザーの作成に失敗した場合の処理をここに追加
@@ -118,67 +136,106 @@ class _Signup2State extends State<Signup2> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('サインアップ'),
-        automaticallyImplyLeading: false,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(10),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                controller: userIdController,
-                decoration: InputDecoration(
-                  labelText: 'User ID',
+    ThemeData selectedTheme = lightTheme;
+    return MaterialApp(
+      theme: selectedTheme,
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('サインアップ'),
+          automaticallyImplyLeading: false,
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(10),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: userIdController,
+                  decoration: InputDecoration(
+                    labelText: 'User ID',
+                  ),
                 ),
-              ),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'username',
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'username',
+                  ),
                 ),
-              ),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  errorText: emailError.isNotEmpty ? emailError : null,
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    errorText: emailError.isNotEmpty ? emailError : null,
+                  ),
                 ),
-              ),
-              SizedBox(height: 50.0),
-              TextField(
-                controller: passwordController,
-                decoration: InputDecoration(
-                  labelText: 'password',
-                  errorText: passwordError.isNotEmpty ? passwordError : null,
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    // パスワードのバリデーションを呼び出す
-                    isPasswordValid(value);
-                  });
-                },
-              ),
-              TextField(
-                controller: rePasswordController,
-                decoration: InputDecoration(
-                  labelText: 're password',
-                ),
-              ),
-              SizedBox(height: 10.0),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.4,
-                child: ElevatedButton(
-                  onPressed: () {
-                    handleclear();
+                SizedBox(height: 50.0),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'password',
+                    errorText: passwordError.isNotEmpty ? passwordError : null,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      // パスワードのバリデーションを呼び出す
+                      isPasswordValid(value);
+                    });
                   },
-                  child: Text('入力完了'),
                 ),
-              ),
-            ],
+                TextField(
+                  controller: rePasswordController,
+                  decoration: InputDecoration(
+                    labelText: 're password',
+                  ),
+                ),
+                SizedBox(height: 10.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => AuthScreen()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 5, // 影の設定
+                        ),
+                        child: Text(
+                          '戻る',
+                          style: TextStyle(
+                            fontSize: 18, // フォントサイズの設定
+                            fontWeight: FontWeight.bold, // 太文字の設定
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          handleclear(context, true);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 5, // 影の設定
+                        ),
+                        child: Text(
+                          'アカウント作成',
+                          style: TextStyle(
+                            fontSize: 18, // フォントサイズの設定
+                            fontWeight: FontWeight.bold, // 太文字の設定
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

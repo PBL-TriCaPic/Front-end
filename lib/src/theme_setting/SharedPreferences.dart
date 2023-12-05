@@ -1,7 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
+import 'dart:ffi';
 
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -184,5 +186,16 @@ class SharedPrefs {
   static Future<String?> getTakeImage() async {
     final pref = await SharedPreferences.getInstance();
     return pref.getString('image');
+  }
+
+  static Future<void> saveLoginStatus(
+      BuildContext context, bool isLoggedIn) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool('isLoggedIn', isLoggedIn);
+  }
+
+  static Future<bool> checkLoginStatus() async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.getBool('isLoggedIn') ?? false;
   }
 }
