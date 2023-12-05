@@ -114,12 +114,12 @@ class MyHomePageState extends State<MyHomePage> {
         print("transition started");
         Navigator.of(context).push(_createRoute());
       });
-      final AudioPlayer _audioPlayer = AudioPlayer();
+      //final AudioPlayer _audioPlayer = AudioPlayer();
       await getCurrentLocation(); // 位置情報を取得
       final userData = await ApiService.capselSend(
           text_data, capselLat, capselLon, userId, image_pref!);
-      String mp3Url = "assets/Capsule_digging.mp3"; // 実際のURLまたはローカルパスに置き換えてください
-      await _audioPlayer.play(mp3Url as Source);
+      //String mp3Url = "assets/Capsule_digging.mp3"; // 実際のURLまたはローカルパスに置き換えてください
+      //await _audioPlayer.play(Uri.parse(mp3Url) as Source);
       final List<int> capsulesIdListnew =
           List<int>.from(userData['capsulesIdList'] ?? []);
       final List<double> capsulesLatListnew =
