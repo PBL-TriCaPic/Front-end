@@ -220,6 +220,7 @@ class MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                   ),
+                  const SizedBox(height: 10),
                   Container(
                     child: Image.memory(decode_Image!),
                   ),
