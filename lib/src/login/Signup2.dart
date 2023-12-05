@@ -144,97 +144,103 @@ class _Signup2State extends State<Signup2> {
           title: Text('サインアップ'),
           automaticallyImplyLeading: false,
         ),
-        body: Padding(
-          padding: EdgeInsets.all(10),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: userIdController,
-                  decoration: InputDecoration(
-                    labelText: 'User ID',
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextField(
+                    controller: userIdController,
+                    decoration: InputDecoration(
+                      labelText: 'User ID',
+                    ),
                   ),
-                ),
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'username',
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'username',
+                    ),
                   ),
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    errorText: emailError.isNotEmpty ? emailError : null,
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      errorText: emailError.isNotEmpty ? emailError : null,
+                    ),
                   ),
-                ),
-                SizedBox(height: 50.0),
-                TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'password',
-                    errorText: passwordError.isNotEmpty ? passwordError : null,
+                  SizedBox(height: 50.0),
+                  TextField(
+                    controller: passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'password',
+                      errorText:
+                          passwordError.isNotEmpty ? passwordError : null,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        // パスワードのバリデーションを呼び出す
+                        isPasswordValid(value);
+                      });
+                    },
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      // パスワードのバリデーションを呼び出す
-                      isPasswordValid(value);
-                    });
-                  },
-                ),
-                TextField(
-                  controller: rePasswordController,
-                  decoration: InputDecoration(
-                    labelText: 're password',
+                  TextField(
+                    controller: rePasswordController,
+                    decoration: InputDecoration(
+                      labelText: 're password',
+                    ),
                   ),
-                ),
-                SizedBox(height: 10.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => AuthScreen()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5, // 影の設定
-                        ),
-                        child: Text(
-                          '戻る',
-                          style: TextStyle(
-                            fontSize: 18, // フォントサイズの設定
-                            fontWeight: FontWeight.bold, // 太文字の設定
+                  SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => AuthScreen()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 5, // 影の設定
+                          ),
+                          child: Text(
+                            '戻る',
+                            style: TextStyle(
+                              fontSize: 15, // フォントサイズの設定
+                              fontWeight: FontWeight.bold, // 太文字の設定
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          handleclear(context, true);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5, // 影の設定
-                        ),
-                        child: Text(
-                          'アカウント作成',
-                          style: TextStyle(
-                            fontSize: 18, // フォントサイズの設定
-                            fontWeight: FontWeight.bold, // 太文字の設定
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            handleclear(context, true);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 5, // 影の設定
+                          ),
+                          child: Text(
+                            'アカウント作成',
+                            style: TextStyle(
+                              fontSize: 15, // フォントサイズの設定
+                              fontWeight: FontWeight.bold, // 太文字の設定
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

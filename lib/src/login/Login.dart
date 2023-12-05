@@ -249,8 +249,11 @@ class _LoginState extends State<Login> {
           title: Text('ログイン'),
           automaticallyImplyLeading: false,
         ),
-        body: Padding(
-          padding: EdgeInsets.all(10),
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
           child: Column(
             children: [
               TextField(
