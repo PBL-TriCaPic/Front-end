@@ -1,14 +1,18 @@
+// ignore_for_file: camel_case_types, file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class Code_Success extends StatelessWidget {
   final TextEditingController codeController = TextEditingController();
 
+  Code_Success({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('コード認証'),
+        title: const Text('コード認証'),
         automaticallyImplyLeading: false,
       ),
       body: Padding(
@@ -24,13 +28,13 @@ class Code_Success extends StatelessWidget {
                   LengthLimitingTextInputFormatter(4),
                   FilteringTextInputFormatter.allow(RegExp('[0-9]'))
                 ],
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'コード入力',
                 ),
               ),
             ),
-            SizedBox(height: 50.0),
-            Container(
+            const SizedBox(height: 50.0),
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.4,
               child: ElevatedButton(
                 onPressed: () {
@@ -47,14 +51,14 @@ class Code_Success extends StatelessWidget {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('エラー'),
-                          content: Text('有効なコードを入力してください。'),
+                          title: const Text('エラー'),
+                          content: const Text('有効なコードを入力してください。'),
                           actions: <Widget>[
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('閉じる'),
+                              child: const Text('閉じる'),
                             ),
                           ],
                         );
@@ -62,7 +66,7 @@ class Code_Success extends StatelessWidget {
                     );
                   }
                 },
-                child: Text('入力完了'),
+                child: const Text('入力完了'),
               ),
             ),
           ],

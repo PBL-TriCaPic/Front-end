@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters, file_names
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -40,6 +42,7 @@ class _LottieAnimationState extends State<_LottieAnimation>
         setState(() {});
       })
       ..addStatusListener((status) {
+        // ignore: avoid_print
         print(status);
         if (status == AnimationStatus.completed) {
           widget.onAinimCompleted();

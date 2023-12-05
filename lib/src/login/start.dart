@@ -1,13 +1,16 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/login/Login.dart';
 import 'package:flutter_application_develop/src/login/Signup2.dart';
 import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
-import 'homescreen.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
+
   @override
   _AuthScreenState createState() => _AuthScreenState();
 }
@@ -41,18 +44,18 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.5,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => LoginApp()),
+                      MaterialPageRoute(builder: (context) => const LoginApp()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     elevation: 5, // 影の設定
                   ),
-                  child: Text(
+                  child: const Text(
                     'ログイン',
                     style: TextStyle(
                       fontSize: 18, // フォントサイズの設定
@@ -61,19 +64,19 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 50.0),
-              Container(
+              const SizedBox(height: 50.0),
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.5,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => Signup2()),
+                      MaterialPageRoute(builder: (context) => const Signup2()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     elevation: 5, // 影の設定
                   ),
-                  child: Text(
+                  child: const Text(
                     'アカウント作成',
                     style: TextStyle(
                       fontSize: 18, // フォントサイズの設定

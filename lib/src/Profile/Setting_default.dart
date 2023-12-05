@@ -1,6 +1,10 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class Item2Screen extends StatelessWidget {
+  const Item2Screen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

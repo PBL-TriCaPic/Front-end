@@ -1,17 +1,13 @@
-import 'dart:convert';
+// ignore_for_file: file_names, library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:flutter_application_develop/main.dart';
 import 'package:flutter_application_develop/src/app.dart';
 import 'package:flutter_application_develop/src/login/start.dart';
 import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
-import 'package:provider/provider.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:flutter_application_develop/main.dart';
 // import '../login/homescreen.dart';
-import '../Map/Map.dart';
-import '../login/Passwordforget.dart';
-import 'package:http/http.dart' as http;
 
 import '../theme_setting/HTTP_request.dart';
 
@@ -19,15 +15,19 @@ final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class LoginApp extends StatelessWidget {
+  const LoginApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Login(),
     );
   }
 }
 
 class Login extends StatefulWidget {
+  const Login({super.key});
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -160,7 +160,7 @@ class _LoginState extends State<Login> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Start(),
+              builder: (context) => const Start(),
             ),
           );
         } catch (e) {
@@ -168,14 +168,14 @@ class _LoginState extends State<Login> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: Text('エラー'),
-                content: Text('ログインに失敗しました\nメールアドレス、もしくはパスワードが間違っています'),
+                title: const Text('エラー'),
+                content: const Text('ログインに失敗しました\nメールアドレス、もしくはパスワードが間違っています'),
                 actions: [
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('閉じる'),
+                    child: const Text('閉じる'),
                   ),
                 ],
               );
@@ -187,14 +187,14 @@ class _LoginState extends State<Login> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('エラー'),
-              content: Text('正しい形式で入力してください'),
+              title: const Text('エラー'),
+              content: const Text('正しい形式で入力してください'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('閉じる'),
+                  child: const Text('閉じる'),
                 ),
               ],
             );
@@ -246,7 +246,7 @@ class _LoginState extends State<Login> {
       theme: selectedTheme,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('ログイン'),
+          title: const Text('ログイン'),
           automaticallyImplyLeading: false,
         ),
         body: GestureDetector(
@@ -299,22 +299,23 @@ class _LoginState extends State<Login> {
               //     child: Text('パスワードを忘れた人'),
               //   ),
               // ),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Container(
+                  SizedBox(
                     width: MediaQuery.of(context).size.width * 0.4,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => AuthScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => const AuthScreen()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 5, // 影の設定
                       ),
-                      child: Text(
+                      child: const Text(
                         '戻る',
                         style: TextStyle(
                           fontSize: 18, // フォントサイズの設定
@@ -323,7 +324,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     width: MediaQuery.of(context).size.width * 0.4,
                     child: ElevatedButton(
                       onPressed: () {
@@ -332,7 +333,7 @@ class _LoginState extends State<Login> {
                       style: ElevatedButton.styleFrom(
                         elevation: 5, // 影の設定
                       ),
-                      child: Text(
+                      child: const Text(
                         'ログイン',
                         style: TextStyle(
                           fontSize: 18, // フォントサイズの設定

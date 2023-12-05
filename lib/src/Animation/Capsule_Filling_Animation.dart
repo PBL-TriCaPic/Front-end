@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, avoid_print
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -19,8 +21,7 @@ void screenTransitionAnimation(BuildContext context, Function screenTransFunc) {
 }
 
 class _LottieAnimation extends StatefulWidget {
-  const _LottieAnimation({Key? key, required this.onAinimCompleted})
-      : super(key: key);
+  const _LottieAnimation({required this.onAinimCompleted});
   final Function onAinimCompleted;
 
   @override

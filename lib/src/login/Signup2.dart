@@ -1,11 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api, file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/app.dart';
 import 'package:flutter_application_develop/src/login/start.dart';
 import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
-import '../login/HomeScreen2.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import '../theme_setting/HTTP_request.dart';
 
@@ -15,6 +14,8 @@ final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class Signup2 extends StatefulWidget {
+  const Signup2({super.key});
+
   @override
   _Signup2State createState() => _Signup2State();
 }
@@ -100,15 +101,17 @@ class _Signup2State extends State<Signup2> {
         await SharedPrefs.setCapsulesIdList(capsulesIdList);
         await SharedPrefs.setCapsulesLatList(capsulesLatList);
         await SharedPrefs.setCapsulesLonList(capsulesLonList);
+        // ignore: use_build_context_synchronously
         await SharedPrefs.saveLoginStatus(context, isLoggedIn);
         await ApiService.createUser(userID, email, password, name)
             .then((success) {
           if (success) {
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => Start()),
+              MaterialPageRoute(builder: (context) => const Start()),
             );
           } else {
             // ユーザーの作成に失敗した場合の処理をここに追加
+            // ignore: avoid_print
             print('POSTリクエストが失敗しました');
           }
         });
@@ -117,14 +120,14 @@ class _Signup2State extends State<Signup2> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('エラー'),
-              content: Text('パスワードが一致しない、もしくはパスワードが適切ではありません。'),
+              title: const Text('エラー'),
+              content: const Text('パスワードが一致しない、もしくはパスワードが適切ではありません。'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('閉じる'),
+                  child: const Text('閉じる'),
                 ),
               ],
             );
@@ -141,7 +144,7 @@ class _Signup2State extends State<Signup2> {
       theme: selectedTheme,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('サインアップ'),
+          title: const Text('サインアップ'),
           automaticallyImplyLeading: false,
         ),
         body: GestureDetector(
@@ -156,13 +159,13 @@ class _Signup2State extends State<Signup2> {
                 children: [
                   TextField(
                     controller: userIdController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'User ID',
                     ),
                   ),
                   TextField(
                     controller: nameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'username',
                     ),
                   ),
@@ -173,7 +176,7 @@ class _Signup2State extends State<Signup2> {
                       errorText: emailError.isNotEmpty ? emailError : null,
                     ),
                   ),
-                  SizedBox(height: 50.0),
+                  const SizedBox(height: 50.0),
                   TextField(
                     controller: passwordController,
                     decoration: InputDecoration(
@@ -190,27 +193,27 @@ class _Signup2State extends State<Signup2> {
                   ),
                   TextField(
                     controller: rePasswordController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 're password',
                     ),
                   ),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      Container(
+                      SizedBox(
                         width: MediaQuery.of(context).size.width * 0.4,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (context) => AuthScreen()),
+                                  builder: (context) => const AuthScreen()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
                             elevation: 5, // 影の設定
                           ),
-                          child: Text(
+                          child: const Text(
                             '戻る',
                             style: TextStyle(
                               fontSize: 15, // フォントサイズの設定
@@ -219,7 +222,7 @@ class _Signup2State extends State<Signup2> {
                           ),
                         ),
                       ),
-                      Container(
+                      SizedBox(
                         width: MediaQuery.of(context).size.width * 0.4,
                         child: ElevatedButton(
                           onPressed: () {
@@ -228,7 +231,7 @@ class _Signup2State extends State<Signup2> {
                           style: ElevatedButton.styleFrom(
                             elevation: 5, // 影の設定
                           ),
-                          child: Text(
+                          child: const Text(
                             'アカウント作成',
                             style: TextStyle(
                               fontSize: 15, // フォントサイズの設定

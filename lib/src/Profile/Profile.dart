@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, use_key_in_widget_constructors, use_build_context_synchronously, avoid_print, unused_element
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
@@ -10,7 +12,6 @@ import 'profile_edit.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
 import 'dart:async';
-import 'package:geocoding/geocoding.dart' as geoCoding;
 //import '../Timeline/TimlineButton.dart';
 import 'dart:convert';
 
@@ -24,12 +25,14 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: lightTheme,
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   State<MyHomePage> createState() => MyHomePageState();
 }
@@ -175,7 +178,7 @@ class MyHomePageState extends State<MyHomePage> {
           elevation: 3,
           shadowColor: Colors.black,
         ),
-        endDrawer: CustomDrawer(),
+        endDrawer: const CustomDrawer(),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -186,12 +189,12 @@ class MyHomePageState extends State<MyHomePage> {
                   children: [
                     Text(
                       userName ?? '',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
-                      icon: Icon(Icons.edit),
+                      icon: const Icon(Icons.edit),
                       onPressed: () {
                         _editProfile(context);
                       },

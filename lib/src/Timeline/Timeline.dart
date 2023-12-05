@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, library_prefixes, camel_case_types, non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../theme_setting/Color_Scheme.dart';
@@ -14,7 +16,7 @@ final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class TimelineScreen extends StatelessWidget {
-  const TimelineScreen({Key? key}) : super(key: key);
+  const TimelineScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class _timelinePageState extends State<_timeline> {
   List<double> capsuleLatList = [];
   List<double> capsuleLonList = [];
 
+  @override
   void initState() {
     super.initState();
     _loadPreferences();
@@ -65,9 +68,7 @@ class _timelinePageState extends State<_timeline> {
   }
 
   Future<void> _loadPreference() async {
-    // ignore: non_constant_identifier_names
     final Email = await SharedPrefs.getEmail();
-    // ignore: non_constant_identifier_names
     final Password = await SharedPrefs.getPassword();
 
     if (Email == null || Password == null) {

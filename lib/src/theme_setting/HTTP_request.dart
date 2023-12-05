@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, avoid_print
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -59,20 +61,20 @@ class ApiService {
   } //カプセルget
 
   static Future<Map<String, dynamic>> capselSend(
-      String? text_Data,
+      String? textData,
       double capselLat,
       double capselLon,
       String? userId,
-      String? image_pref) async {
+      String? imagePref) async {
     final url = Uri.parse('$baseApiUrl/create/capsule');
     final headers = {'Content-Type': 'application/json'};
 
     final Map<String, dynamic> requestBody = {
-      'textData': text_Data,
+      'textData': textData,
       'capsuleLat': capselLat.toString(),
       'capsuleLon': capselLon.toString(),
       'userId': userId,
-      'imageDataBase64': image_pref,
+      'imageDataBase64': imagePref,
     };
 
     final String encodedBody = json.encode(requestBody);
@@ -83,7 +85,7 @@ class ApiService {
       if (response.statusCode == 200) {
         print('カプセル内容のPOSTリクエスト成功');
         print('サーバーレスポンスは：${response.body}です');
-        print('あああ${encodedBody}');
+        //print('あああ${encodedBody}');
         final List<int> bytes = response.bodyBytes;
         final Map<String, dynamic> capsuleData = jsonDecode(utf8.decode(bytes));
         return capsuleData;

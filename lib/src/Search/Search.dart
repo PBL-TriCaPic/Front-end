@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme_setting/Color_Scheme.dart';
@@ -39,7 +41,7 @@ final StateProvider<List<int>> searchIndexListProvider =
     StateProvider((ref) => []);
 
 class SearchScreen extends StatelessWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  const SearchScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +55,7 @@ class SearchScreen extends StatelessWidget {
 }
 
 class _SearchScreen extends ConsumerWidget {
-  const _SearchScreen({Key? key}) : super(key: key);
+  const _SearchScreen();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -95,13 +97,13 @@ class _SearchScreen extends ConsumerWidget {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.grey[100],
-        contentPadding: EdgeInsets.all(0),
+        contentPadding: const EdgeInsets.all(0),
         prefixIcon: Icon(
           Icons.search,
           color: Colors.grey.shade600,
         ),
         suffixIcon: IconButton(
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
           onPressed: () {
             textController.clear();
             searchIndexListNotifier.state = [];
@@ -145,7 +147,7 @@ class _SearchScreen extends ConsumerWidget {
               //               SearchDetailPage(title: wordList[index])));
               // },//ここにListViewのTileを押したときの画面遷移をかく。他の人のプロフィール表示
               title: Text(wordList[index]),
-              tileColor: Color.fromARGB(255, 255, 255, 255),
+              tileColor: const Color.fromARGB(255, 255, 255, 255),
             ),
           );
         });
@@ -166,7 +168,7 @@ class _SearchScreen extends ConsumerWidget {
             //               SearchDetailPage(title: wordList[index])));
             // },//ここにListViewのTileを押したときの画面遷移をかく。他の人のプロフィール表示
             title: Text(wordList[index]),
-            tileColor: Color.fromARGB(255, 255, 255, 255),
+            tileColor: const Color.fromARGB(255, 255, 255, 255),
           ),
         );
       },

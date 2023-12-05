@@ -1,34 +1,24 @@
+// ignore_for_file: file_names, non_constant_identifier_names, no_leading_underscores_for_local_identifiers, camel_case_types, avoid_print
+
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
-//import 'package:flutter_application_develop/src/Map/Map.dart';
-import 'package:flutter_application_develop/src/Profile/profile_edit.dart';
-import 'package:flutter_application_develop/src/app.dart';
 import 'package:flutter_application_develop/src/theme_setting/HTTP_request.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../theme_setting/Color_Scheme.dart';
 //yamlにhttpを使用する記述を書く!
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:geolocator/geolocator.dart';
 import '../../Animation/Capsule_Filling_Animation.dart';
 import '../Map.dart';
-
-import 'package:audioplayers/audioplayers.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class capsel_Check extends StatelessWidget {
-  const capsel_Check({Key? key}) : super(key: key);
+  const capsel_Check({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +31,7 @@ class capsel_Check extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title, required this.nakami})
-      : super(key: key);
+  const MyHomePage({super.key, required this.title, required this.nakami});
 
   final String title;
   final String nakami;
@@ -89,10 +78,10 @@ class MyHomePageState extends State<MyHomePage> {
     image_pref = await SharedPrefs.getTakeImage();
     setState(() {
       userId = userIdValue;
+      text_data = nakami;
       //final text_data = nakami;
       //ここでgetStringしないと中身nullになる
-      text_data = pref.getString('nakami');
-      //final image_pref = impref;
+      //text_data = pref.getString('nakami');
       //撮影してエンコードした写真のデコード
       image_pref = image_pref;
       if (image_pref != null) {
@@ -108,6 +97,7 @@ class MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     Future<void> _onPressedFunction() async {
       screenTransitionAnimation(context, () {
@@ -138,34 +128,32 @@ class MyHomePageState extends State<MyHomePage> {
         //backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          child: Column(//縦並び
-              children: <Widget>[
-            //Text('-タイトル-'),
-            //Text(capsel_title),
-            Text('-中身-'),
-            Text(text_data ?? 'テキストは空です'),
-            Text('撮影した写真'),
-            Image.memory(decode_Image!),
-            Text("以下の内容で埋めてもよろしいですか？"),
-            OutlinedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    //カプセル作成画面に遷移
-                    return capsel_Create();
-                  }),
-                );
-              },
-              child: Text('戻る'),
-            ),
-            OutlinedButton(
-              onPressed: _onPressedFunction,
-              child: Text('埋める！'),
-            ),
-          ]),
-        ),
+        child: Column(//縦並び
+            children: <Widget>[
+          //Text('-タイトル-'),
+          //Text(capsel_title),
+          const Text('-中身-'),
+          Text(text_data ?? 'テキストは空です'),
+          const Text('撮影した写真'),
+          Image.memory(decode_Image!),
+          const Text("以下の内容で埋めてもよろしいですか？"),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  //カプセル作成画面に遷移
+                  return const capsel_Create();
+                }),
+              );
+            },
+            child: const Text('戻る'),
+          ),
+          OutlinedButton(
+            onPressed: _onPressedFunction,
+            child: const Text('埋める！'),
+          ),
+        ]),
       ),
     );
   }

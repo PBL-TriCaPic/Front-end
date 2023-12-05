@@ -1,19 +1,13 @@
-import 'dart:ffi';
+// ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously, camel_case_types, avoid_print
+
 import 'dart:io';
 import 'dart:typed_data';
-//import 'dart:html';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
-import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
 import 'package:flutter_application_develop/src/Map/Map.dart';
-import 'package:flutter_application_develop/src/app.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
-import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_map/flutter_map.dart';
-//import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
 import '../../theme_setting/Color_Scheme.dart';
-import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,9 +38,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  String _apptitle = 'カプセル埋める';
+  //int _counter = 0;
   //タイトルと中身を保存する変数 pref
   late SharedPreferences pref;
   String capsel_title = '';
@@ -71,11 +63,11 @@ class MyHomePageState extends State<MyHomePage> {
   }
   追記部終わり*/
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  // void _incrementCounter() {
+  //   setState(() {
+  //     _counter++;
+  //   });
+  // }
 
   dynamic dateTime;
 
@@ -122,8 +114,9 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     //カメラ表示追記
-    final ImagePicker _picker = ImagePicker();
-    var _textEditingController;
+    //final ImagePicker _picker = ImagePicker();
+    // ignore: prefer_typing_uninitialized_variables
+    var textEditingController;
     return Scaffold(
         //キーボードを出した時に、bottom～のトラテープみたいなエラーを封じる
         resizeToAvoidBottomInset: false,
@@ -143,47 +136,45 @@ class MyHomePageState extends State<MyHomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start, // 垂直方向上寄せ
                 children: [
-                  Container(
-                    child: ButtonBar(
-                      //横並びにする
-                      alignment: MainAxisAlignment.spaceBetween, //幅を等しくする
-                      children: [
-                        //キャンセルボタンを押した時の処理
-                        TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) {
-                                  //マップ画面に遷移(Navigatorpopの方がいいかも？)
-                                  return MapScreen();
-                                }),
-                              );
-                            },
-                            child: const Text(
-                              "キャンセル",
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            )),
+                  ButtonBar(
+                    //横並びにする
+                    alignment: MainAxisAlignment.spaceBetween, //幅を等しくする
+                    children: [
+                      //キャンセルボタンを押した時の処理
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                //マップ画面に遷移(Navigatorpopの方がいいかも？)
+                                return const MapScreen();
+                              }),
+                            );
+                          },
+                          child: const Text(
+                            "キャンセル",
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          )),
 
-                        //次へボタンを押した時の処理
-                        IconButton(
-                            onPressed: () async {
-                              //プリファレンスに保存している
-                              await SharedPrefs.setCapselText(capsel_nakami);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) {
-                                  //カプセル確認画面に遷移
-                                  return capsel_Check();
-                                }),
-                              );
-                            },
-                            icon: Icon(Icons.keyboard_double_arrow_right),
-                            iconSize: 30,
-                            color: Color.fromARGB(255, 142, 189, 237)),
-                      ],
-                    ),
+                      //次へボタンを押した時の処理
+                      IconButton(
+                          onPressed: () async {
+                            //プリファレンスに保存している
+                            await SharedPrefs.setCapselText(capsel_nakami);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                //カプセル確認画面に遷移
+                                return const capsel_Check();
+                              }),
+                            );
+                          },
+                          icon: const Icon(Icons.keyboard_double_arrow_right),
+                          iconSize: 30,
+                          color: const Color.fromARGB(255, 142, 189, 237)),
+                    ],
                   ),
                   /*Container(
                     width:
@@ -197,33 +188,31 @@ class MyHomePageState extends State<MyHomePage> {
                       keyboardType: TextInputType.multiline,
                       // テキストフィールドをスクロール可能にするためにSingleChildScrollViewを使用,
                       onChanged: (text) {
-                        // TODO: ここで取得したtextを使う
+                        // ここで取得したtextを使う
                         capsel_title = text;
                       },
                     ),
                   ),
                   SizedBox(height: 20.0), // 適切な間隔を設定*/
-                  Container(
+                  SizedBox(
                     width:
                         MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
                     child: TextField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: '中身',
                       ),
-                      controller: _textEditingController,
+                      controller: textEditingController,
                       maxLines: null, // または必要な行数
                       keyboardType: TextInputType.multiline,
                       // テキストフィールドをスクロール可能にするためにSingleChildScrollViewを使用,
                       onChanged: (text) {
-                        // TODO: ここで取得したtextを使う
+                        // ここで取得したtextを使う
                         capsel_nakami = text;
                       },
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    child: Image.memory(decode_Image!),
-                  ),
+                  Image.memory(decode_Image!),
                   //Text("$dateTime", style: TextStyle(fontSize: 25)),
 
                   /*ElevatedButton(

@@ -1,5 +1,7 @@
 // start.dart
 
+// ignore_for_file: use_super_parameters, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -48,7 +50,7 @@ class MyStatefulWidget extends ConsumerWidget {
               onTap: (int index) =>
                   view.update((state) => ViewType.values[index]),
               unselectedItemColor: Colors.grey,
-              selectedItemColor: Color.fromARGB(255, 0, 0, 0),
+              selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
               iconSize: 28,
               selectedIconTheme: const IconThemeData(size: 28),
               items: [
@@ -70,7 +72,7 @@ class MyStatefulWidget extends ConsumerWidget {
                       'assets/PostActive.svg',
                       width: 24,
                       height: 24,
-                      color: Color.fromARGB(255, 0, 0, 0),
+                      color: const Color.fromARGB(255, 0, 0, 0),
                     )),
                 const BottomNavigationBarItem(
                     icon: Icon(Icons.search_sharp),

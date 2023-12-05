@@ -1,14 +1,8 @@
-// ignore_for_file: non_constant_identifier_names
-
+// ignore_for_file: non_constant_identifier_names, file_names, avoid_print, unnecessary_brace_in_string_interps
 import 'dart:convert';
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 class SharedPrefs {
   static late SharedPreferences prefs;
@@ -82,9 +76,9 @@ class SharedPrefs {
     return prefs.getString('Email');
   }
 
-  static Future<void> setPassword(String Passward) async {
+  static Future<void> setPassword(String Password) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('Password', Passward);
+    await prefs.setString('Password', Password);
     print("PasswordをSharedPreferencesに保存しました");
   }
 

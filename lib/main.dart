@@ -1,24 +1,28 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'src/app.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'src/login/start.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: SplashScreen(),
     );
   }
 }
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -37,14 +41,14 @@ class _SplashScreenState extends State<SplashScreen> {
     // ログイン状態に応じて画面を切り替え
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => isLoggedIn ? Start() : AuthScreen(),
+        builder: (context) => isLoggedIn ? const Start() : const AuthScreen(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),
       ),
@@ -53,11 +57,13 @@ class _SplashScreenState extends State<SplashScreen> {
 }
 
 class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
       ),
       body: Center(
         child: ElevatedButton(
@@ -65,7 +71,7 @@ class LoginScreen extends StatelessWidget {
             // ログインボタンが押されたときの処理
             saveLoginStatus(context, true);
           },
-          child: Text('Log In'),
+          child: const Text('Log In'),
         ),
       ),
     );
@@ -78,20 +84,22 @@ class LoginScreen extends StatelessWidget {
     // ログイン後に遷移する画面を指定
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => Start(),
+        builder: (context) => const Start(),
       ),
     );
   }
 }
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Welcome!'),
       ),
     );
