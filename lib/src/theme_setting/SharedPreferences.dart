@@ -191,5 +191,11 @@ class SharedPrefs {
   static Future<bool> checkLoginStatus() async {
     final pref = await SharedPreferences.getInstance();
     return pref.getBool('isLoggedIn') ?? false;
+  } //login
+
+  static Future<void> saveLogoutStatus(
+      BuildContext context, bool isLoggedIn) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool('isLoggedIn', isLoggedIn);
   }
 }

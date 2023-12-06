@@ -4,7 +4,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
+<<<<<<< HEAD
   static const String baseApiUrl = 'http://10.0.2.2:8081/api';
+=======
+  static const String baseApiUrl = 'http://10.124.50.73:8081/api';
+>>>>>>> 3db766c7ab19c1a6e5b5eb953344791abe4cf65b
 
   static Future<Map<String, dynamic>> loginUser(
       String email, String password) async {
@@ -58,7 +62,7 @@ class ApiService {
       throw Exception(
           'Failed to load capsule data. Status code: ${response.statusCode}');
     }
-  } //カプセルget
+  } //カプセル参照
 
   static Future<Map<String, dynamic>> capselSend(
       String? textData,

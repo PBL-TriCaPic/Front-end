@@ -42,48 +42,51 @@ class MyStatefulWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final view = ref.watch(baseTabViewProvider.state);
     return Scaffold(
-        body: widgets[view.state.index],
-        bottomNavigationBar: Theme(
-            data: ThemeData(splashFactory: NoSplash.splashFactory),
-            child: BottomNavigationBar(
-              currentIndex: view.state.index,
-              onTap: (int index) =>
-                  view.update((state) => ViewType.values[index]),
-              unselectedItemColor: Colors.grey,
-              selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-              iconSize: 28,
-              selectedIconTheme: const IconThemeData(size: 28),
-              items: [
-                const BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.map_outlined,
-                    ),
-                    label: '',
-                    activeIcon: Icon(Icons.map)),
-                BottomNavigationBarItem(
-                    icon: SvgPicture.asset(
-                      'assets/Post.svg',
-                      width: 23,
-                      height: 23,
-                      color: Colors.grey,
-                    ),
-                    label: '',
-                    activeIcon: SvgPicture.asset(
-                      'assets/PostActive.svg',
-                      width: 24,
-                      height: 24,
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                    )),
-                const BottomNavigationBarItem(
-                    icon: Icon(Icons.search_sharp),
-                    label: '',
-                    activeIcon: Icon(Icons.search_sharp)),
-                const BottomNavigationBarItem(
-                    icon: Icon(Icons.account_circle_outlined),
-                    label: '',
-                    activeIcon: Icon(Icons.account_circle_rounded)),
-              ],
-              type: BottomNavigationBarType.fixed,
-            )));
+      body: widgets[view.state.index],
+      bottomNavigationBar: Theme(
+        data: ThemeData(splashFactory: NoSplash.splashFactory),
+        child: BottomNavigationBar(
+          currentIndex: view.state.index,
+          onTap: (int index) => view.update((state) => ViewType.values[index]),
+          unselectedItemColor: Colors.grey,
+          selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+          iconSize: 28,
+          selectedIconTheme: const IconThemeData(size: 28),
+          items: [
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.map_outlined),
+              label: '',
+              activeIcon: Icon(Icons.map),
+            ),
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/Post.svg',
+                width: 23,
+                height: 23,
+                color: Colors.grey,
+              ),
+              label: '',
+              activeIcon: SvgPicture.asset(
+                'assets/PostActive.svg',
+                width: 24,
+                height: 24,
+                color: const Color.fromARGB(255, 0, 0, 0),
+              ),
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.search_sharp),
+              label: '',
+              activeIcon: Icon(Icons.search_sharp),
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle_outlined),
+              label: '',
+              activeIcon: Icon(Icons.account_circle_rounded),
+            ),
+          ],
+          type: BottomNavigationBarType.fixed,
+        ),
+      ),
+    );
   }
 }

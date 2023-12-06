@@ -31,7 +31,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    checkLoginStatus();
+    Future.delayed(const Duration(seconds: 1), () {
+      checkLoginStatus();
+    });
   }
 
   void checkLoginStatus() async {
@@ -51,56 +53,6 @@ class _SplashScreenState extends State<SplashScreen> {
     return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),
-      ),
-    );
-  }
-}
-
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // ログインボタンが押されたときの処理
-            saveLoginStatus(context, true);
-          },
-          child: const Text('Log In'),
-        ),
-      ),
-    );
-  }
-
-  void saveLoginStatus(BuildContext context, bool isLoggedIn) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // prefs.setBool('isLoggedIn', isLoggedIn);
-    await SharedPrefs.saveLoginStatus(context, isLoggedIn);
-    // ログイン後に遷移する画面を指定
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const Start(),
-      ),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: const Center(
-        child: Text('Welcome!'),
       ),
     );
   }
