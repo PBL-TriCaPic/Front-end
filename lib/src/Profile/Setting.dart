@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'Setting_email_password.dart';
 import 'Setting_default.dart';
-import 'Setting_privacy.dart';
+import 'Setting_logout.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -45,7 +45,7 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text("プライバシー"),
+            title: const Text("ログアウト"),
             trailing: const Icon(Icons.arrow_forward),
             onTap: () {
               Navigator.of(context).push(
