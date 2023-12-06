@@ -1,18 +1,16 @@
+// ignore_for_file: file_names, deprecated_member_use, use_build_context_synchronously, avoid_unnecessary_containers, void_checks, avoid_print
+
 import 'dart:io';
 
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
-import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/Color_Scheme.dart';
-import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geocoding/geocoding.dart' as geoCoding;
 import '../theme_setting/SharedPreferences.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -20,6 +18,7 @@ final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 class MapScreen extends StatelessWidget {
+  // ignore: use_super_parameters
   const MapScreen({Key? key}) : super(key: key);
 
   @override
@@ -81,17 +80,15 @@ class _HomeScreen extends State<HomeScreen> {
       point: capsuleLatLng,
       width: 80,
       height: 80,
-      builder: (context) => Container(
-        child: IconButton(
-          icon: const Icon(
-            Icons.location_on,
-            size: 40,
-            color: Colors.blue, // You can set your preferred color
-          ),
-          onPressed: () {
-            // Handle tap on saved capsule pin if needed
-          },
+      builder: (context) => IconButton(
+        icon: const Icon(
+          Icons.location_on,
+          size: 40,
+          color: Colors.blue, // You can set your preferred color
         ),
+        onPressed: () {
+          // Handle tap on saved capsule pin if needed
+        },
       ),
     );
     markers.add(marker);
@@ -103,7 +100,7 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     //カメラ表示追記1行
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     ThemeData selectedTheme = lightTheme;
     // 追加: isLoadingがtrueの場合はローディング表示
     if (isLoading) {
@@ -126,37 +123,35 @@ class _HomeScreen extends State<HomeScreen> {
           elevation: 3,
           shadowColor: Colors.black,
         ),
-        body: Container(
-          child: FlutterMap(
-            // マップ表示設定
-            options: MapOptions(
-              center: LatLng(lat!, lng!), //メモ:ここを変える
-              zoom: 15.0,
-              interactiveFlags: InteractiveFlag.all,
-              enableScrollWheel: true,
-              scrollWheelVelocity: 0.00001,
-              // onTap: (tapPosition, latLng) {
-              //   tapLatLng = latLng;
-              //   print(tapLatLng);
-              //   print("↑ピンを押したところの緯度経度");
-              //   cleatePin(tapLatLng!);
-              // },
-            ),
-            layers: [
-              //背景地図読み込み (OSM)
-              TileLayerOptions(
-                urlTemplate: "https://tile.openstreetmap.jp/{z}/{x}/{y}.png",
-              ),
-              // サークルマーカー設定
-              CircleLayerOptions(
-                circles: circleMarkers,
-              ),
-              // ピンマーカー設定
-              MarkerLayerOptions(
-                markers: markers,
-              ),
-            ],
+        body: FlutterMap(
+          // マップ表示設定
+          options: MapOptions(
+            center: LatLng(lat!, lng!), //メモ:ここを変える
+            zoom: 15.0,
+            interactiveFlags: InteractiveFlag.all,
+            enableScrollWheel: true,
+            scrollWheelVelocity: 0.00001,
+            // onTap: (tapPosition, latLng) {
+            //   tapLatLng = latLng;
+            //   print(tapLatLng);
+            //   print("↑ピンを押したところの緯度経度");
+            //   cleatePin(tapLatLng!);
+            // },
           ),
+          layers: [
+            //背景地図読み込み (OSM)
+            TileLayerOptions(
+              urlTemplate: "https://tile.openstreetmap.jp/{z}/{x}/{y}.png",
+            ),
+            // サークルマーカー設定
+            CircleLayerOptions(
+              circles: circleMarkers,
+            ),
+            // ピンマーカー設定
+            MarkerLayerOptions(
+              markers: markers,
+            ),
+          ],
         ),
 
         //右下のボタンの処理
@@ -166,11 +161,11 @@ class _HomeScreen extends State<HomeScreen> {
             'assets/TriCaPicapplogo1.svg',
             width: 35,
             height: 35,
-            color: Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
+            color: const Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
           ),
           onPressed: () async {
             //カメラ撮影画面に遷移
-            final XFile? image = await _picker.pickImage(
+            final XFile? image = await picker.pickImage(
               source: ImageSource.camera,
             );
             if (image != null) {

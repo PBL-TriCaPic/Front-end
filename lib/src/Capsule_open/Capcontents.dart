@@ -1,9 +1,9 @@
+// ignore_for_file: file_names, non_constant_identifier_names, avoid_types_as_parameter_names, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../Timeline/Timeline.dart';
@@ -17,7 +17,7 @@ class CapContentsScreen extends StatefulWidget {
   final String capsuleId;
   final String cityName;
   const CapContentsScreen(
-      {Key, required this.capsuleId, required this.cityName});
+      {super.key, Key, required this.capsuleId, required this.cityName});
 
   @override
   State<CapContentsScreen> createState() => _CapContentsScreenState();
@@ -34,7 +34,6 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   String? capsuleDate;
   String? textData;
   String? imageData;
-  //String? cityName;
 
   Uint8List? decodedImageData;
   Uint8List? decodedprofile;
@@ -55,7 +54,7 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   Future<void> _loadImage() async {
     String? base64Image = await SharedPrefs.getProfileImage();
     //final String? base64Image = prefs.getString('_profileImageKey');
-    print('Base64 Image: $base64Image'); // デバッグログ
+    //print('Base64 Image: $base64Image'); // デバッグログ
     setState(() {
       if (base64Image != null) {
         decodedprofile = base64.decode(base64Image);
@@ -110,12 +109,12 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
           elevation: 3,
           shadowColor: Colors.black,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return TimelineScreen();
+                  return const TimelineScreen();
                 }),
               );
             },
@@ -129,7 +128,8 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
               children: [
                 Text(
                   userName ?? '',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,24 +167,24 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
                   userId ?? '',
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
                   textData ?? '', // 中身の表示
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 // imageDataがデコードされていれば、画像を表示
                 if (decodedImageData != null)
                   GestureDetector(
                     onTap: () {
                       // ここで写真のプレビューを表示します
                       showGeneralDialog(
-                        transitionDuration: Duration(milliseconds: 1000),
+                        transitionDuration: const Duration(milliseconds: 1000),
                         barrierDismissible: true,
                         barrierLabel: '',
                         context: context,
@@ -194,9 +194,9 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                             type: MaterialType.transparency,
                             child: DefaultTextStyle(
                               style:
-                                  Theme.of(context).primaryTextTheme.bodyText1!,
+                                  Theme.of(context).primaryTextTheme.bodyLarge!,
                               child: Center(
-                                child: Container(
+                                child: SizedBox(
                                   height: 500,
                                   width: 500,
                                   child: Column(
@@ -207,7 +207,7 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                                             MainAxisAlignment.end,
                                         children: [
                                           IconButton(
-                                            icon: Icon(Icons.close),
+                                            icon: const Icon(Icons.close),
                                             onPressed: () {
                                               Navigator.of(context)
                                                   .pop(); // プレビュー画面を閉じる
@@ -219,10 +219,8 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                                         child: InteractiveViewer(
                                           minScale: 0.1,
                                           maxScale: 5,
-                                          child: Container(
-                                            child: Image.memory(
-                                              decodedImageData!,
-                                            ),
+                                          child: Image.memory(
+                                            decodedImageData!,
                                           ),
                                         ),
                                       ),

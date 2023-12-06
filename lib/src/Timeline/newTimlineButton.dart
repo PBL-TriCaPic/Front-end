@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, use_build_context_synchronously, unnecessary_string_interpolations
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../Capsule_open/Capcontents.dart';
@@ -11,14 +13,14 @@ class CityButtonsWidget extends StatelessWidget {
   final List<double> capsuleLonList;
 
   const CityButtonsWidget({
-    Key? key,
+    super.key,
     required this.cityNames,
     required this.userNames,
     required this.userIds,
     required this.capsuleId,
     required this.capsuleLatList,
     required this.capsuleLonList,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class CityButtonsWidget extends StatelessWidget {
       child: GridView.builder(
         shrinkWrap: false, // グリッドの高さに合わせてシュリンク
         padding: EdgeInsets.zero, // 余白をゼロにするか確認
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, // 列数を指定
           crossAxisSpacing: 20.0, // 列間のスペース
           mainAxisSpacing: 20.0, // 行間のスペース
@@ -80,14 +82,14 @@ class CityButtonsWidget extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('注意'),
-                content: Text('ボタンが500メートル以上離れています。'),
+                title: const Text('注意'),
+                content: const Text('ボタンが500メートル以上離れています。'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('OK'),
+                    child: const Text('OK'),
                   ),
                 ],
               );
@@ -96,9 +98,9 @@ class CityButtonsWidget extends StatelessWidget {
         }
       },
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(16),
-        minimumSize: Size(100, 100),
-        shape: CircleBorder(),
+        padding: const EdgeInsets.all(16),
+        minimumSize: const Size(100, 100),
+        shape: const CircleBorder(),
         elevation: 10,
         //primary: Colors.transparent, // 背景色を透明に設定
       ),
@@ -119,19 +121,19 @@ class CityButtonsWidget extends StatelessWidget {
             Text(
               '${userNames[index]}',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
             ),
             Text(
               '${userIds[index]}',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 15, fontWeight: FontWeight.bold), // テキストサイズを指定
             ),
             Text(
               '${cityNames[index]}',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
             ),
           ],

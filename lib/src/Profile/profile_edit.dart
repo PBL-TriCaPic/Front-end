@@ -1,9 +1,7 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import '../theme_setting/SharedPreferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../theme_setting/HTTP_request.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String? initialUserName; // Nullable
@@ -77,12 +75,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   keyboardType: TextInputType.multiline,
                 ),
                 const SizedBox(height: 16),
-                const Text('メールアドレス'),
-                TextField(controller: emailController),
-                const SizedBox(height: 16),
-                const Text('パスワード'),
-                TextField(controller: passwordController),
-                const SizedBox(height: 16),
+                // const Text('メールアドレス'),
+                // TextField(controller: emailController),
+                // const SizedBox(height: 16),
+                // const Text('パスワード'),
+                // TextField(controller: passwordController),
+                // const SizedBox(height: 16),
               ],
             ),
           ),
@@ -93,29 +91,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _saveChanges(BuildContext context) async {
     // // 保存処理
     try {
-      final email = emailController.text;
-      final password = passwordController.text;
-      final userData = await ApiService.loginUser(email, password);
-      await SharedPrefs.setEmail(email);
-      await SharedPrefs.setPassward(password);
+      // final email = emailController.text;
+      // final password = passwordController.text;
+      // final userData = await ApiService.loginUser(email, password);
+      // await SharedPrefs.setEmail(email);
+      // await SharedPrefs.setPassword(password);
       String? newBio =
           _bioController.text.isNotEmpty ? _bioController.text : null;
       // if (newUserName != null)
-      await SharedPrefs.setUsername(userData['username']);
-      // if (newUserID != null)
-      await SharedPrefs.setUserId(userData['userId']);
+      // await SharedPrefs.setUsername(userData['username']);
+      // // if (newUserID != null)
+      // await SharedPrefs.setUserId(userData['userId']);
       if (newBio != null) await SharedPrefs.setMyBio(newBio);
 
-      final List<int> capsulesIdList =
-          List<int>.from(userData['capsulesIdList'] ?? []);
-      final List<double> capsulesLatList =
-          List<double>.from(userData['capsuleLatList'] ?? []);
-      final List<double> capsulesLonList =
-          List<double>.from(userData['capsuleLonList'] ?? []);
-      await SharedPrefs.setCapsulesIdList(capsulesIdList);
-      await SharedPrefs.setCapsulesLatList(capsulesLatList);
-      await SharedPrefs.setCapsulesLonList(capsulesLonList);
-      Navigator.of(context).pop({print(userData['username'])});
+      //final List<int> capsulesIdList =
+      //     List<int>.from(userData['capsulesIdList'] ?? []);
+      // final List<double> capsulesLatList =
+      //     List<double>.from(userData['capsuleLatList'] ?? []);
+      // final List<double> capsulesLonList =
+      //     List<double>.from(userData['capsuleLonList'] ?? []);
+      // await SharedPrefs.setCapsulesIdList(capsulesIdList);
+      // await SharedPrefs.setCapsulesLatList(capsulesLatList);
+      // await SharedPrefs.setCapsulesLonList(capsulesLonList);
+      Navigator.of(context).pop();
     } catch (e) {
       setState(() {
         message = 'Login failed. Please check your credentials.';
