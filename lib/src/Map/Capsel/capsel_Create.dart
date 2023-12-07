@@ -97,7 +97,7 @@ class MyHomePageState extends State<MyHomePage> {
   Future<void> loadPref() async {
     pref = await SharedPreferences.getInstance();
     image_pref = await SharedPrefs.getTakeImage();
-    capsel_nakami = (await SharedPrefs.getCapselText())!;
+    //capsel_nakami = (await SharedPrefs.getCapselText())!;
     setState(() {
       image_pref = image_pref;
       if (image_pref != null) {
