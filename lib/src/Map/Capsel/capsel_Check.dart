@@ -1,7 +1,7 @@
 // ignore_for_file: file_names, non_constant_identifier_names, no_leading_underscores_for_local_identifiers, camel_case_types, avoid_print
 
 import 'dart:convert';
-import 'dart:io';
+//import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,7 +64,7 @@ class MyHomePageState extends State<MyHomePage> {
   late double capselLon;
   Uint8List? decode_Image;
   Image? picture_Return;
-  File? imageFile;
+  //File? imageFile;
 
   @override
   void initState() {
@@ -89,11 +89,11 @@ class MyHomePageState extends State<MyHomePage> {
         decode_Image = base64.decode(image_pref!);
       }
 
-      final String? imagePath = pref.getString('imagepath');
-      print('loadPref関数起動');
-      if (imagePath != null) {
-        imageFile = File(imagePath);
-      }
+      // final String? imagePath = pref.getString('imagepath');
+      // print('loadPref関数起動');
+      // if (imagePath != null) {
+      //   //imageFile = File(imagePath);
+      // }
       //final image = File(imageFile!.path);
     });
   }
