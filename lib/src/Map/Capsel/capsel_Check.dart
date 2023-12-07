@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, non_constant_identifier_names, no_leading_underscores_for_local_identifiers, camel_case_types, avoid_print, unnecessary_import
+// ignore_for_file: file_names, non_constant_identifier_names, no_leading_underscores_for_local_identifiers, camel_case_types, avoid_print
 
 import 'dart:convert';
 import 'dart:io';
@@ -127,38 +127,38 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> _showConfirmationDialog() async {
-      return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('注意'),
-            content: const Text('戻るとカプセルの文章が破棄されてしまいます\n本当に戻りますか？'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      // カプセル作成画面に遷移
-                      return const capsel_Create();
-                    }),
-                  ); // ダイアログを閉じる
-                  //_onPressedFunction(); // ボタンの処理を実行
-                },
-                child: const Text('OK'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // ダイアログを閉じる
-                },
-                child: const Text('キャンセル'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+    // Future<void> _showConfirmationDialog() async {
+    //   return showDialog(
+    //     context: context,
+    //     builder: (context) {
+    //       return AlertDialog(
+    //         title: const Text('注意'),
+    //         content: const Text('戻るとカプセルの文章が破棄されてしまいます\n本当に戻りますか？'),
+    //         actions: [
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.push(
+    //                 context,
+    //                 MaterialPageRoute(builder: (context) {
+    //                   // カプセル作成画面に遷移
+    //                   return const capsel_Create();
+    //                 }),
+    //               ); // ダイアログを閉じる
+    //               //_onPressedFunction(); // ボタンの処理を実行
+    //             },
+    //             child: const Text('OK'),
+    //           ),
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.of(context).pop(); // ダイアログを閉じる
+    //             },
+    //             child: const Text('キャンセル'),
+    //           ),
+    //         ],
+    //       );
+    //     },
+    //   );
+    // }
 
     Future<void> _onPressedFunction() async {
       screenTransitionAnimation(context, () {
@@ -167,6 +167,7 @@ class MyHomePageState extends State<MyHomePage> {
       });
       //final AudioPlayer _audioPlayer = AudioPlayer();
       await getCurrentLocation(); // 位置情報を取得
+      await SharedPrefs.setCapselText('');
       final userData = await ApiService.capselSend(
           text_data, capselLat, capselLon, userId, image_pref!);
       //String mp3Url = "assets/Capsule_digging.mp3"; // 実際のURLまたはローカルパスに置き換えてください
@@ -195,7 +196,14 @@ class MyHomePageState extends State<MyHomePage> {
               children: [
                 TextButton(
                   onPressed: () {
-                    _showConfirmationDialog();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        // カプセル作成画面に遷移
+                        return const capsel_Create();
+                      }),
+                    ); // ダイアログを閉じる
+                    //_onPressedFunction(); // ボタンの処理を実行
                   },
                   child: const Text(
                     '戻る',
