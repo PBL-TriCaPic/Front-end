@@ -1,11 +1,11 @@
 // ignore_for_file: file_names, use_key_in_widget_constructors, use_build_context_synchronously, avoid_print, unused_element
 
-import 'dart:io';
+//import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Profile/Setting.dart';
-import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker/image_picker.dart';
 //import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_edit.dart';
@@ -46,6 +46,7 @@ class MyHomePageState extends State<MyHomePage> {
   String? bio;
   int? followingCount;
   int? followersCount;
+  int? friendCount;
   int? postsCount;
   List<String> capsulesIdList = [];
   List<double> capsuleLatList = [];
@@ -57,8 +58,9 @@ class MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     // ユーザー統計情報のデフォルト値を初期化
-    followingCount = 100;
-    followersCount = 100;
+    // followingCount = 100;
+    // followersCount = 100;
+    friendCount = 100;
     postsCount = 100;
     // ユーザーの設定をロードし、プロファイル画像を設定
     _loadPreferences();
@@ -66,51 +68,53 @@ class MyHomePageState extends State<MyHomePage> {
 
 // タップ時にプロファイル画像を拡大表示するダイアログを表示
   void _showEnlargeDialog() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    // final pickedFile =
+    //     await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      final image = File(pickedFile.path);
+    //if (pickedFile != null) {
+    //final image = File(pickedFile.path);
 
-      // 画像をBase64文字列にエンコード
-      List<int> imageBytes = await image.readAsBytes();
-      String base64Image = base64Encode(imageBytes);
+    // 画像をBase64文字列にエンコード
+    //List<int> imageBytes = await image.readAsBytes();
+    //String base64Image = base64Encode(imageBytes);
 
-      // Base64エンコードされた画像をSharedPreferencesに保存
-      await SharedPrefs.setProfileImage(base64Image);
+    // Base64エンコードされた画像をSharedPreferencesに保存
+    //await SharedPrefs.setProfileImage(base64Image);
 
-      await _loadPreferences();
+    await _loadPreferences();
 
-      setState(() {
-        decodedprofile = base64Image as Uint8List?;
-      });
+    // setState(() {
+    //   decodedprofile = base64Image as Uint8List?;
+    // });
 
-      // 選択された画像を保存し、ステートを更新
-      //await SharedPrefs.setImage(imageFile!);
-      // 拡大表示されたプロファイル画像を含むダイアログを表示
-      showDialog<void>(
-        context: context,
-        builder: (_) {
-          return BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: AlertDialog(
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              content: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop(); // タップでダイアログを閉じる
-                },
-                child: CircleAvatar(
-                  radius: MediaQuery.of(context).size.width / 1.8,
-                  backgroundImage: FileImage(image),
-                ),
+    // 選択された画像を保存し、ステートを更新
+    //await SharedPrefs.setImage(imageFile!);
+    // 拡大表示されたプロファイル画像を含むダイアログを表示
+    showDialog<void>(
+      context: context,
+      builder: (_) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: AlertDialog(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            content: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop(); // タップでダイアログを閉じる
+              },
+              child: CircleAvatar(
+                radius: MediaQuery.of(context).size.width / 1.8,
+                backgroundImage: decodedprofile != null
+                    ? Image.memory(decodedprofile!).image
+                    : null,
               ),
             ),
-          );
-        },
-      );
-    }
+          ),
+        );
+      },
+    );
   }
+  //}
 
   Future<void> _loadPreferences() async {
     final userNameValue = await SharedPrefs.getUsername();
@@ -223,7 +227,7 @@ class MyHomePageState extends State<MyHomePage> {
                       Column(
                         children: [
                           const Text(
-                            '投稿',
+                            '投稿数',
                             style: TextStyle(fontSize: 16),
                           ),
                           Text(
@@ -236,24 +240,11 @@ class MyHomePageState extends State<MyHomePage> {
                       Column(
                         children: [
                           const Text(
-                            'フォロワー',
+                            'フレンド数',
                             style: TextStyle(fontSize: 16),
                           ),
                           Text(
-                            '$followersCount',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          const Text(
-                            'フォロー数',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            '$followingCount',
+                            '$friendCount',
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -302,19 +293,19 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   // 変更をSharedPreferencesに保存する関数(フォローフォロワー投稿数)
-  void _saveChanges(
-    int? newFollowingCount,
-    int? newFollowersCount,
-    int? newPostsCount,
-  ) async {
-    if (newFollowingCount != null) {
-      await prefs.setInt('followingCount', newFollowingCount);
-    }
-    if (newFollowersCount != null) {
-      await prefs.setInt('followersCount', newFollowersCount);
-    }
-    if (newPostsCount != null) await prefs.setInt('postsCount', newPostsCount);
+  // void _saveChanges(
+  //   int? newFollowingCount,
+  //   int? newFollowersCount,
+  //   int? newPostsCount,
+  // ) async {
+  //   if (newFollowingCount != null) {
+  //     await prefs.setInt('followingCount', newFollowingCount);
+  //   }
+  //   if (newFollowersCount != null) {
+  //     await prefs.setInt('followersCount', newFollowersCount);
+  //   }
+  //   if (newPostsCount != null) await prefs.setInt('postsCount', newPostsCount);
 
-    _loadPreferences(); // 変更後の設定を再読み込み
-  }
+  //   _loadPreferences(); // 変更後の設定を再読み込み
+  // }
 }
