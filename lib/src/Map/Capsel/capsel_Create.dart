@@ -1,6 +1,6 @@
 // ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously, camel_case_types, avoid_print
 
-import 'dart:io';
+//import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
 import 'package:flutter_application_develop/src/Map/Map.dart';
@@ -43,7 +43,7 @@ class MyHomePageState extends State<MyHomePage> {
   late SharedPreferences pref;
   String capsel_title = '';
   String capsel_nakami = '';
-  File? imageFile;
+  //File? imageFile;
   Uint8List? decode_Image;
   String? image_pref = '';
 
@@ -69,13 +69,13 @@ class MyHomePageState extends State<MyHomePage> {
   //   });
   // }
 
-  dynamic dateTime;
+  //dynamic dateTime;
 
   //ロード時に読み込まれる関数たち
   @override
   void initState() {
     super.initState();
-    dateTime = DateTime.now();
+    //dateTime = DateTime.now();
     loadPref();
   }
 
@@ -97,17 +97,18 @@ class MyHomePageState extends State<MyHomePage> {
   Future<void> loadPref() async {
     pref = await SharedPreferences.getInstance();
     image_pref = await SharedPrefs.getTakeImage();
+    //capsel_nakami = (await SharedPrefs.getCapselText())!;
     setState(() {
       image_pref = image_pref;
       if (image_pref != null) {
         decode_Image = base64.decode(image_pref!);
       }
 
-      final String? imagePath = pref.getString('imagepath');
-      print('loadPref関数起動');
-      if (imagePath != null) {
-        imageFile = File(imagePath);
-      }
+      // final String? imagePath = pref.getString('imagepath');
+      // print('loadPref関数起動');
+      // if (imagePath != null) {
+      //   //imageFile = File(imagePath);
+      // }
     });
   }
 
@@ -116,7 +117,7 @@ class MyHomePageState extends State<MyHomePage> {
     //カメラ表示追記
     //final ImagePicker _picker = ImagePicker();
     // ignore: prefer_typing_uninitialized_variables
-    var textEditingController;
+    var textEditingController = TextEditingController(text: capsel_nakami);
     return Scaffold(
         //キーボードを出した時に、bottom～のトラテープみたいなエラーを封じる
         resizeToAvoidBottomInset: false,
@@ -209,6 +210,7 @@ class MyHomePageState extends State<MyHomePage> {
                         // ここで取得したtextを使う
                         capsel_nakami = text;
                       },
+                      //initialValue: capsel_nakami,
                     ),
                   ),
                   const SizedBox(height: 10),

@@ -9,6 +9,7 @@ import '../theme_setting/Color_Scheme.dart';
 import '../Timeline/Timeline.dart';
 import '../theme_setting/SharedPreferences.dart';
 import '../theme_setting/HTTP_request.dart';
+import 'package:photo_view/photo_view.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -180,64 +181,17 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                 const SizedBox(height: 16),
                 // imageDataがデコードされていれば、画像を表示
                 if (decodedImageData != null)
-                  GestureDetector(
-                    onTap: () {
-                      // ここで写真のプレビューを表示します
-                      showGeneralDialog(
-                        transitionDuration: const Duration(milliseconds: 1000),
-                        barrierDismissible: true,
-                        barrierLabel: '',
-                        context: context,
-                        pageBuilder: (context, animation1, animation2) {
-                          return Material(
-                            // ここにMaterialウィジェットを追加
-                            type: MaterialType.transparency,
-                            child: DefaultTextStyle(
-                              style:
-                                  Theme.of(context).primaryTextTheme.bodyLarge!,
-                              child: Center(
-                                child: SizedBox(
-                                  height: 500,
-                                  width: 500,
-                                  child: Column(
-                                    children: [
-                                      // バツボタンを追加
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(Icons.close),
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pop(); // プレビュー画面を閉じる
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      SingleChildScrollView(
-                                        child: InteractiveViewer(
-                                          minScale: 0.1,
-                                          maxScale: 5,
-                                          child: Image.memory(
-                                            decodedImageData!,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: Center(
-                      child: Image.memory(
-                        decodedImageData!,
-                        width: MediaQuery.of(context).size.width * 0.9,
+                  Container(
+                    width: 500.0, // 任意の幅
+                    height: 350.0, // 任意の高さ
+                    child: PhotoView(
+                      imageProvider: MemoryImage(decodedImageData!),
+                      minScale: PhotoViewComputedScale.contained,
+                      maxScale: PhotoViewComputedScale.covered * 0.6,
+                      backgroundDecoration: BoxDecoration(
+                        color: Colors.transparent,
                       ),
+                      enableRotation: true, // 画像の回転を有効にする
                     ),
                   )
               ],

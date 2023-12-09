@@ -1,9 +1,10 @@
 // ignore_for_file: file_names, non_constant_identifier_names, no_leading_underscores_for_local_identifiers, camel_case_types, avoid_print
 
 import 'dart:convert';
-import 'dart:io';
+//import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
 import 'package:flutter_application_develop/src/theme_setting/HTTP_request.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
@@ -63,7 +64,7 @@ class MyHomePageState extends State<MyHomePage> {
   late double capselLon;
   Uint8List? decode_Image;
   Image? picture_Return;
-  File? imageFile;
+  //File? imageFile;
 
   @override
   void initState() {
@@ -88,17 +89,77 @@ class MyHomePageState extends State<MyHomePage> {
         decode_Image = base64.decode(image_pref!);
       }
 
-      final String? imagePath = pref.getString('imagepath');
-      print('loadPref関数起動');
-      if (imagePath != null) {
-        imageFile = File(imagePath);
-      }
+      // final String? imagePath = pref.getString('imagepath');
+      // print('loadPref関数起動');
+      // if (imagePath != null) {
+      //   //imageFile = File(imagePath);
+      // }
       //final image = File(imageFile!.path);
     });
   }
 
+  // Future<void> _showConfirmationDialog() async {
+  //   return showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('注意'),
+  //         content: const Text('以下の内容で埋めてもよろしいですか？'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop(); // ダイアログを閉じる
+  //               _onPressedFunction(); // ボタンの処理を実行
+  //             },
+  //             child: const Text('OK'),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop(); // ダイアログを閉じる
+  //             },
+  //             child: const Text('キャンセル'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
+    // Future<void> _showConfirmationDialog() async {
+    //   return showDialog(
+    //     context: context,
+    //     builder: (context) {
+    //       return AlertDialog(
+    //         title: const Text('注意'),
+    //         content: const Text('戻るとカプセルの文章が破棄されてしまいます\n本当に戻りますか？'),
+    //         actions: [
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.push(
+    //                 context,
+    //                 MaterialPageRoute(builder: (context) {
+    //                   // カプセル作成画面に遷移
+    //                   return const capsel_Create();
+    //                 }),
+    //               ); // ダイアログを閉じる
+    //               //_onPressedFunction(); // ボタンの処理を実行
+    //             },
+    //             child: const Text('OK'),
+    //           ),
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.of(context).pop(); // ダイアログを閉じる
+    //             },
+    //             child: const Text('キャンセル'),
+    //           ),
+    //         ],
+    //       );
+    //     },
+    //   );
+    // }
+
     Future<void> _onPressedFunction() async {
       screenTransitionAnimation(context, () {
         print("transition started");
@@ -106,6 +167,7 @@ class MyHomePageState extends State<MyHomePage> {
       });
       //final AudioPlayer _audioPlayer = AudioPlayer();
       await getCurrentLocation(); // 位置情報を取得
+      await SharedPrefs.setCapselText('');
       final userData = await ApiService.capselSend(
           text_data, capselLat, capselLon, userId, image_pref!);
       //String mp3Url = "assets/Capsule_digging.mp3"; // 実際のURLまたはローカルパスに置き換えてください
@@ -124,36 +186,64 @@ class MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('カプセル確認画面'),
+        title: const Text('カプセル確認'),
         //backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: SingleChildScrollView(
-        child: Column(//縦並び
-            children: <Widget>[
-          //Text('-タイトル-'),
-          //Text(capsel_title),
-          const Text('-中身-'),
-          Text(text_data ?? 'テキストは空です'),
-          const Text('撮影した写真'),
-          Image.memory(decode_Image!),
-          const Text("以下の内容で埋めてもよろしいですか？"),
-          OutlinedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  //カプセル作成画面に遷移
-                  return const capsel_Create();
-                }),
-              );
-            },
-            child: const Text('戻る'),
-          ),
-          OutlinedButton(
-            onPressed: _onPressedFunction,
-            child: const Text('埋める！'),
-          ),
-        ]),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        // カプセル作成画面に遷移
+                        return const capsel_Create();
+                      }),
+                    ); // ダイアログを閉じる
+                    //_onPressedFunction(); // ボタンの処理を実行
+                  },
+                  child: const Text(
+                    '戻る',
+                    style: TextStyle(
+                      fontSize: 18, // フォントサイズの設定
+                      //fontWeight: FontWeight.bold, // 太文字の設定
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: _onPressedFunction,
+                  child: const Text(
+                    '埋める！',
+                    style: TextStyle(
+                      fontSize: 18, // フォントサイズの設定
+                      fontWeight: FontWeight.bold, // 太文字の設定
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              // 縦並び
+              children: <Widget>[
+                const Text('-中身-'),
+                SelectableText(
+                  text_data ?? 'テキストは空です',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Text('-写真-'),
+                Image.memory(decode_Image!),
+                const Text("以下の内容で埋めてもよろしいですか？"),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
