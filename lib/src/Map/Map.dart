@@ -310,6 +310,7 @@ class _HomeScreen extends State<HomeScreen> {
       lng = position.longitude;
       //isLoading = false; // 追加: ローディング終了
     });
+    initCircleMarker(lat!, lng!);
     await loadSavedCapsules();
     setState(() {
       isLoading = false;
