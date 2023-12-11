@@ -67,28 +67,6 @@ class MyHomePageState extends State<MyHomePage> {
 
 // タップ時にプロファイル画像を拡大表示するダイアログを表示
   void _showEnlargeDialog() async {
-    // final pickedFile =
-    //     await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    //if (pickedFile != null) {
-    //final image = File(pickedFile.path);
-
-    // 画像をBase64文字列にエンコード
-    //List<int> imageBytes = await image.readAsBytes();
-    //String base64Image = base64Encode(imageBytes);
-
-    // Base64エンコードされた画像をSharedPreferencesに保存
-    //await SharedPrefs.setProfileImage(base64Image);
-
-    await _loadPreferences();
-
-    // setState(() {
-    //   decodedprofile = base64Image as Uint8List?;
-    // });
-
-    // 選択された画像を保存し、ステートを更新
-    //await SharedPrefs.setImage(imageFile!);
-    // 拡大表示されたプロファイル画像を含むダイアログを表示
     showDialog<void>(
       context: context,
       builder: (_) {

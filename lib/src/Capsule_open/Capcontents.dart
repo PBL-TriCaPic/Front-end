@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/Color_Scheme.dart';
@@ -94,6 +95,33 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
     return "${dateTime.year}/${dateTime.month}/${dateTime.day}";
   }
 
+  void _showEnlargeDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: AlertDialog(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            content: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop(); // タップでダイアログを閉じる
+              },
+              child: CircleAvatar(
+                radius: MediaQuery.of(context).size.width / 1.8,
+                // 画像を表示するロジックをここに追加
+                backgroundImage: decodedprofile != null
+                    ? MemoryImage(decodedprofile!)
+                    : null,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeData selectedTheme = lightTheme;
@@ -132,10 +160,14 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 13),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
+                      onTap: () {
+                        _showEnlargeDialog();
+                      },
                       child: CircleAvatar(
                         radius: 60,
                         backgroundImage: decodedprofile != null
