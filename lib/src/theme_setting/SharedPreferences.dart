@@ -7,9 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPrefs {
   static late SharedPreferences prefs;
 
-  static Future<void> setInstance() async {
-    prefs = await SharedPreferences.getInstance();
-  } //OK　アイコン写真set　初期化
+  // static Future<void> setInstance() async {
+  //   prefs = await SharedPreferences.getInstance();
+  // }
 
   static const String _profileImageKey = 'profileImage';
 
@@ -26,11 +26,11 @@ class SharedPrefs {
     return prefs.getString(_profileImageKey);
   }
 
-  static Future<String?> getImagePath() async {
-    final prefs = await SharedPreferences.getInstance();
-    // SharedPreferencesから画像のパスを取得
-    return prefs.getString('imagePath');
-  } //アイコン写真get OK
+  // static Future<String?> getImagePath() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   // SharedPreferencesから画像のパスを取得
+  //   return prefs.getString('imagePath');
+  // } //アイコン写真get OK
 
   static Future<void> setUsername(String username) async {
     final prefs = await SharedPreferences.getInstance();
