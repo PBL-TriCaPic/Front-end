@@ -49,7 +49,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _loadPreferences() async {
     String? base64Image = await SharedPrefs.getProfileImage();
-    print('Base64 Image: $base64Image'); // デバッグログ
+    //print('Base64 Image: $base64Image'); // デバッグログ
     setState(() {
       if (base64Image != null) {
         decodedprofile = base64.decode(base64Image);

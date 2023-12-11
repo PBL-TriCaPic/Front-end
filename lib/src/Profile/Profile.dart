@@ -4,6 +4,7 @@
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_develop/src/Friend/Friend_List.dart';
 import 'package:flutter_application_develop/src/Profile/Setting.dart';
 //import 'package:image_picker/image_picker.dart';
 //import 'package:path_provider/path_provider.dart';
@@ -44,8 +45,6 @@ class MyHomePageState extends State<MyHomePage> {
   String? userName;
   String? userId;
   String? bio;
-  int? followingCount;
-  int? followersCount;
   int? friendCount;
   int? postsCount;
   List<String> capsulesIdList = [];
@@ -205,7 +204,10 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
-                Row(
+                Padding(
+                  padding: const EdgeInsets.only(
+                      right: 16.0), // Adjust the value as needed
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
@@ -217,11 +219,6 @@ class MyHomePageState extends State<MyHomePage> {
                           backgroundImage: decodedprofile != null
                               ? MemoryImage(decodedprofile!)
                               : null,
-                          // child: Image.memory(
-                          //   Uint8List.fromList(imageFile!.readAsBytesSync()),
-                          //   height: 100,
-                          //   width: 100,
-                          // ),
                         ),
                       ),
                       Column(
@@ -233,24 +230,54 @@ class MyHomePageState extends State<MyHomePage> {
                           Text(
                             '$postsCount',
                             style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
                       Column(
                         children: [
-                          const Text(
-                            'フレンド数',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            '$friendCount',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                          // const Text(
+                          //   'フレンド数',
+                          //   style: TextStyle(fontSize: 16),
+                          // ),
+                          TextButton(
+                            onPressed: () {
+                              // ここにボタンが押されたときの処理を追加してください
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const FriendList(),
+                                ),
+                              );
+                            },
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
+                                children: [
+                                  const TextSpan(
+                                    text: 'フレンド数\n',
+                                  ),
+                                  TextSpan(
+                                    text: '$friendCount',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    ]),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Text(
                   userId ?? '',

@@ -181,14 +181,14 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                 const SizedBox(height: 16),
                 // imageDataがデコードされていれば、画像を表示
                 if (decodedImageData != null)
-                  Container(
+                  SizedBox(
                     width: 500.0, // 任意の幅
                     height: 350.0, // 任意の高さ
                     child: PhotoView(
                       imageProvider: MemoryImage(decodedImageData!),
                       minScale: PhotoViewComputedScale.contained,
                       maxScale: PhotoViewComputedScale.covered * 0.6,
-                      backgroundDecoration: BoxDecoration(
+                      backgroundDecoration: const BoxDecoration(
                         color: Colors.transparent,
                       ),
                       enableRotation: true, // 画像の回転を有効にする
