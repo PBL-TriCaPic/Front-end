@@ -113,13 +113,13 @@ class MyHomePageState extends State<FriendPage> {
           borderRadius: BorderRadius.circular(8.0), // 四角い形状に設定
         ),
       ),
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.8, // 幅を80%に設定
         height: 50,
         child: Center(
           child: Text(
             isFollowing ? 'フレンド' : 'フレンドになる',
-            style: TextStyle(fontSize: 25),
+            style: const TextStyle(fontSize: 25),
           ),
         ),
       ),
