@@ -50,6 +50,8 @@ class MyHomePageState extends State<FriendPage> {
   int? postsCount;
   String? bio;
 
+  bool isFollowing = false; // フォロー状態を管理する変数
+
   MyHomePageState({
     required this.username,
     required this.userID,
@@ -96,6 +98,32 @@ class MyHomePageState extends State<FriendPage> {
 
   @override
   Widget build(BuildContext context) {
+    ElevatedButton followButton = ElevatedButton(
+      onPressed: () {
+        setState(() {
+          isFollowing = !isFollowing; // ボタンをクリックすると状態をトグル
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isFollowing
+            ? const Color.fromARGB(255, 228, 255, 253)
+            : const Color(0xFFf2fcfc), // フォロー中かどうかで色を変更
+        elevation: 4, // 影の設定
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0), // 四角い形状に設定
+        ),
+      ),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8, // 幅を80%に設定
+        height: 50,
+        child: Center(
+          child: Text(
+            isFollowing ? 'フレンド' : 'フレンドになる',
+            style: TextStyle(fontSize: 25),
+          ),
+        ),
+      ),
+    );
     //ThemeData selectedTheme = lightTheme;
     return Scaffold(
       appBar: AppBar(
@@ -203,6 +231,7 @@ class MyHomePageState extends State<FriendPage> {
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
+              followButton, // フォローボタンを追加
             ],
           ),
         ),
