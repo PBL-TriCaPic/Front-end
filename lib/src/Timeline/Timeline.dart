@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import '../theme_setting/Color_Scheme.dart';
 import 'Friend_Timeline.dart';
@@ -35,7 +37,7 @@ class TimelineScreen extends StatelessWidget {
               ],
             ),
           ),
-          body: TabBarView(
+          body: const TabBarView(
             children: [
               MyTab(),
               FriendTab(),

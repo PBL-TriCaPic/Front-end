@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, library_prefixes, non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +12,8 @@ import 'package:geolocator/geolocator.dart';
 import '../Animation/Capsule_Open_Animation.dart';
 
 class MyTab extends StatefulWidget {
+  const MyTab({super.key});
+
   @override
   State<MyTab> createState() => MyTabState();
 }
@@ -225,9 +229,7 @@ class MyTabState extends State<MyTab> {
           // ignore: use_build_context_synchronously
           screenTransitionAnimation(context, () {
             Navigator.of(context).push(_createRoute(
-              capsulesIdList[index],
-              cityNames[index],
-            ));
+                capsulesIdList[index], cityNames[index], userName!, userId!));
           });
         } else {
           // 500メートル以上ならダイアログ表示
@@ -316,12 +318,15 @@ class MyTabState extends State<MyTab> {
   } //500m以内
 }
 
-Route _createRoute(int capsuleId, String cityName) {
+Route _createRoute(
+    int capsuleId, String cityName, String userName, String userId) {
   return PageRouteBuilder(
     transitionDuration: const Duration(seconds: 1),
     pageBuilder: (context, animation, secondaryAnimation) => CapContentsScreen(
       capsuleId: capsuleId.toString(),
       cityName: cityName,
+      userName: userName,
+      userId: userId,
     ),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       var tween =

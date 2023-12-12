@@ -18,8 +18,16 @@ final ThemeData lightTheme =
 class CapContentsScreen extends StatefulWidget {
   final String capsuleId;
   final String cityName;
-  const CapContentsScreen(
-      {super.key, Key, required this.capsuleId, required this.cityName});
+  final String userName;
+  final String userId;
+  const CapContentsScreen({
+    super.key,
+    Key,
+    required this.capsuleId,
+    required this.cityName,
+    required this.userName,
+    required this.userId,
+  });
 
   @override
   State<CapContentsScreen> createState() => _CapContentsScreenState();
@@ -48,8 +56,8 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   }
 
   Future<void> _loadPreferences() async {
-    userName = await SharedPrefs.getUsername();
-    userId = await SharedPrefs.getUserId();
+    // userName = userName;
+    // userId = userId;
     _loadImage();
   }
 
@@ -75,6 +83,8 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
         capsuleDate = data['capsuleDate'];
         textData = data['textData'];
         place = widget.cityName;
+        userName = widget.userName;
+        userId = widget.userId;
         imageData = data['imageData'];
         // imageDataがnullでない場合、Base64データをデコード
         if (imageData != null) {

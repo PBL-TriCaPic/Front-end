@@ -12,6 +12,8 @@ import 'package:geolocator/geolocator.dart';
 import '../Animation/Capsule_Open_Animation.dart';
 
 class FriendTab extends StatefulWidget {
+  const FriendTab({super.key});
+
   @override
   State<FriendTab> createState() => FriendTabState();
 }
@@ -19,32 +21,46 @@ class FriendTab extends StatefulWidget {
 class FriendTabState extends State<FriendTab> {
   // ここに第二のタブのコードを書きます
   late SharedPreferences prefs;
-  String? userName;
-  String? userId;
-  List<int> capsulesIdList = [];
-  List<double> capsuleLatList = [];
-  List<double> capsuleLonList = [];
+  List<String> userName = [];
+  List<String> userId = [];
+  List<int> friendcapsulesIdList = [];
+  List<double> friendcapsuleLatList = [];
+  List<double> friendcapsuleLonList = [];
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
+    _loadfriendcapdata();
   }
 
-  Future<void> _loadPreferences() async {
-    final userNameValue = await SharedPrefs.getUsername();
-    final userIdValue = await SharedPrefs.getUserId();
+  Future<void> _loadfriendcapdata() async {
+    // final userNameValue = await SharedPrefs.getUsername();
+    // final userIdValue = await SharedPrefs.getUserId();
 
-    final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
-    final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
-    final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
+    // final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
+    // final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
+    // final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
+    //ここでバックエンドにリクエスト
+    final userNameValue = ['John Doe', 'もちゃ', 'ねこま'];
+    final userIdValue = ['@123456', '@momo', '@nekoma'];
+    final capsulesIdListValue = [1, 2, 3];
+    final capsulesLatListValue = [
+      41.815494446200134,
+      41.83820963121419,
+      41.851328225527055
+    ];
+    final capsulesLonListValue = [
+      140.7534832958439,
+      140.76897688843917,
+      140.76695664722564
+    ];
 
     setState(() {
       userName = userNameValue;
       userId = userIdValue;
-      capsulesIdList = capsulesIdListValue;
-      capsuleLatList = capsulesLatListValue.cast<double>();
-      capsuleLonList = capsulesLonListValue.cast<double>();
+      friendcapsulesIdList = capsulesIdListValue;
+      friendcapsuleLatList = capsulesLatListValue;
+      friendcapsuleLonList = capsulesLonListValue;
     });
   }
 
@@ -71,9 +87,9 @@ class FriendTabState extends State<FriendTab> {
     await SharedPrefs.setCapsulesLonList(capsulesLonListnew);
 
     setState(() {
-      capsulesIdList = capsulesIdListnew.cast<int>();
-      capsuleLatList = capsulesLatListnew.cast<double>();
-      capsuleLonList = capsulesLonListnew.cast<double>();
+      friendcapsulesIdList = capsulesIdListnew.cast<int>();
+      friendcapsuleLatList = capsulesLatListnew.cast<double>();
+      friendcapsuleLonList = capsulesLonListnew.cast<double>();
     });
   }
 
@@ -122,9 +138,9 @@ class FriendTabState extends State<FriendTab> {
   Future<List<String>> _getCityNames() async {
     List<String> cityNames = [];
 
-    for (int CaCount = 0; CaCount < capsulesIdList.length; CaCount++) {
-      double latitude = capsuleLatList[CaCount];
-      double longitude = capsuleLonList[CaCount];
+    for (int CaCount = 0; CaCount < friendcapsulesIdList.length; CaCount++) {
+      double latitude = friendcapsuleLatList[CaCount];
+      double longitude = friendcapsuleLonList[CaCount];
 
       String cityName = await _getCityNameFromCoordinates(latitude, longitude);
 
@@ -203,15 +219,14 @@ class FriendTabState extends State<FriendTab> {
 
   Widget _buildCityButton(
       BuildContext context, int index, List<String> cityNames) {
-    //final int currentCapsuleId = timelinePageState.getCapsulesIdList()[index];
     return ElevatedButton(
       onPressed: () async {
         // 位置情報を取得
         Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best,
         );
-        double targetLatitude = capsuleLatList[index];
-        double targetLongitude = capsuleLonList[index];
+        double targetLatitude = friendcapsuleLatList[index];
+        double targetLongitude = friendcapsuleLonList[index];
 
         // ボタンの位置と現在位置との距離を計測
         double distanceInMeters = Geolocator.distanceBetween(
@@ -223,12 +238,13 @@ class FriendTabState extends State<FriendTab> {
 
         // 距離が500メートル以内なら通常の画面表示
         if (distanceInMeters <= 500) {
-          //print('Selected Capsule ID: ${capsuleId[index]}');
           // ignore: use_build_context_synchronously
           screenTransitionAnimation(context, () {
             Navigator.of(context).push(_createRoute(
-              capsulesIdList[index],
+              friendcapsulesIdList[index],
               cityNames[index],
+              userName[index],
+              userId[index],
             ));
           });
         } else {
@@ -254,7 +270,7 @@ class FriendTabState extends State<FriendTab> {
                       'assets/Capsule_Not_Found.json', // Lottie アニメーションのファイルパス
                     ),
                     const Text('このカプセルは遠すぎて開けられないよ！'),
-                    const SizedBox(height: 10), // 適切なスペースを追加
+                    const SizedBox(height: 10),
                     Text(
                         'カプセルまであと ${distanceToShow.toStringAsFixed(2)} $distanceUnit'),
                   ],
@@ -277,53 +293,60 @@ class FriendTabState extends State<FriendTab> {
         minimumSize: const Size(100, 100),
         shape: const CircleBorder(),
         elevation: 10,
-        //primary: Colors.transparent, // 背景色を透明に設定
       ),
       child: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(
-              'assets/TimeCapsule.PNG',
-            ), // 画像のパス
-            fit: BoxFit.cover, // 画像をボタンにフィットさせるかどうか
+            image: AssetImage('assets/TimeCapsule.PNG'),
+            fit: BoxFit.cover,
           ),
         ),
-        width: 250, // 任意の幅を指定
-        height: 250, // 任意の高さを指定
+        width: 250,
+        height: 250,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // 垂直方向に中央寄せ
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              userName ?? "",
+              userName[index],
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
-              userId ?? "",
+              userId[index],
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.bold), // テキストサイズを指定
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               cityNames[index],
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
       ),
     );
-  } //500m以内
+  }
+  //500m以内
 }
 
-Route _createRoute(int capsuleId, String cityName) {
+Route _createRoute(
+    int capsuleId, String cityName, String userName, String userId) {
   return PageRouteBuilder(
     transitionDuration: const Duration(seconds: 1),
     pageBuilder: (context, animation, secondaryAnimation) => CapContentsScreen(
       capsuleId: capsuleId.toString(),
       cityName: cityName,
+      userName: userName,
+      userId: userId,
     ),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       var tween =
