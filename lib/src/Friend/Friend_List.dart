@@ -72,8 +72,13 @@ class FriendListpageState extends State<FriendListpage> {
           final userID = userIDs[index];
 
           return ListTile(
-            contentPadding: const EdgeInsets.only(left: 16.0), // 左側のスペースを追加
-            title: Text(username),
+            contentPadding: const EdgeInsets.only(left: 50.0), // 左側のスペースを追加
+            title: Text(
+              username,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold, // 太文字にする
+              ),
+            ),
             subtitle: Text(userID),
             onTap: () {
               // タップされたときの画面遷移処理を実装

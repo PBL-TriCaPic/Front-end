@@ -95,7 +95,7 @@ class FriendTabState extends State<FriendTab> {
       friendcapsuleLatList = capsulesLatListnew.cast<double>();
       friendcapsuleLonList = capsulesLonListnew.cast<double>();
     });
-  }
+  } //ここの処理まるまる変えてリフレッシュした時に友達のカプセルを更新できるようにする。
 
   @override
   Widget build(BuildContext context) {
