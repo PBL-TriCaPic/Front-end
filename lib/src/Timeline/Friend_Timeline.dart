@@ -41,18 +41,22 @@ class FriendTabState extends State<FriendTab> {
     // final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
     // final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
     //ここでバックエンドにリクエスト
-    final userNameValue = ['John Doe', 'もちゃ', 'ねこま'];
-    final userIdValue = ['@123456', '@momo', '@nekoma'];
-    final capsulesIdListValue = [1, 2, 3];
+    final userNameValue = ['John Doe', 'もちゃ', 'ねこま', 'なさき', 'ねこま'];
+    final userIdValue = ['@123456', '@momo', '@nekoma', '@n_saki', '@nekoma'];
+    final capsulesIdListValue = [100, 101, 102, 103, 104];
     final capsulesLatListValue = [
       41.815494446200134,
       41.83820963121419,
-      41.851328225527055
+      41.851328225527055,
+      41.84591764182999,
+      41.848258151796124
     ];
     final capsulesLonListValue = [
       140.7534832958439,
       140.76897688843917,
-      140.76695664722564
+      140.76695664722564,
+      140.76611795200157,
+      140.76781910626528,
     ];
 
     setState(() {

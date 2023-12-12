@@ -53,6 +53,7 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
     super.initState();
     _loadPreferences();
     _fetchCapsuleData(widget.capsuleId);
+    print(widget.userName);
   }
 
   Future<void> _loadPreferences() async {
@@ -62,9 +63,9 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   }
 
   Future<void> _loadImage() async {
-    String? base64Image = await SharedPrefs.getProfileImage();
-    //final String? base64Image = prefs.getString('_profileImageKey');
-    //print('Base64 Image: $base64Image'); // デバッグログ
+    String? base64Image = await SharedPrefs
+        .getProfileImage(); //これはシェアドプリファレンスで画像を保存したものを持ってきてるだけ。
+    //ここで
     setState(() {
       if (base64Image != null) {
         decodedprofile = base64.decode(base64Image);
@@ -72,7 +73,7 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
         // imageDataがnullの場合の処理を行います（必要に応じて）。
       }
     });
-  } //profile
+  } //profile image  使わなくなるかも
 
   Future<void> _fetchCapsuleData(String capsuleId) async {
     try {
@@ -80,12 +81,14 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
           await ApiService.fetchCapsuleData(capsuleId);
 
       setState(() {
+        //ここでプロフ画像も持ってくるからそれをデコードし、decodedprofileに代入する。
         capsuleDate = data['capsuleDate'];
         textData = data['textData'];
         place = widget.cityName;
         userName = widget.userName;
         userId = widget.userId;
         imageData = data['imageData'];
+
         // imageDataがnullでない場合、Base64データをデコード
         if (imageData != null) {
           decodedImageData = base64.decode(imageData!);
