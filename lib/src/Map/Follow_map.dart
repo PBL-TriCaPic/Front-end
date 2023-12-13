@@ -2,10 +2,8 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_develop/src/Map/Capsel/picture.dart';
-import 'package:flutter_application_develop/src/Map/Follow_map.dart';
+import 'package:flutter_application_develop/src/Map/Map.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
@@ -13,11 +11,13 @@ import 'package:latlong2/latlong.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
 
+//MapScreen->FollowMapScreen
+//HomeScreen->FollowHomeScreen
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
-class MapScreen extends StatelessWidget {
-  const MapScreen({Key? key}) : super(key: key);
+class  FollowMapScreen extends StatelessWidget {
+  const FollowMapScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +28,21 @@ class MapScreen extends StatelessWidget {
       theme: lightTheme,
       // darkTheme: darkTheme,
       title: 'Flutter Demo',
-      home: const HomeScreen(title: 'Flutter Demo Home Page'),
+      home: const FollowHomeScreen(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.title});
+class FollowHomeScreen extends StatefulWidget {
+  const FollowHomeScreen({super.key, required this.title});
 
   final String title;
 
   @override
-  State<HomeScreen> createState() => _HomeScreen();
+  State<FollowHomeScreen> createState() => _FollowHomeScreen();
 }
 
-class _HomeScreen extends State<HomeScreen> {
+class _FollowHomeScreen extends State<FollowHomeScreen> {
   //String _title = 'MyMap';
   double? lat; //メモ：最初に表示される場所を指定
   double? lng;
@@ -56,24 +56,38 @@ class _HomeScreen extends State<HomeScreen> {
   List<CircleMarker> circleMarkers = []; //中身ないけど、削除すると現在地の●表示されなくなる
   bool isLoading = true; // 追加: ローディング状態を管理
 
-
+//他の人のピン表示
+  List<double> latListother = [];
+  List<double> lonListother = [];
 
   @override
   void initState() {
     super.initState();
     initLocation();
-    loadSavedCapsules(); // Load saved capsules on initialization
+    //loadSavedCapsules(); // Load saved capsules on initialization
     //他の人のピン表示
-   
+    loadOtherCapsules();
   }
 
-  Future<void> loadSavedCapsules() async {
-    //バックから緯度経度をとる
-    List<double> latList = await SharedPrefs.getCapsulesLatList();
-    List<double> lonList = await SharedPrefs.getCapsulesLonList();
+  // Future<void> loadSavedCapsules() async {
+  //   //バックから緯度経度をとる
+  //   List<double> latList = await SharedPrefs.getCapsulesLatList();
+  //   List<double> lonList = await SharedPrefs.getCapsulesLonList();
 
-    for (int i = 0; i < min(latList.length, lonList.length); i++) {
-      LatLng capsuleLatLng = LatLng(latList[i], lonList[i]);
+  //   for (int i = 0; i < min(latList.length, lonList.length); i++) {
+  //     LatLng capsuleLatLng = LatLng(latList[i], lonList[i]);
+  //     createPinFromSavedCapsule(capsuleLatLng);
+  //   }
+  // }
+
+//他の人のピン表示 sharedpreferenceの中身をかえる
+  Future<void> loadOtherCapsules() async {
+    //バックから緯度経度をとる
+   latListother = await SharedPrefs.getCapsulesotherLatList();
+   lonListother = await SharedPrefs.getCapsulesotherLonList();
+
+    for (int i = 0; i < min(latListother.length, lonListother.length); i++) {
+      LatLng capsuleLatLng = LatLng(latListother[i], lonListother[i]);
       createPinFromSavedCapsule(capsuleLatLng);
     }
   }
@@ -128,7 +142,9 @@ class _HomeScreen extends State<HomeScreen> {
           elevation: 3,
           shadowColor: Colors.black,
 
-          //ボタンの動きを追加Follow_mapへ
+
+
+          //ボタンの動きを追加Map.dartへ
            actions: [
             // Wrap the IconButton with GestureDetector
             GestureDetector(
@@ -136,7 +152,7 @@ class _HomeScreen extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FollowMapScreen(),
+                    builder: (context) => MapScreen(),
                   ),
                 );
               },
@@ -146,7 +162,6 @@ class _HomeScreen extends State<HomeScreen> {
               ),
             ),
           ],
-          
         ),
         body: Container(
           child: FlutterMap(
@@ -182,29 +197,29 @@ class _HomeScreen extends State<HomeScreen> {
         ),
 
         //右下のボタンの処理
-        floatingActionButton: FloatingActionButton(
-          //Iconの部分を書き換えるとアイコンのデザイン変更可
-          child: SvgPicture.asset(
-            'assets/TriCaPicapplogo1.svg',
-            width: 35,
-            height: 35,
-            color: Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
-          ),
-          onPressed: () async {
-            //カメラ撮影画面に遷移
-            final XFile? image = await _picker.pickImage(
-              source: ImageSource.camera,
-            );
-            if (image != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PictureCheck(image),
-                ),
-              );
-            }
-          },
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   //Iconの部分を書き換えるとアイコンのデザイン変更可
+        //   child: SvgPicture.asset(
+        //     'assets/TriCaPicapplogo1.svg',
+        //     width: 35,
+        //     height: 35,
+        //     color: Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
+        //   ),
+        //   onPressed: () async {
+        //     //カメラ撮影画面に遷移
+        //     final XFile? image = await _picker.pickImage(
+        //       source: ImageSource.camera,
+        //     );
+        //     if (image != null) {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //           builder: (context) => PictureCheck(image),
+        //         ),
+        //       );
+        //     }
+        //   },
+        // ),
       ),
     );
   }
@@ -299,7 +314,7 @@ class _HomeScreen extends State<HomeScreen> {
 //メモ：端末の現在地を青色の●で表示する関数
   void initCircleMarker(double latitude, double longitude) {
     CircleMarker circleMarker = CircleMarker(
-      color: Colors.indigo.withOpacity(0.9),
+      color: const Color.fromARGB(255, 93, 181, 63).withOpacity(0.9),
       radius: 10,
       borderColor: Colors.white.withOpacity(0.9),
       borderStrokeWidth: 3,
