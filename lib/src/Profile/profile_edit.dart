@@ -13,7 +13,7 @@ class EditProfileScreen extends StatefulWidget {
   final String? initialBio;
 
   const EditProfileScreen({
-    Key? key, // 'super.key'を'key'に変更
+    Key? key,
     this.initialUserName,
     this.initialUserID,
     this.initialBio,
@@ -25,7 +25,6 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _userNameController;
-  late TextEditingController _userIDController;
   late TextEditingController _bioController;
 
   Uint8List? decodedprofile;
@@ -35,13 +34,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String message = '';
+  late String userID; // 修正
 
   @override
   void initState() {
     super.initState();
+    userID = widget.initialUserID!;
     _userNameController =
         TextEditingController(text: widget.initialUserName ?? '');
-    _userIDController = TextEditingController(text: widget.initialUserID ?? '');
     _bioController = TextEditingController(text: widget.initialBio ?? '');
     _loadPreferences();
   }
@@ -96,6 +96,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    userID,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               Center(
                 child: GestureDetector(
                   onTap: () {
@@ -112,9 +126,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const Text('ユーザー名'),
               TextField(controller: _userNameController),
               const SizedBox(height: 16),
-              const Text('ユーザーID'),
-              TextField(controller: _userIDController),
-              const SizedBox(height: 16),
               const Text('自己紹介'),
               TextField(
                 controller: _bioController,
@@ -130,8 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _saveChanges(BuildContext context) async {
-    final userID = _userIDController.text; // 修正
-    final username = _userNameController.text; // 修正
+    final username = _userNameController.text;
     String? newBio =
         _bioController.text.isNotEmpty ? _bioController.text : null;
 
