@@ -99,4 +99,38 @@ class ApiService {
       throw Exception('サーバに送るのを失敗しました。');
     }
   } //カプセル埋める
+
+  static Future<bool> updateUserInformation(
+    String userId,
+    String iconImageBase64,
+    String name,
+    String profile,
+  ) async {
+    final url = Uri.parse('$baseApiUrl/update/userInf');
+    final headers = {'Content-Type': 'application/json'};
+    final body = json.encode({
+      'userId': userId,
+      'iconImage': iconImageBase64,
+      'name': name,
+      'profile': profile,
+    });
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        print('ユーザー情報の更新に成功しました');
+        print('サーバーレスポンス: ${response.body}');
+
+        return response.body == 'true';
+      } else {
+        print('ユーザー情報の更新に失敗しました。HTTPステータスコード: ${response.statusCode}');
+        print('サーバーレスポンス: ${response.body}');
+        throw Exception('ユーザー情報の更新に失敗しました');
+      }
+    } catch (e) {
+      print('エラーが発生しました: $e');
+      throw Exception('ユーザー情報の更新に失敗しました');
+    }
+  } //プロフィール更新
 }
