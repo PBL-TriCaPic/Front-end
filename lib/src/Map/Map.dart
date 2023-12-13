@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, deprecated_member_use, use_build_context_synchronously, avoid_unnecessary_containers, void_checks, avoid_print
 
+import 'dart:async';
 import 'dart:io';
 
 import 'dart:math';
@@ -52,6 +53,7 @@ class _HomeScreen extends State<HomeScreen> {
   //画像保存用のpreference
   //late SharedPreferences pref;
   late XFile image;
+  late Timer locationUpdateTimer;
 
   File? imageFile;
   List<Marker> markers = [];
@@ -62,7 +64,50 @@ class _HomeScreen extends State<HomeScreen> {
   void initState() {
     super.initState();
     initLocation();
-    loadSavedCapsules(); // Load saved capsules on initialization
+    //loadSavedCapsules(); // Load saved capsules on initialization
+    startLocationUpdateTimer();
+  }
+
+  void startLocationUpdateTimer() {
+    locationUpdateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      updateLocation();
+    });
+  }
+
+  Future<void> updateLocation() async {
+    // ここで位置情報を取得して更新する
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    setState(() {
+      lat = position.latitude;
+      lng = position.longitude;
+      // 新しい位置情報で円マーカーを更新
+      updateCircleMarker(lat!, lng!);
+    });
+  }
+
+  void updateCircleMarker(double latitude, double longitude) {
+    // 既存の円マーカーを新しい位置情報で更新
+    CircleMarker circleMarker = CircleMarker(
+      color: Colors.indigo.withOpacity(0.9),
+      radius: 10,
+      borderColor: Colors.white.withOpacity(0.9),
+      borderStrokeWidth: 3,
+      point: LatLng(latitude, longitude),
+    );
+
+    // 既存の円マーカーをクリアして新しいものを追加
+    circleMarkers.clear();
+    circleMarkers.add(circleMarker);
+  }
+
+  @override
+  void dispose() {
+    // タイマーをキャンセルする
+    locationUpdateTimer.cancel();
+    super.dispose();
   }
 
   Future<void> loadSavedCapsules() async {
@@ -263,10 +308,15 @@ class _HomeScreen extends State<HomeScreen> {
     setState(() {
       lat = position.latitude;
       lng = position.longitude;
-      isLoading = false; // 追加: ローディング終了
+      //isLoading = false; // 追加: ローディング終了
+    });
+    initCircleMarker(lat!, lng!);
+    await loadSavedCapsules();
+    setState(() {
+      isLoading = false;
     });
 
-    initCircleMarker(lat!, lng!);
+    //initCircleMarker(lat!, lng!);
   }
 
 //メモ：端末の現在地を青色の●で表示する関数
