@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, no_logic_in_create_state
+// ignore_for_file: file_names, no_logic_in_create_state, avoid_print
 
 import 'dart:typed_data';
 import 'dart:ui';

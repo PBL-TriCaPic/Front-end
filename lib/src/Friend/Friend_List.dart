@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, use_build_context_synchronously
+// ignore_for_file: file_names, use_key_in_widget_constructors, use_build_context_synchronously, use_super_parameters
 
 import 'dart:convert';
 
@@ -12,17 +12,6 @@ import '../theme_setting/SharedPreferences.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
-
-// class FriendList extends StatelessWidget {
-//   final String initialuserId;
-
-//   const FriendList({Key? key, required this.initialuserId}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const FriendListpage(userId:userId);
-//   }
-// }
 
 class FriendList extends StatefulWidget {
   final String? userId;
@@ -70,7 +59,6 @@ class _FriendListpageState extends State<FriendList> {
       });
     } catch (e) {
       // エラーハンドリング
-      print('友達リストの取得に失敗しました: $e');
       setState(() {
         isLoading = false; // エラー時も非同期処理が完了したことを通知
       });
@@ -90,7 +78,8 @@ class _FriendListpageState extends State<FriendList> {
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // データ取得中の場合はインジケーターを表示
+          ? const Center(
+              child: CircularProgressIndicator()) // データ取得中の場合はインジケーターを表示
           : ListView.builder(
               itemCount: usernames.length,
               itemBuilder: (context, index) {
@@ -101,7 +90,7 @@ class _FriendListpageState extends State<FriendList> {
 
                 return ListTile(
                   contentPadding: const EdgeInsets.only(left: 50.0),
-                  leading: Container(
+                  leading: SizedBox(
                     width: 65, // アイコンの望ましい幅
                     height: 65, // アイコンの望ましい高さ
                     //color: iconImage.isNotEmpty ? null : Colors.black,
@@ -112,7 +101,7 @@ class _FriendListpageState extends State<FriendList> {
                               base64.decode(iconImage),
                             ),
                           )
-                        : Icon(
+                        : const Icon(
                             Icons.account_circle_outlined,
                             size: 65,
                             //color: Colors.

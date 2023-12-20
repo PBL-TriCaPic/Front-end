@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -13,11 +15,11 @@ class EditProfileScreen extends StatefulWidget {
   final String? initialBio;
 
   const EditProfileScreen({
-    Key? key,
+    super.key,
     this.initialUserName,
     this.initialUserID,
     this.initialBio,
-  }) : super(key: key);
+  });
 
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();

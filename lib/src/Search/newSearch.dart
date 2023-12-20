@@ -46,12 +46,14 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: lightTheme,
-      home: SearchScreenpage(),
+      home: const SearchScreenpage(),
     );
   }
 }
 
 class SearchScreenpage extends StatefulWidget {
+  const SearchScreenpage({super.key});
+
   @override
   State<SearchScreenpage> createState() => MyHomePageState();
 }
