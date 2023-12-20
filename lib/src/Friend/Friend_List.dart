@@ -38,6 +38,7 @@ class _FriendListpageState extends State<FriendList> {
   List<String> usernames = [];
   List<String> userIDs = [];
   List<String?> iconImages = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -48,6 +49,11 @@ class _FriendListpageState extends State<FriendList> {
 
   Future<void> _fetchFriendsList() async {
     try {
+      // 非同期処理が開始したことを通知
+      setState(() {
+        isLoading = true;
+      });
+
       // ここでfetchFriendsListを呼び出してデータを取得
       List friendsList = await ApiService.fetchFriendsList(userId);
 
@@ -60,10 +66,14 @@ class _FriendListpageState extends State<FriendList> {
         iconImages = friendsList
             .map((friend) => friend['iconImage'] as String?)
             .toList();
+        isLoading = false; // 非同期処理が完了したことを通知
       });
     } catch (e) {
       // エラーハンドリング
       print('友達リストの取得に失敗しました: $e');
+      setState(() {
+        isLoading = false; // エラー時も非同期処理が完了したことを通知
+      });
     }
   }
 
@@ -79,46 +89,48 @@ class _FriendListpageState extends State<FriendList> {
           },
         ),
       ),
-      body: ListView.builder(
-        itemCount: usernames.length,
-        itemBuilder: (context, index) {
-          final username = usernames[index];
-          final userID = userIDs[index];
-          final iconImage =
-              iconImages[index] ?? ''; // iconImageがnullの場合は空の文字列を使用
+      body: isLoading
+          ? Center(child: CircularProgressIndicator()) // データ取得中の場合はインジケーターを表示
+          : ListView.builder(
+              itemCount: usernames.length,
+              itemBuilder: (context, index) {
+                final username = usernames[index];
+                final userID = userIDs[index];
+                final iconImage =
+                    iconImages[index] ?? ''; // iconImageがnullの場合は空の文字列を使用
 
-          return ListTile(
-            contentPadding: const EdgeInsets.only(left: 50.0),
-            leading: Container(
-              width: 65, // アイコンの望ましい幅
-              height: 65, // アイコンの望ましい高さ
-              //color: iconImage.isNotEmpty ? null : Colors.black,
-              child: iconImage.isNotEmpty
-                  ? CircleAvatar(
-                      radius: 20, // 望ましい半径
-                      backgroundImage: MemoryImage(
-                        base64.decode(iconImage),
-                      ),
-                    )
-                  : Icon(
-                      Icons.account_circle_outlined,
-                      size: 65,
-                      //color: Colors.
-                    ), // iconImageが空の場合はデフォルトのアイコンを表示
+                return ListTile(
+                  contentPadding: const EdgeInsets.only(left: 50.0),
+                  leading: Container(
+                    width: 65, // アイコンの望ましい幅
+                    height: 65, // アイコンの望ましい高さ
+                    //color: iconImage.isNotEmpty ? null : Colors.black,
+                    child: iconImage.isNotEmpty
+                        ? CircleAvatar(
+                            radius: 20, // 望ましい半径
+                            backgroundImage: MemoryImage(
+                              base64.decode(iconImage),
+                            ),
+                          )
+                        : Icon(
+                            Icons.account_circle_outlined,
+                            size: 65,
+                            //color: Colors.
+                          ), // iconImageが空の場合はデフォルトのアイコンを表示
+                  ),
+                  title: Text(
+                    username,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(userID),
+                  onTap: () {
+                    _navigateToUserDetails(context, username, userID);
+                  },
+                );
+              },
             ),
-            title: Text(
-              username,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            subtitle: Text(userID),
-            onTap: () {
-              _navigateToUserDetails(context, username, userID);
-            },
-          );
-        },
-      ),
     );
   }
 
