@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, use_key_in_widget_constructors, use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Friend/Friend_Profile.dart';
 import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
@@ -35,6 +37,7 @@ class _FriendListpageState extends State<FriendList> {
   late String userId;
   List<String> usernames = [];
   List<String> userIDs = [];
+  List<String?> iconImages = [];
 
   @override
   void initState() {
@@ -54,6 +57,9 @@ class _FriendListpageState extends State<FriendList> {
             friendsList.map((friend) => friend['name'] as String).toList();
         userIDs =
             friendsList.map((friend) => friend['userId'] as String).toList();
+        iconImages = friendsList
+            .map((friend) => friend['iconImage'] as String?)
+            .toList();
       });
     } catch (e) {
       // エラーハンドリング
@@ -78,9 +84,28 @@ class _FriendListpageState extends State<FriendList> {
         itemBuilder: (context, index) {
           final username = usernames[index];
           final userID = userIDs[index];
+          final iconImage =
+              iconImages[index] ?? ''; // iconImageがnullの場合は空の文字列を使用
 
           return ListTile(
             contentPadding: const EdgeInsets.only(left: 50.0),
+            leading: Container(
+              width: 65, // アイコンの望ましい幅
+              height: 65, // アイコンの望ましい高さ
+              //color: iconImage.isNotEmpty ? null : Colors.black,
+              child: iconImage.isNotEmpty
+                  ? CircleAvatar(
+                      radius: 20, // 望ましい半径
+                      backgroundImage: MemoryImage(
+                        base64.decode(iconImage),
+                      ),
+                    )
+                  : Icon(
+                      Icons.account_circle_outlined,
+                      size: 65,
+                      //color: Colors.
+                    ), // iconImageが空の場合はデフォルトのアイコンを表示
+            ),
             title: Text(
               username,
               style: const TextStyle(
