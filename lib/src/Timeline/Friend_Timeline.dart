@@ -21,6 +21,7 @@ class FriendTab extends StatefulWidget {
 class FriendTabState extends State<FriendTab> {
   // ここに第二のタブのコードを書きます
   late SharedPreferences prefs;
+  late Position currentPosition;
   List<String> userName = [];
   List<String> userId = [];
   List<int> friendcapsulesIdList = [];
@@ -58,6 +59,9 @@ class FriendTabState extends State<FriendTab> {
       140.76611795200157,
       140.76781910626528,
     ];
+    currentPosition = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best,
+    );
 
     setState(() {
       userName = userNameValue;
@@ -120,7 +124,7 @@ class FriendTabState extends State<FriendTab> {
                     ),
                     itemCount: cityNames.length,
                     itemBuilder: (context, index) {
-                      return _buildCityButton(context, index, cityNames);
+                      return _buildCityImage(context, index, cityNames);
                     },
                   );
                 } else {
@@ -221,10 +225,26 @@ class FriendTabState extends State<FriendTab> {
   //   );
   // }//どこのでも行ける
 
-  Widget _buildCityButton(
+  Widget _buildCityImage(
       BuildContext context, int index, List<String> cityNames) {
-    return ElevatedButton(
-      onPressed: () async {
+    double targetLatitude = friendcapsuleLatList[index];
+    double targetLongitude = friendcapsuleLonList[index];
+
+    // Calculate distance
+    double distanceInMeters = Geolocator.distanceBetween(
+      currentPosition.latitude,
+      currentPosition.longitude,
+      targetLatitude,
+      targetLongitude,
+    );
+
+    // 500メートル以内かどうかに基づいて画像パスを設定
+    String imagePath = (distanceInMeters <= 500)
+        ? 'assets/Capsule_open.PNG' // 500メートル以内ならこの画像
+        : 'assets/Capsule_not_open.PNG'; // 500メートル以上ならこの画像
+
+    return GestureDetector(
+      onTap: () async {
         // 位置情報を取得
         Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best,
@@ -242,14 +262,11 @@ class FriendTabState extends State<FriendTab> {
 
         // 距離が500メートル以内なら通常の画面表示
         if (distanceInMeters <= 500) {
+          //print('Selected Capsule ID: ${capsuleId[index]}');
           // ignore: use_build_context_synchronously
           screenTransitionAnimation(context, () {
-            Navigator.of(context).push(_createRoute(
-              friendcapsulesIdList[index],
-              cityNames[index],
-              userName[index],
-              userId[index],
-            ));
+            Navigator.of(context).push(_createRoute(friendcapsulesIdList[index],
+                cityNames[index], userName[index], userId[index]));
           });
         } else {
           // 500メートル以上ならダイアログ表示
@@ -274,7 +291,7 @@ class FriendTabState extends State<FriendTab> {
                       'assets/Capsule_Not_Found.json', // Lottie アニメーションのファイルパス
                     ),
                     const Text('このカプセルは遠すぎて開けられないよ！'),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 10), // 適切なスペースを追加
                     Text(
                         'カプセルまであと ${distanceToShow.toStringAsFixed(2)} $distanceUnit'),
                   ],
@@ -292,50 +309,65 @@ class FriendTabState extends State<FriendTab> {
           );
         }
       },
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(16),
-        minimumSize: const Size(100, 100),
-        shape: const CircleBorder(),
-        elevation: 10,
-      ),
-      child: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/TimeCapsule.PNG'),
-            fit: BoxFit.cover,
+      child: Stack(
+        alignment: Alignment.center, // 子要素の中央に配置
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle, // 画像を丸く切り取る
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  //offset: Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Image.asset(
+              imagePath,
+              width: 250,
+              height: 250,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        width: 250,
-        height: 250,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              userName[index],
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+          Positioned(
+            // テキストの配置位置を指定
+            //bottom: 20,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // 垂直方向に中央寄せ
+              children: [
+                Text(
+                  userName[index],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ), // テキストサイズを指定
+                ),
+                Text(
+                  userId[index],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ), // テキストサイズを指定
+                ),
+                Text(
+                  cityNames[index],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ), // テキストサイズを指定
+                ),
+              ],
             ),
-            Text(
-              userId[index],
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              cityNames[index],
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
