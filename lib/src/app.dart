@@ -7,8 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'Profile/Profile.dart';
 import 'Map/Map.dart';
-import 'Search/Search.dart';
+//import 'Search/Search.dart';
 import 'Timeline/Timeline.dart';
+import 'Search/newSearch.dart';
 
 final baseTabViewProvider = StateProvider<ViewType>((ref) => ViewType.map);
 

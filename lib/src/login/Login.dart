@@ -153,6 +153,7 @@ class _LoginState extends State<Login> {
               List<double>.from(success['capsuleLatList'] ?? []);
           final List<double> capsulesLonList =
               List<double>.from(success['capsuleLonList'] ?? []);
+          await SharedPrefs.setCapsulesCount(capsulesIdList.length);
           await SharedPrefs.setCapsulesIdList(capsulesIdList);
           await SharedPrefs.setCapsulesLatList(capsulesLatList);
           await SharedPrefs.setCapsulesLonList(capsulesLonList);

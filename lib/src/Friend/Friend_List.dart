@@ -1,57 +1,81 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors
+// ignore_for_file: file_names, use_key_in_widget_constructors, use_build_context_synchronously
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Friend/Friend_Profile.dart';
 import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
 
+import '../Profile/Profile.dart';
+import '../theme_setting/HTTP_request.dart';
+import '../theme_setting/SharedPreferences.dart';
+
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
-class FriendList extends StatelessWidget {
-  const FriendList({Key? key});
+// class FriendList extends StatelessWidget {
+//   final String initialuserId;
+
+//   const FriendList({Key? key, required this.initialuserId}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const FriendListpage(userId:userId);
+//   }
+// }
+
+class FriendList extends StatefulWidget {
+  final String? userId;
+
+  const FriendList({Key? key, required this.userId}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return const FriendListpage();
+  State<FriendList> createState() => _FriendListpageState();
+}
+
+class _FriendListpageState extends State<FriendList> {
+  late String userId;
+  List<String> usernames = [];
+  List<String> userIDs = [];
+  List<String?> iconImages = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    userId = widget.userId!;
+    _fetchFriendsList();
   }
-}
 
-class FriendListpage extends StatefulWidget {
-  const FriendListpage({Key? key});
+  Future<void> _fetchFriendsList() async {
+    try {
+      // 非同期処理が開始したことを通知
+      setState(() {
+        isLoading = true;
+      });
 
-  @override
-  State<FriendListpage> createState() => FriendListpageState();
-}
+      // ここでfetchFriendsListを呼び出してデータを取得
+      List friendsList = await ApiService.fetchFriendsList(userId);
 
-class FriendListpageState extends State<FriendListpage> {
-  final List<String> usernames = [
-    'たくひろ',
-    'まさと',
-    'ドラゴン',
-    'かわむら',
-    'さいとう',
-    '青池',
-    'KAWAGUCHI',
-    '武居',
-    'Ito',
-    '榊原',
-    'よしなが',
-    'としま'
-  ]; // ユーザーネームのリスト
-  final List<String> userIDs = [
-    '@taku',
-    '@masato',
-    '@doragon',
-    '@kawa',
-    '@Saito',
-    '@aoike',
-    '@hiro',
-    '@inori',
-    '@itouuuuuuuuuuuuuuu',
-    '@sakaki',
-    '@naga',
-    '@toshima'
-  ]; // ユーザーIDのリスト
+      // データをusernamesとuserIDsにセット
+      setState(() {
+        usernames =
+            friendsList.map((friend) => friend['name'] as String).toList();
+        userIDs =
+            friendsList.map((friend) => friend['userId'] as String).toList();
+        iconImages = friendsList
+            .map((friend) => friend['iconImage'] as String?)
+            .toList();
+        isLoading = false; // 非同期処理が完了したことを通知
+      });
+    } catch (e) {
+      // エラーハンドリング
+      print('友達リストの取得に失敗しました: $e');
+      setState(() {
+        isLoading = false; // エラー時も非同期処理が完了したことを通知
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,42 +89,73 @@ class FriendListpageState extends State<FriendListpage> {
           },
         ),
       ),
-      body: ListView.builder(
-        itemCount: usernames.length,
-        itemBuilder: (context, index) {
-          final username = usernames[index];
-          final userID = userIDs[index];
+      body: isLoading
+          ? Center(child: CircularProgressIndicator()) // データ取得中の場合はインジケーターを表示
+          : ListView.builder(
+              itemCount: usernames.length,
+              itemBuilder: (context, index) {
+                final username = usernames[index];
+                final userID = userIDs[index];
+                final iconImage =
+                    iconImages[index] ?? ''; // iconImageがnullの場合は空の文字列を使用
 
-          return ListTile(
-            contentPadding: const EdgeInsets.only(left: 50.0), // 左側のスペースを追加
-            title: Text(
-              username,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold, // 太文字にする
-              ),
+                return ListTile(
+                  contentPadding: const EdgeInsets.only(left: 50.0),
+                  leading: Container(
+                    width: 65, // アイコンの望ましい幅
+                    height: 65, // アイコンの望ましい高さ
+                    //color: iconImage.isNotEmpty ? null : Colors.black,
+                    child: iconImage.isNotEmpty
+                        ? CircleAvatar(
+                            radius: 20, // 望ましい半径
+                            backgroundImage: MemoryImage(
+                              base64.decode(iconImage),
+                            ),
+                          )
+                        : Icon(
+                            Icons.account_circle_outlined,
+                            size: 65,
+                            //color: Colors.
+                          ), // iconImageが空の場合はデフォルトのアイコンを表示
+                  ),
+                  title: Text(
+                    username,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(userID),
+                  onTap: () {
+                    _navigateToUserDetails(context, username, userID);
+                  },
+                );
+              },
             ),
-            subtitle: Text(userID),
-            onTap: () {
-              // タップされたときの画面遷移処理を実装
-              _navigateToUserDetails(context, username, userID);
-            },
-          );
-        },
-      ),
     );
   }
 
-  // タップされたときの画面遷移処理
   void _navigateToUserDetails(
-      BuildContext context, String username, String userID) {
-    // ここに画面遷移の処理を実装
-    // 例えば、ユーザー詳細画面に遷移する場合：
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            UserDetailsScreen(username: username, userID: userID),
-      ),
-    );
+      BuildContext context, String username, String userID) async {
+    // SharedPreferencesから現在のログイン中のユーザーIDを取得
+    String? loggedInUserId = await SharedPrefs.getUserId();
+
+    if (loggedInUserId != null && userID == loggedInUserId) {
+      // 目的のユーザーIDがログイン中のユーザーIDと一致する場合、AccountScreenに遷移
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AccountScreen(),
+        ),
+      );
+    } else {
+      // 目的のユーザーIDが異なる場合、UserDetailsScreenに遷移
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              UserDetailsScreen(username: username, userID: userID),
+        ),
+      );
+    }
   }
 }
