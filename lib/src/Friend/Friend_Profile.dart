@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Friend/Friend_List.dart';
 
 import '../theme_setting/HTTP_request.dart';
+import '../theme_setting/SharedPreferences.dart';
 //import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
 
 // final ThemeData lightTheme =
@@ -53,6 +54,8 @@ class MyHomePageState extends State<FriendPage> {
   String? bio;
 
   bool isFollowing = false; // フォロー状態を管理する変数
+  List<String> userIDs = []; // この行を追加
+  String? myUserID; // myUserIDを追加
 
   MyHomePageState({
     required this.username,
@@ -72,12 +75,31 @@ class MyHomePageState extends State<FriendPage> {
   Future<void> _initStateAsync() async {
     await _loadApiService();
     // initState 内で非同期処理を実行する場合、setState を呼ぶと再度 build メソッドが実行される
+    myUserID = await SharedPrefs.getUserId();
     setState(() {});
   }
 
   Future<void> _loadApiService() async {
     try {
       friendCount = await ApiService.fetchFriendsCount(userID);
+      List friendsList = await ApiService.fetchFriendsList(userID);
+      userIDs =
+          friendsList.map((friend) => friend['userId'] as String).toList();
+      // userIDがuserIDsに含まれているかどうかに基づいてisFollowingを更新
+      setState(() {
+        isFollowing = userIDs.contains(myUserID);
+      });
+    } catch (e) {
+      print('フレンド数の取得に失敗しました: $e');
+    }
+  }
+
+  Future<void> _reloadApiService() async {
+    try {
+      final count = await ApiService.fetchFriendsCount(userID);
+      setState(() {
+        friendCount = count;
+      });
     } catch (e) {
       print('フレンド数の取得に失敗しました: $e');
     }
@@ -117,10 +139,26 @@ class MyHomePageState extends State<FriendPage> {
   @override
   Widget build(BuildContext context) {
     ElevatedButton followButton = ElevatedButton(
-      onPressed: () {
-        setState(() {
-          isFollowing = !isFollowing; // ボタンをクリックすると状態をトグル
-        });
+      onPressed: () async {
+        try {
+          if (isFollowing) {
+            // フォロー中の場合はアンフォロー
+            await ApiService.unfollowUser(myUserID!, widget.userID);
+            _reloadApiService();
+          } else {
+            // フォローしていない場合はフォロー
+            await ApiService.followUser(myUserID!, widget.userID);
+            _reloadApiService();
+          }
+          //_reloadApiService();
+          // フォロー状態をトグル
+          setState(() {
+            isFollowing = !isFollowing;
+          });
+        } catch (e) {
+          print('エラーが発生しました: $e');
+          // エラーハンドリングを追加することが適切です
+        }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: isFollowing
@@ -149,7 +187,7 @@ class MyHomePageState extends State<FriendPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop(); // 前の画面に戻る
+            Navigator.pop(context, true); // 前の画面に戻る
           },
         ),
       ),

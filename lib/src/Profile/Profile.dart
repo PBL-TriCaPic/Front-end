@@ -231,14 +231,8 @@ class MyHomePageState extends State<MyHomePage> {
                           // ),
                           TextButton(
                             onPressed: () {
-                              // ここにボタンが押されたときの処理を追加してください
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      FriendList(userId: userId),
-                                ),
-                              );
+                              // フレンドリスト画面に遷移
+                              _navigateToFriendList(context);
                             },
                             child: RichText(
                               textAlign: TextAlign.center,
@@ -305,6 +299,17 @@ class MyHomePageState extends State<MyHomePage> {
         _loadPreferences();
       });
     });
+  }
+
+  void _navigateToFriendList(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FriendList(userId: userId),
+      ),
+    );
+
+    _loadPreferences();
   }
 
   // 変更をSharedPreferencesに保存する関数(フォローフォロワー投稿数)

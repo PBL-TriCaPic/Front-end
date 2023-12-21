@@ -69,11 +69,11 @@ class _FriendListpageState extends State<FriendList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('フォロワー一覧'),
+        title: const Text('フレンド一覧'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop(); // 前の画面に戻る
+            Navigator.pop(context, true); // 前の画面に戻る
           },
         ),
       ),
@@ -135,7 +135,10 @@ class _FriendListpageState extends State<FriendList> {
         MaterialPageRoute(
           builder: (context) => const AccountScreen(),
         ),
-      );
+      ).then((value) {
+        // 画面が戻ってきた際に再度データを取得
+        _fetchFriendsList();
+      });
     } else {
       // 目的のユーザーIDが異なる場合、UserDetailsScreenに遷移
       Navigator.push(
@@ -144,7 +147,10 @@ class _FriendListpageState extends State<FriendList> {
           builder: (context) =>
               UserDetailsScreen(username: username, userID: userID),
         ),
-      );
+      ).then((value) {
+        // 画面が戻ってきた際に再度データを取得
+        _fetchFriendsList();
+      });
     }
   }
 }

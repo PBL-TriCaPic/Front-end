@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseApiUrl = 'http://172.20.10.9:8081/api';
+  static const String baseApiUrl = 'http://192.168.10.119:8081/api';
 
   static Future<Map<String, dynamic>> loginUser(
       String email, String password) async {
@@ -176,4 +176,79 @@ class ApiService {
       throw Exception('フレンド数の取得に失敗しました');
     } //フレンド数取得
   }
+
+  static Future<void> followUser(
+      String followerUserId, String followedUserId) async {
+    final url = Uri.parse('$baseApiUrl/relations/follow');
+    final headers = {'Content-Type': 'application/json'};
+    final body = json.encode({
+      'followerId': {'userId': followerUserId},
+      'followedId': {'userId': followedUserId},
+    });
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        print('フォロー追加成功');
+        print('サーバーレスポンス: ${response.body}');
+      } else {
+        print('フォロー追加失敗. Status code: ${response.statusCode}');
+        print('サーバーレスポンス: ${response.body}');
+        throw Exception('フォロー追加失敗');
+      }
+    } catch (e) {
+      print('エラーが発生しました: $e');
+      throw Exception('フォロー追加時にエラーが発生しました');
+    }
+  } //フォロー追加
+
+  static Future<void> unfollowUser(
+      String followerUserId, String followedUserId) async {
+    final url = Uri.parse('$baseApiUrl/relations/unfollow');
+    final headers = {'Content-Type': 'application/json'};
+    final body = json.encode({
+      'followerId': {'userId': followerUserId},
+      'followedId': {'userId': followedUserId},
+    });
+
+    try {
+      final response = await http.delete(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        print('フォロー削除成功');
+        print('サーバーレスポンス: ${response.body}');
+      } else {
+        print('フォロー削除失敗. Status code: ${response.statusCode}');
+        print('サーバーレスポンス: ${response.body}');
+        throw Exception('フォロー削除失敗');
+      }
+    } catch (e) {
+      print('エラーが発生しました: $e');
+      throw Exception('フォロー削除時にエラーが発生しました');
+    }
+  } //フォロー削除
+
+  static Future<List<dynamic>> fetchFriendRequestsList(String userId) async {
+    final url =
+        Uri.parse('$baseApiUrl/relations/get/friendsRequest-list/$userId');
+    final headers = {'Content-Type': 'application/json'};
+
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        final List<int> bytes = response.bodyBytes;
+        final List<dynamic> friendRequestsList = jsonDecode(utf8.decode(bytes));
+        return friendRequestsList;
+      } else {
+        print('フレンドリクエストリストの取得に失敗しました。HTTPステータスコード: ${response.statusCode}');
+        print('サーバーレスポンス: ${response.body}');
+        throw Exception('フレンドリクエストリストの取得に失敗しました');
+      }
+    } catch (e) {
+      print('エラーが発生しました: $e');
+      throw Exception('フレンドリクエストリストの取得に失敗しました');
+    }
+  } //フォローリクエストリスト取得
 }
