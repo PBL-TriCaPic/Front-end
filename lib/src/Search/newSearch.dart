@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_build_context_synchronously
+// ignore_for_file: file_names, use_build_context_synchronously, empty_catches
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -132,6 +132,24 @@ class MyHomePageState extends State<SearchScreenpage> {
       // fetchUserDataが正常にデータを取得した場合
       _navigateToUserDetails(context, userData['name'], userId);
     } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('エラー'),
+            content: const Text('ユーザーが見つかりませんでした。'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
       // エラーが発生した場合
     }
   }
@@ -164,25 +182,6 @@ class MyHomePageState extends State<SearchScreenpage> {
         // 画面が戻ってきた際に再度データを取得
         // _fetchFriendsList();
       }
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('エラー'),
-            content: const Text('ユーザーが見つかりませんでした。'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  FocusScope.of(context).unfocus();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+    } catch (e) {}
   }
 }

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, no_logic_in_create_state, avoid_print, unnecessary_null_comparison
+// ignore_for_file: file_names, no_logic_in_create_state, avoid_print, unnecessary_null_comparison, non_constant_identifier_names
 
 import 'dart:convert';
 import 'dart:typed_data';
@@ -226,7 +226,7 @@ class MyHomePageState extends State<FriendPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // ローディング中の場合はインジケーターを表示
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
