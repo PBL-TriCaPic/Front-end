@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseApiUrl = 'http://172.20.10.9:8081/api';
+  static const String baseApiUrl = 'http://192.168.10.119:8081/api';
 
   static Future<Map<String, dynamic>> loginUser(
       String email, String password) async {
@@ -254,7 +254,7 @@ class ApiService {
 
   static Future<Map<String, dynamic>> fetchUserData(String userId) async {
     final response = await http.get(
-      Uri.parse('http://172.20.10.9:8081/users/$userId'),
+      Uri.parse('$baseApiUrl/users/$userId'),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -271,6 +271,29 @@ class ApiService {
       // その他のエラーコードに対するエラーハンドリング
       throw Exception('ユーザーデータの取得に失敗しました。ステータスコード: ${response.statusCode}');
     }
-  }
-  //フレンドの情報取得（検索）
+  } //フレンドの情報取得（検索）
+
+  static Future<int> fetchFriendsStatus(
+      String loginUserId, String otherUserId) async {
+    final url = Uri.parse(
+        '$baseApiUrl/relations/get/friends-status/$loginUserId/$otherUserId');
+    final headers = {'Content-Type': 'application/json'};
+
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        // APIから返されたデータが整数であると仮定しています
+        final int friendsStatus = int.parse(response.body);
+        return friendsStatus;
+      } else {
+        print('友達ステータスの取得に失敗しました。HTTPステータスコード: ${response.statusCode}');
+        print('サーバーレスポンス: ${response.body}');
+        throw Exception('友達ステータスの取得に失敗しました');
+      }
+    } catch (e) {
+      print('エラーが発生しました: $e');
+      throw Exception('友達ステータスの取得に失敗しました');
+    }
+  } // フレンドステータス取得
 }

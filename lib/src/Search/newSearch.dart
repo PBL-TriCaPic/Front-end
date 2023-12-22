@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../Friend/Friend_Profile.dart';
@@ -12,7 +14,6 @@ final ThemeData lightTheme =
 
 // テキスト入力フィールドのコントローラ
 TextEditingController _textController = TextEditingController();
-Timer? _debounce;
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -64,7 +65,6 @@ class MyHomePageState extends State<SearchScreenpage> {
       // },
       onSubmitted: (String text) {
         // キーボードの決定ボタンが押されたときの処理
-        print(text);
         _performSearch(text);
       },
       decoration: InputDecoration(
@@ -128,7 +128,6 @@ class MyHomePageState extends State<SearchScreenpage> {
     try {
       String userId = entertext.startsWith('@') ? entertext : '@$entertext';
       final userData = await ApiService.fetchUserData(userId);
-      print('帰ってきた値 $userData');
 
       // fetchUserDataが正常にデータを取得した場合
       _navigateToUserDetails(context, userData['name'], userId);
