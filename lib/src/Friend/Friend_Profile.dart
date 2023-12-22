@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, no_logic_in_create_state, avoid_print
 
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -67,7 +68,7 @@ class MyHomePageState extends State<FriendPage> {
     super.initState();
     //friendCount = 100;
     _loadApiService();
-    postsCount = 100;
+    //postsCount = 100;
     _initStateAsync();
     // ここで必要な初期化を行う
   }
@@ -81,16 +82,33 @@ class MyHomePageState extends State<FriendPage> {
 
   Future<void> _loadApiService() async {
     try {
-      friendCount = await ApiService.fetchFriendsCount(userID);
-      List friendsList = await ApiService.fetchFriendsList(userID);
-      userIDs =
-          friendsList.map((friend) => friend['userId'] as String).toList();
-      // userIDがuserIDsに含まれているかどうかに基づいてisFollowingを更新
-      setState(() {
-        isFollowing = userIDs.contains(myUserID);
-      });
+      // 2つの非同期処理を同時に実行
+      final userDataFuture = ApiService.fetchUserData(userID);
+      final friendsCountFuture = ApiService.fetchFriendsCount(userID);
+
+      // それぞれの結果を待つ
+      final userData = await userDataFuture;
+      final count = await friendsCountFuture;
+
+      // ユーザーのプロフィール画像データをデコード
+      String? imageBase64 = userData['imageDataBase64'];
+      if (imageBase64 != null) {
+        decodedprofile = base64Decode(imageBase64);
+      }
+
+      postsCount = userData['capsulesCount'];
+      bio = userData['profile'];
+      friendCount = count;
+
+      // List friendsList = await ApiService.fetchFriendsList(userID);
+      // userIDs =
+      //     friendsList.map((friend) => friend['userId'] as String).toList();
+      // // userIDがuserIDsに含まれているかどうかに基づいてisFollowingを更新
+      // setState(() {
+      //   isFollowing = userIDs.contains(myUserID);
+      // });//ここでフレンド状態か確認しようと思ってた
     } catch (e) {
-      print('フレンド数の取得に失敗しました: $e');
+      print('データの取得に失敗しました: $e');
     }
   }
 
@@ -175,7 +193,10 @@ class MyHomePageState extends State<FriendPage> {
         child: Center(
           child: Text(
             isFollowing ? 'フレンド' : 'フレンドになる',
-            style: const TextStyle(fontSize: 25),
+            style: const TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
