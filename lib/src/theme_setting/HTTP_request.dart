@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseApiUrl = 'http://192.168.10.119:8081/api';
+  static const String baseApiUrl = 'http://192.168.3.59:8081/api';
 
   static Future<Map<String, dynamic>> loginUser(
       String email, String password) async {
@@ -296,4 +296,27 @@ class ApiService {
       throw Exception('友達ステータスの取得に失敗しました');
     }
   } // フレンドステータス取得
+
+  static Future<List<dynamic>> fetchFriendsCapsules(String userId) async {
+    final url = Uri.parse('$baseApiUrl/relations/get/friends-capsules/$userId');
+    final headers = {'Content-Type': 'application/json'};
+
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        final List<int> bytes = response.bodyBytes;
+        final List<dynamic> friendsCapsulesList =
+            jsonDecode(utf8.decode(bytes));
+        return friendsCapsulesList;
+      } else {
+        print('友達のカプセル取得に失敗しました。HTTPステータスコード: ${response.statusCode}');
+        print('サーバーレスポンス: ${response.body}');
+        throw Exception('友達のカプセル取得に失敗しました');
+      }
+    } catch (e) {
+      print('エラーが発生しました: $e');
+      throw Exception('友達のカプセル取得に失敗しました');
+    }
+  } //友達のカプセル取得
 }
