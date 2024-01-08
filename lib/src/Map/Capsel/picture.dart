@@ -1,30 +1,23 @@
-import 'dart:convert';
+// ignore_for_file: use_build_context_synchronously, unnecessary_import, non_constant_identifier_names
+
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Create.dart';
-import 'package:flutter_application_develop/src/Map/Map.dart';
-import 'package:flutter_application_develop/src/Profile/Profile.dart';
-import 'package:flutter_application_develop/src/app.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
 import 'package:image_picker/image_picker.dart';
-
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
 
+// ignore: must_be_immutable
 class PictureCheck extends StatelessWidget {
-  PictureCheck(this.image, {Key? key}) : super(key: key);
+  PictureCheck(this.image, {super.key});
   final XFile image;
   late SharedPreferences pref;
   File? image_File;
 
   @override
   Widget build(BuildContext context) {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     return Scaffold(
       body: Column(children: [
         Center(
@@ -33,31 +26,31 @@ class PictureCheck extends StatelessWidget {
             File(image.path),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(12),
+        const Padding(
+          padding: EdgeInsets.all(12),
         ),
         //画像をサーバにアップロード
 
         //カプセル作成画面に遷移
         ElevatedButton(
-          child: Text('次へ進む'),
+          child: const Text('次へ進む'),
           onPressed: () async {
             await SharedPrefs.setTakeImage(image);
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return capsel_Create();
+                  return const capsel_Create();
                 },
               ),
             );
           },
         ),
         ElevatedButton(
-          child: Text('撮りなおす'),
+          child: const Text('撮りなおす'),
           onPressed: () async {
             //カメラ撮影画面に遷移
-            final XFile? image = await _picker.pickImage(
+            final XFile? image = await picker.pickImage(
               source: ImageSource.camera,
             );
             if (image != null) {

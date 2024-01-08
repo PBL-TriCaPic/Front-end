@@ -1,14 +1,16 @@
+// ignore_for_file: file_names, non_constant_identifier_names, avoid_types_as_parameter_names, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../Timeline/Timeline.dart';
 import '../theme_setting/SharedPreferences.dart';
 import '../theme_setting/HTTP_request.dart';
+import 'package:photo_view/photo_view.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -16,8 +18,16 @@ final ThemeData lightTheme =
 class CapContentsScreen extends StatefulWidget {
   final String capsuleId;
   final String cityName;
-  const CapContentsScreen(
-      {Key, required this.capsuleId, required this.cityName});
+  final String userName;
+  final String userId;
+  const CapContentsScreen({
+    super.key,
+    Key,
+    required this.capsuleId,
+    required this.cityName,
+    required this.userName,
+    required this.userId,
+  });
 
   @override
   State<CapContentsScreen> createState() => _CapContentsScreenState();
@@ -34,7 +44,6 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   String? capsuleDate;
   String? textData;
   String? imageData;
-  //String? cityName;
 
   Uint8List? decodedImageData;
   Uint8List? decodedprofile;
@@ -44,18 +53,19 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
     super.initState();
     _loadPreferences();
     _fetchCapsuleData(widget.capsuleId);
+    print(widget.userName);
   }
 
   Future<void> _loadPreferences() async {
-    userName = await SharedPrefs.getUsername();
-    userId = await SharedPrefs.getUserId();
+    // userName = userName;
+    // userId = userId;
     _loadImage();
   }
 
   Future<void> _loadImage() async {
-    String? base64Image = await SharedPrefs.getProfileImage();
-    //final String? base64Image = prefs.getString('_profileImageKey');
-    print('Base64 Image: $base64Image'); // デバッグログ
+    String? base64Image = await SharedPrefs
+        .getProfileImage(); //これはシェアドプリファレンスで画像を保存したものを持ってきてるだけ。
+    //ここで
     setState(() {
       if (base64Image != null) {
         decodedprofile = base64.decode(base64Image);
@@ -63,7 +73,7 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
         // imageDataがnullの場合の処理を行います（必要に応じて）。
       }
     });
-  } //profile
+  } //profile image  使わなくなるかも
 
   Future<void> _fetchCapsuleData(String capsuleId) async {
     try {
@@ -71,10 +81,14 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
           await ApiService.fetchCapsuleData(capsuleId);
 
       setState(() {
+        //ここでプロフ画像も持ってくるからそれをデコードし、decodedprofileに代入する。
         capsuleDate = data['capsuleDate'];
         textData = data['textData'];
         place = widget.cityName;
+        userName = widget.userName;
+        userId = widget.userId;
         imageData = data['imageData'];
+
         // imageDataがnullでない場合、Base64データをデコード
         if (imageData != null) {
           decodedImageData = base64.decode(imageData!);
@@ -94,6 +108,33 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
     return "${dateTime.year}/${dateTime.month}/${dateTime.day}";
   }
 
+  void _showEnlargeDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: AlertDialog(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            content: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop(); // タップでダイアログを閉じる
+              },
+              child: CircleAvatar(
+                radius: MediaQuery.of(context).size.width / 1.8,
+                // 画像を表示するロジックをここに追加
+                backgroundImage: decodedprofile != null
+                    ? MemoryImage(decodedprofile!)
+                    : null,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeData selectedTheme = lightTheme;
@@ -110,12 +151,12 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
           elevation: 3,
           shadowColor: Colors.black,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return TimelineScreen();
+                  return const TimelineScreen();
                 }),
               );
             },
@@ -129,12 +170,17 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
               children: [
                 Text(
                   userName ?? '',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 13),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
+                      onTap: () {
+                        _showEnlargeDialog();
+                      },
                       child: CircleAvatar(
                         radius: 60,
                         backgroundImage: decodedprofile != null
@@ -167,79 +213,30 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
                   userId ?? '',
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
                   textData ?? '', // 中身の表示
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 // imageDataがデコードされていれば、画像を表示
                 if (decodedImageData != null)
-                  GestureDetector(
-                    onTap: () {
-                      // ここで写真のプレビューを表示します
-                      showGeneralDialog(
-                        transitionDuration: Duration(milliseconds: 1000),
-                        barrierDismissible: true,
-                        barrierLabel: '',
-                        context: context,
-                        pageBuilder: (context, animation1, animation2) {
-                          return Material(
-                            // ここにMaterialウィジェットを追加
-                            type: MaterialType.transparency,
-                            child: DefaultTextStyle(
-                              style:
-                                  Theme.of(context).primaryTextTheme.bodyText1!,
-                              child: Center(
-                                child: Container(
-                                  height: 500,
-                                  width: 500,
-                                  child: Column(
-                                    children: [
-                                      // バツボタンを追加
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          IconButton(
-                                            icon: Icon(Icons.close),
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pop(); // プレビュー画面を閉じる
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      SingleChildScrollView(
-                                        child: InteractiveViewer(
-                                          minScale: 0.1,
-                                          maxScale: 5,
-                                          child: Container(
-                                            child: Image.memory(
-                                              decodedImageData!,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: Center(
-                      child: Image.memory(
-                        decodedImageData!,
-                        width: MediaQuery.of(context).size.width * 0.9,
+                  SizedBox(
+                    width: 500.0, // 任意の幅
+                    height: 350.0, // 任意の高さ
+                    child: PhotoView(
+                      imageProvider: MemoryImage(decodedImageData!),
+                      minScale: PhotoViewComputedScale.contained,
+                      maxScale: PhotoViewComputedScale.covered * 0.6,
+                      backgroundDecoration: const BoxDecoration(
+                        color: Colors.transparent,
                       ),
+                      enableRotation: true, // 画像の回転を有効にする
                     ),
                   )
               ],

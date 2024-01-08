@@ -1,16 +1,15 @@
-// ignore_for_file: non_constant_identifier_names
-
+// ignore_for_file: non_constant_identifier_names, file_names, avoid_print, unnecessary_brace_in_string_interps
 import 'dart:convert';
-
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefs {
   static late SharedPreferences prefs;
 
-  static Future<void> setInstance() async {
-    prefs = await SharedPreferences.getInstance();
-  } //OK　アイコン写真set　初期化
+  // static Future<void> setInstance() async {
+  //   prefs = await SharedPreferences.getInstance();
+  // }
 
   static const String _profileImageKey = 'profileImage';
 
@@ -27,11 +26,11 @@ class SharedPrefs {
     return prefs.getString(_profileImageKey);
   }
 
-  static Future<String?> getImagePath() async {
-    final prefs = await SharedPreferences.getInstance();
-    // SharedPreferencesから画像のパスを取得
-    return prefs.getString('imagePath');
-  } //アイコン写真get OK
+  // static Future<String?> getImagePath() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   // SharedPreferencesから画像のパスを取得
+  //   return prefs.getString('imagePath');
+  // } //アイコン写真get OK
 
   static Future<void> setUsername(String username) async {
     final prefs = await SharedPreferences.getInstance();
@@ -77,15 +76,15 @@ class SharedPrefs {
     return prefs.getString('Email');
   }
 
-  static Future<void> setPassward(String Passward) async {
+  static Future<void> setPassword(String Password) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('Passward', Passward);
-    print("PasswardをSharedPreferencesに保存しました");
+    await prefs.setString('Password', Password);
+    print("PasswordをSharedPreferencesに保存しました");
   }
 
-  static Future<String?> getPassward() async {
+  static Future<String?> getPassword() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('Passward');
+    return prefs.getString('Password');
   }
 
   static Future<void> setCapsulesIdList(List<int> capsulesIdList) async {
@@ -224,5 +223,22 @@ class SharedPrefs {
   static Future<String?> getTakeImage() async {
     final pref = await SharedPreferences.getInstance();
     return pref.getString('image');
+  }
+
+  static Future<void> saveLoginStatus(
+      BuildContext context, bool isLoggedIn) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool('isLoggedIn', isLoggedIn);
+  }
+
+  static Future<bool> checkLoginStatus() async {
+    final pref = await SharedPreferences.getInstance();
+    return pref.getBool('isLoggedIn') ?? false;
+  } //login
+
+  static Future<void> saveLogoutStatus(
+      BuildContext context, bool isLoggedIn) async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool('isLoggedIn', isLoggedIn);
   }
 }
