@@ -272,7 +272,7 @@ class MyHomePageState extends State<FriendPage> {
                           Column(
                             children: [
                               const Text(
-                                '投稿数',
+                                'カプセル数',
                                 style: TextStyle(fontSize: 16),
                               ),
                               Text(

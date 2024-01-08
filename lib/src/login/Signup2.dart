@@ -103,6 +103,8 @@ class _Signup2State extends State<Signup2> {
         await SharedPrefs.setCapsulesLonList(capsulesLonList);
         // ignore: use_build_context_synchronously
         await SharedPrefs.saveLoginStatus(context, isLoggedIn);
+        await SharedPrefs.setMyBio('');
+        await SharedPrefs.setProfileImage('');
         await ApiService.createUser(userID, email, password, name)
             .then((success) {
           if (success) {
