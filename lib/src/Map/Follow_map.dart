@@ -2,36 +2,33 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_develop/src/Map/Map.dart';
+import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
 
-//MapScreen->FollowMapScreen
-//HomeScreen->FollowHomeScreen
+
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
-class  FollowMapScreen extends StatelessWidget {
-  const FollowMapScreen({Key? key}) : super(key: key);
+// class FollowMapScreen extends StatelessWidget {
+//   // ignore: use_super_parameters
+//   const FollowMapScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    //final themeProvider = Provider.of<ThemeProvider>(context);
+//   @override
+//   FollowHomeScreen createState() => FollowHomeScreen(title: '',);
+  
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     throw UnimplementedError();
+//   }
+  
+// }
 
-    return MaterialApp(
-      //theme: themeProvider.selectedTheme,
-      theme: lightTheme,
-      // darkTheme: darkTheme,
-      title: 'Flutter Demo',
-      home: const FollowHomeScreen(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
 
 class FollowHomeScreen extends StatefulWidget {
   const FollowHomeScreen({super.key, required this.title});
@@ -132,37 +129,37 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
     return MaterialApp(
       theme: selectedTheme,
       home: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Image.asset(
-            'assets/TriCaPic_logo.png',
-            height: 200,
-            width: 200,
-          ),
-          elevation: 3,
-          shadowColor: Colors.black,
+        // appBar: AppBar(
+        //   centerTitle: true,
+        //   // title: Image.asset(
+        //   //   'assets/TriCaPic_logo.png',
+        //   //   height: 200,
+        //   //   width: 200,
+        //   // ),
+        //   elevation: 3,
+        //   shadowColor: Colors.black,
 
 
 
-          //ボタンの動きを追加Map.dartへ
-           actions: [
-            // Wrap the IconButton with GestureDetector
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MapScreen(),
-                  ),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Icon(Icons.people_alt_outlined),
-              ),
-            ),
-          ],
-        ),
+        //   //ボタンの動きを追加Map.dartへ
+        //    actions: [
+        //     // Wrap the IconButton with GestureDetector
+        //     GestureDetector(
+        //       onTap: () {
+        //         Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //             builder: (context) => MapScreen(),
+        //           ),
+        //         );
+        //       },
+        //       child: Padding(
+        //         padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        //         child: Icon(Icons.people_alt_outlined),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         body: Container(
           child: FlutterMap(
             // マップ表示設定
