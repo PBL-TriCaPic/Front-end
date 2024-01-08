@@ -10,7 +10,6 @@ import 'package:latlong2/latlong.dart';
 
 import '../theme_setting/SharedPreferences.dart';
 
-
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
@@ -20,15 +19,14 @@ final ThemeData lightTheme =
 
 //   @override
 //   FollowHomeScreen createState() => FollowHomeScreen(title: '',);
-  
+
 //   @override
 //   Widget build(BuildContext context) {
 //     // TODO: implement build
 //     throw UnimplementedError();
 //   }
-  
-// }
 
+// }
 
 class FollowHomeScreen extends StatefulWidget {
   const FollowHomeScreen({super.key, required this.title});
@@ -80,8 +78,8 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
 //他の人のピン表示 sharedpreferenceの中身をかえる
   Future<void> loadOtherCapsules() async {
     //バックから緯度経度をとる
-   latListother = await SharedPrefs.getCapsulesotherLatList();
-   lonListother = await SharedPrefs.getCapsulesotherLonList();
+    latListother = await SharedPrefs.getCapsulesotherLatList();
+    lonListother = await SharedPrefs.getCapsulesotherLonList();
 
     for (int i = 0; i < min(latListother.length, lonListother.length); i++) {
       LatLng capsuleLatLng = LatLng(latListother[i], lonListother[i]);
@@ -127,6 +125,7 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
       );
     }
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: selectedTheme,
       home: Scaffold(
         // appBar: AppBar(
@@ -138,8 +137,6 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
         //   // ),
         //   elevation: 3,
         //   shadowColor: Colors.black,
-
-
 
         //   //ボタンの動きを追加Map.dartへ
         //    actions: [
