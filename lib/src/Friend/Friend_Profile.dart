@@ -5,6 +5,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Friend/Friend_List.dart';
+
+import '../theme_setting/HTTP_request.dart';
 //import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
 
 // final ThemeData lightTheme =
@@ -60,9 +62,25 @@ class MyHomePageState extends State<FriendPage> {
   @override
   void initState() {
     super.initState();
-    friendCount = 100;
+    //friendCount = 100;
+    _loadApiService();
     postsCount = 100;
+    _initStateAsync();
     // ここで必要な初期化を行う
+  }
+
+  Future<void> _initStateAsync() async {
+    await _loadApiService();
+    // initState 内で非同期処理を実行する場合、setState を呼ぶと再度 build メソッドが実行される
+    setState(() {});
+  }
+
+  Future<void> _loadApiService() async {
+    try {
+      friendCount = await ApiService.fetchFriendsCount(userID);
+    } catch (e) {
+      print('フレンド数の取得に失敗しました: $e');
+    }
   }
 
   void _showEnlargeDialog() {
@@ -190,7 +208,8 @@ class MyHomePageState extends State<FriendPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const FriendList(),
+                                builder: (context) =>
+                                    FriendList(userId: userID),
                               ),
                             );
                           },

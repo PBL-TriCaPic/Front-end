@@ -39,7 +39,7 @@ class TimelineScreen extends StatelessWidget {
           ),
           body: const TabBarView(
             children: [
-              MyTab(),
+              MyTab(), // この MyTab ウィジェットが tabs プロパティに渡されていると仮定
               FriendTab(),
             ],
           ),

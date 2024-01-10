@@ -79,9 +79,12 @@ flutter:
     - assets/TriCaPicapplogo1.svg
     - assets/TriCaPic_icon.png
     - assets/TimeCapsule.PNG
+    - assets/Capsule_open.PNG
+    - assets/Capsule_not_open.PNG
     - assets/Capsule_Filling_Animation.json
     - assets/Capsule_Not_Found.json
     - assets/Capsule_Not_Found2.json
+
     - assets/
     #Capsule_digging.mp3
 

@@ -21,6 +21,7 @@ class MyTab extends StatefulWidget {
 class MyTabState extends State<MyTab> {
   // ここに第二のタブのコードを書きます
   late SharedPreferences prefs;
+  late Position currentPosition;
   String? userName;
   String? userId;
   List<int> capsulesIdList = [];
@@ -40,6 +41,10 @@ class MyTabState extends State<MyTab> {
     final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
     final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
     final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
+
+    currentPosition = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best,
+    );
 
     setState(() {
       userName = userNameValue;
@@ -102,7 +107,7 @@ class MyTabState extends State<MyTab> {
                     ),
                     itemCount: cityNames.length,
                     itemBuilder: (context, index) {
-                      return _buildCityButton(context, index, cityNames);
+                      return _buildCityImage(context, index, cityNames);
                     },
                   );
                 } else {
@@ -203,11 +208,26 @@ class MyTabState extends State<MyTab> {
   //   );
   // }//どこのでも行ける
 
-  Widget _buildCityButton(
+  Widget _buildCityImage(
       BuildContext context, int index, List<String> cityNames) {
-    //final int currentCapsuleId = timelinePageState.getCapsulesIdList()[index];
-    return ElevatedButton(
-      onPressed: () async {
+    double targetLatitude = capsuleLatList[index];
+    double targetLongitude = capsuleLonList[index];
+
+    // Calculate distance
+    double distanceInMeters = Geolocator.distanceBetween(
+      currentPosition.latitude,
+      currentPosition.longitude,
+      targetLatitude,
+      targetLongitude,
+    );
+
+    // 500メートル以内かどうかに基づいて画像パスを設定
+    String imagePath = (distanceInMeters <= 500)
+        ? 'assets/Capsule_open.PNG' // 500メートル以内ならこの画像
+        : 'assets/Capsule_not_open.PNG'; // 500メートル以上ならこの画像
+
+    return GestureDetector(
+      onTap: () async {
         // 位置情報を取得
         Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best,
@@ -272,50 +292,70 @@ class MyTabState extends State<MyTab> {
           );
         }
       },
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(16),
-        minimumSize: const Size(100, 100),
-        shape: const CircleBorder(),
-        elevation: 10,
-        //primary: Colors.transparent, // 背景色を透明に設定
-      ),
-      child: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              'assets/TimeCapsule.PNG',
-            ), // 画像のパス
-            fit: BoxFit.cover, // 画像をボタンにフィットさせるかどうか
+      child: Stack(
+        alignment: Alignment.center, // 子要素の中央に配置
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle, // 画像を丸く切り取る
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  //offset: Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Image.asset(
+              imagePath,
+              width: 250,
+              height: 250,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        width: 250, // 任意の幅を指定
-        height: 250, // 任意の高さを指定
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // 垂直方向に中央寄せ
-          children: [
-            Text(
-              userName ?? "",
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
+          Positioned(
+            // テキストの配置位置を指定
+            //bottom: 20,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // 垂直方向に中央寄せ
+              children: [
+                Text(
+                  userName ?? "",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ), // テキストサイズを指定
+                ),
+                Text(
+                  userId ?? "",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ), // テキストサイズを指定
+                ),
+                Text(
+                  cityNames[index],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ), // テキストサイズを指定
+                ),
+              ],
             ),
-            Text(
-              userId ?? "",
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.bold), // テキストサイズを指定
-            ),
-            Text(
-              cityNames[index],
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold), // テキストサイズを指定
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  } //500m以内
+  }
+
+  //500m以内
 }
 
 Route _createRoute(

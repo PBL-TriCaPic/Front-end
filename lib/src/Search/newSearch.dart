@@ -1,91 +1,86 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: file_names
 
-class MySearchAppBar extends StatefulWidget {
+import 'package:flutter/material.dart';
+//import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../theme_setting/Color_Scheme.dart';
+import 'package:lottie/lottie.dart';
+
+final ThemeData lightTheme =
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
+
+// テキスト入力フィールドのコントローラ
+TextEditingController _textController = TextEditingController();
+// 検索状態を管理するプロバイダー
+
+final List<String> wordList = [
+  "Hello",
+  "Good morning",
+  "Good afternoon",
+  "Good evening",
+  "Good night",
+  "Good bye",
+  "Bye",
+  "See you later",
+  "taku",
+  "fun",
+  "Hakodate",
+  "kanagawa",
+  "Housei",
+  "Tokyo",
+  "Kyoto",
+  "PBL",
+  "TriCaPic",
+  "darui",
+  "はこだて未来大学",
+  "神奈川工科大学",
+  "法政大学",
+  "京都橘大学",
+  "ミライケータイプロジェクト",
+];
+// 検索結果のインデックスリストを管理するプロバイダー
+
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({super.key});
+
   @override
-  _MySearchAppBarState createState() => _MySearchAppBarState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: lightTheme,
+      home: SearchScreenpage(),
+    );
+  }
 }
 
-class _MySearchAppBarState extends State<MySearchAppBar> {
-  TextEditingController _textController = TextEditingController();
-  bool _isSearching = false;
-  //List<int> _searchIndexList = [];
+class SearchScreenpage extends StatefulWidget {
+  @override
+  State<SearchScreenpage> createState() => MyHomePageState();
+}
 
-  // 適切なバックエンドリクエスト関数を呼び出すメソッド
-  Future<bool> _searchBackend(String query) async {
-    // バックエンドに対するリクエストの実装
-    // ここでは仮にfalseを返しています。実際にはバックエンドとの通信を行い、結果を返すロジックを追加してください。
-    await Future.delayed(Duration(seconds: 1));
-    return false;
-  }
-
-  // 検索結果に応じて適切な表示を更新するメソッド
-  void _updateSearchResults(String query) async {
-    setState(() {
-      //_searchIndexList = [];
-      _isSearching = true;
-    });
-
-    // 適切なバックエンドリクエスト関数を呼び出す
-    bool isMatch = await _searchBackend(query);
-
-    setState(() {
-      _isSearching = false;
-      if (isMatch) {
-        // バックエンドから詳細情報を取得するロジックを実装
-        // ここでは仮に詳細情報があるとして、結果を元にbodyを生成しています。
-        // 実際にはバックエンドからの詳細情報を利用して適切なbodyを生成するロジックを追加してください。
-        // 以下は仮のコードです。
-        _generateBodyWithDetails();
-      } else {
-        // 一致するものがない場合、"not found"を表示
-        _generateBodyNotFound();
-      }
-    });
-  }
-
-  // バックエンドから詳細情報を取得し、適切なbodyを生成するメソッド
-  void _generateBodyWithDetails() {
-    // 仮の詳細情報取得ロジック
-    // ここでは詳細情報があると仮定して、それを元にbodyを生成しています。
-    // 実際にはバックエンドからの詳細情報を利用して適切なbodyを生成するロジックを追加してください。
-    String details = "詳細情報";
-    _generateBody(details);
-  }
-
-  // "not found"を表示するメソッド
-  void _generateBodyNotFound() {
-    _generateBody("not found");
-  }
-
-  // bodyを生成するメソッド
-  void _generateBody(String bodyContent) {
-    // ここではbodyの生成ロジックを仮実装
-    // 実際には詳細なUIやデータを表示するためのWidgetを追加してください。
-    print("Generated Body: $bodyContent");
-  }
-
+class MyHomePageState extends State<SearchScreenpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _isSearching ? _buildSearchField() : Text("Your App Title"),
-        actions: _buildAppBarActions(),
+        elevation: 3,
+        shadowColor: Colors.black,
+        title: _searchTextField(_textController),
       ),
-      body: Center(
-        // ここに生成されたbodyを表示するWidgetを追加
-        child: Text("Body Content"),
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: _defaultListView(),
       ),
     );
   }
 
-  // 検索フィールドを生成するメソッド
-  Widget _buildSearchField() {
+  Widget _searchTextField(TextEditingController textController) {
     return TextField(
-      controller: _textController,
-      autofocus: true,
+      controller: textController,
+      autofocus: false,
       onChanged: (String text) {
-        // テキストが変更されるたびに検索結果を更新
-        _updateSearchResults(text);
+        // 入力テキストに一致する単語のインデックスを検索し、リストに追加
       },
       decoration: InputDecoration(
         filled: true,
@@ -98,8 +93,7 @@ class _MySearchAppBarState extends State<MySearchAppBar> {
         suffixIcon: IconButton(
           icon: const Icon(Icons.clear),
           onPressed: () {
-            // 検索ボックスをクリア
-            _textController.clear();
+            textController.clear();
           },
         ),
         border: OutlineInputBorder(
@@ -120,22 +114,28 @@ class _MySearchAppBarState extends State<MySearchAppBar> {
     );
   }
 
-  // AppBarのアクションを生成するメソッド
-  List<Widget> _buildAppBarActions() {
-    if (_isSearching) {
-      return [];
-    } else {
-      return [
-        IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            // 検索を開始
-            setState(() {
-              _isSearching = true;
-            });
-          },
+  Widget _defaultListView() {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Lottie.asset(
+                  'assets/Search_Friend.json',
+                  fit: BoxFit.cover,
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  '友達を探そう！！',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
         ),
-      ];
-    }
+      ],
+    );
   }
 }

@@ -177,6 +177,7 @@ class MyHomePageState extends State<MyHomePage> {
           List<double>.from(userData['capsuleLatList'] ?? []);
       final List<double> capsulesLonListnew =
           List<double>.from(userData['capsuleLonList'] ?? []);
+      await SharedPrefs.setCapsulesCount(capsulesIdListnew.length);
       await SharedPrefs.setCapsulesIdList(capsulesIdListnew);
       await SharedPrefs.setCapsulesLatList(capsulesLatListnew);
       await SharedPrefs.setCapsulesLonList(capsulesLonListnew);
