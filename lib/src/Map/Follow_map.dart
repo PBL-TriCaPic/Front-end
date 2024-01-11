@@ -1,14 +1,14 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/theme_setting/Color_Scheme.dart';
+import 'package:flutter_application_develop/src/theme_setting/HTTP_request.dart';
+import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
-
-import '../theme_setting/SharedPreferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 final ThemeData lightTheme =
@@ -53,6 +53,14 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
   List<CircleMarker> circleMarkers = []; //中身ないけど、削除すると現在地の●表示されなくなる
   bool isLoading = true; // 追加: ローディング状態を管理
 
+   late SharedPreferences prefs;
+  List<String> userName = [];
+  List<String> userId = [];
+  List<int> friendcapsulesIdList = [];
+  List<double> friendcapsuleLatList = [];
+  List<double> friendcapsuleLonList = [];
+
+
 //他の人のピン表示
   List<double> latListother = [];
   List<double> lonListother = [];
@@ -63,32 +71,112 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
     initLocation();
     //loadSavedCapsules(); // Load saved capsules on initialization
     //他の人のピン表示
-    loadOtherCapsules();
+    //loadOtherCapsules();
+    _loadfriendcapdata();
   }
 
-  // Future<void> loadSavedCapsules() async {
-  //   //バックから緯度経度をとる
-  //   List<double> latList = await SharedPrefs.getCapsulesLatList();
-  //   List<double> lonList = await SharedPrefs.getCapsulesLonList();
+  Future<void> _loadfriendcapdata() async {
+   final myuserId = await SharedPrefs.getUserId();
 
-  //   for (int i = 0; i < min(latList.length, lonList.length); i++) {
-  //     LatLng capsuleLatLng = LatLng(latList[i], lonList[i]);
-  //     createPinFromSavedCapsule(capsuleLatLng);
-  //   }
-  // }
+    try {
+      final frienddata = await ApiService.fetchFriendsCapsules(myuserId!);
 
-//他の人のピン表示 sharedpreferenceの中身をかえる
-  Future<void> loadOtherCapsules() async {
-    //バックから緯度経度をとる
-   latListother = await SharedPrefs.getCapsulesotherLatList();
-   lonListother = await SharedPrefs.getCapsulesotherLonList();
+      // フレンドのカプセルデータを取得
+      List<String> userIdValue = [];
+      List<String> userNameValue = [];
+      List<int> capsulesIdListValue = [];
+      List<double> capsulesLatListValue = [];
+      List<double> capsulesLonListValue = [];
 
-    for (int i = 0; i < min(latListother.length, lonListother.length); i++) {
-      LatLng capsuleLatLng = LatLng(latListother[i], lonListother[i]);
-      createPinFromSavedCapsule(capsuleLatLng);
+      frienddata.forEach((capsule) {
+        userIdValue.add(capsule["friendUserId"]);
+        userNameValue.add(capsule["friendName"]);
+        capsulesIdListValue.add(capsule["capsulesId"]);
+        capsulesLatListValue.add(capsule["capsulesLat"]);
+        capsulesLonListValue.add(capsule["capsulesLon"]);
+      });
+
+      // 以下の変数は消して構いません
+      // final userNameValue = ['John Doe', 'もちゃ', 'ねこま', 'なさき', 'ねこま'];
+      // final userIdValue = ['@123456', '@momo', '@nekoma', '@n_saki', '@nekoma'];
+      // final capsulesIdListValue = [100, 101, 102, 103, 104];
+      // final capsulesLatListValue = [
+      //   41.815494446200134,
+      //   41.83820963121419,
+      //   41.851328225527055,
+      //   41.84591764182999,
+      //   41.848258151796124
+      // ];
+      // final capsulesLonListValue = [
+      //   140.7534832958439,
+      //   140.76897688843917,
+      //   140.76695664722564,
+      //   140.76611795200157,
+      //   140.76781910626528,
+      // ];
+
+      var currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      );
+
+      setState(() {
+        userName = userNameValue;
+        userId = userIdValue;
+        friendcapsulesIdList = capsulesIdListValue;
+        friendcapsuleLatList = capsulesLatListValue;
+        friendcapsuleLonList = capsulesLonListValue;
+      });
+    } catch (e) {
+      print('エラーが発生しました: $e');
     }
+
+  }
+// //他の人のピン表示 sharedpreferenceの中身をかえる
+//   Future<void> loadOtherCapsules() async {
+//     //バックから緯度経度をとる
+//    latListother = await SharedPrefs.getCapsulesotherLatList();
+//    lonListother = await SharedPrefs.getCapsulesotherLonList();
+
+//     for (int i = 0; i < min(latListother.length, lonListother.length); i++) {
+//       LatLng capsuleLatLng = LatLng(latListother[i], lonListother[i]);
+//       createPinFromSavedCapsule(capsuleLatLng);
+//     }
+//   }
+
+  Future<void> _refreshData() async {
+    await _loadPreference();
   }
 
+  Future<void> _loadPreference() async {
+    final Email = await SharedPrefs.getEmail();
+    final Password = await SharedPrefs.getPassword();
+
+    if (Email == null || Password == null) {
+      return;
+    }
+    final userData = await ApiService.loginUser(Email, Password);
+    final List<int> capsulesIdListnew =
+        List<int>.from(userData['capsulesIdList'] ?? []);
+    final List<double> capsulesLatListnew =
+        List<double>.from(userData['capsuleLatList'] ?? []);
+    final List<double> capsulesLonListnew =
+        List<double>.from(userData['capsuleLonList'] ?? []);
+    await SharedPrefs.setCapsulesIdList(capsulesIdListnew);
+    await SharedPrefs.setCapsulesLatList(capsulesLatListnew);
+    await SharedPrefs.setCapsulesLonList(capsulesLonListnew);
+
+    setState(() {
+      friendcapsulesIdList = capsulesIdListnew.cast<int>();
+      friendcapsuleLatList = capsulesLatListnew.cast<double>();
+      friendcapsuleLonList = capsulesLonListnew.cast<double>();
+      for(int i=0;i<friendcapsuleLatList.length; i++){
+         LatLng capsuleLatLng = LatLng(friendcapsuleLatList[i], friendcapsuleLonList[i]);
+    createPinFromSavedCapsule(capsuleLatLng);
+      }
+    });
+  } //ここの処理まるまる変えてリフレッシュした時に友達のカプセルを更新できるようにする。
+
+  
   void createPinFromSavedCapsule(LatLng capsuleLatLng) {
     Marker marker = Marker(
       point: capsuleLatLng,
@@ -129,37 +217,7 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
     return MaterialApp(
       theme: selectedTheme,
       home: Scaffold(
-        // appBar: AppBar(
-        //   centerTitle: true,
-        //   // title: Image.asset(
-        //   //   'assets/TriCaPic_logo.png',
-        //   //   height: 200,
-        //   //   width: 200,
-        //   // ),
-        //   elevation: 3,
-        //   shadowColor: Colors.black,
-
-
-
-        //   //ボタンの動きを追加Map.dartへ
-        //    actions: [
-        //     // Wrap the IconButton with GestureDetector
-        //     GestureDetector(
-        //       onTap: () {
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(
-        //             builder: (context) => MapScreen(),
-        //           ),
-        //         );
-        //       },
-        //       child: Padding(
-        //         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        //         child: Icon(Icons.people_alt_outlined),
-        //       ),
-        //     ),
-        //   ],
-        // ),
+       
         body: Container(
           child: FlutterMap(
             // マップ表示設定
@@ -193,30 +251,7 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
           ),
         ),
 
-        //右下のボタンの処理
-        // floatingActionButton: FloatingActionButton(
-        //   //Iconの部分を書き換えるとアイコンのデザイン変更可
-        //   child: SvgPicture.asset(
-        //     'assets/TriCaPicapplogo1.svg',
-        //     width: 35,
-        //     height: 35,
-        //     color: Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
-        //   ),
-        //   onPressed: () async {
-        //     //カメラ撮影画面に遷移
-        //     final XFile? image = await _picker.pickImage(
-        //       source: ImageSource.camera,
-        //     );
-        //     if (image != null) {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) => PictureCheck(image),
-        //         ),
-        //       );
-        //     }
-        //   },
-        // ),
+      
       ),
     );
   }
@@ -270,7 +305,7 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
             color: Colors.red,
           ),
           onPressed: () {
-            pinReturn(tapLatLng, tapPin);
+          //  pinReturn(tapLatLng, tapPin);
           },
         ),
       ),
