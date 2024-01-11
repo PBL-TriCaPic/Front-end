@@ -9,6 +9,7 @@ import 'package:flutter_application_develop/src/Profile/Setting.dart';
 //import 'package:image_picker/image_picker.dart';
 //import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../theme_setting/HTTP_request.dart';
 import 'profile_edit.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
@@ -59,8 +60,8 @@ class MyHomePageState extends State<MyHomePage> {
     // ユーザー統計情報のデフォルト値を初期化
     // followingCount = 100;
     // followersCount = 100;
-    friendCount = 100;
-    postsCount = 100;
+    //friendCount = 100;
+    //postsCount = 100;
     // ユーザーの設定をロードし、プロファイル画像を設定
     _loadPreferences();
   }
@@ -100,6 +101,7 @@ class MyHomePageState extends State<MyHomePage> {
     final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
     final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
     final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
+    final capsulesCountValue = await SharedPrefs.getCapsulesCount();
     String? base64Image = await SharedPrefs.getProfileImage();
     print('Base64 Image: $base64Image'); // デバッグログ
     // if (base64Image != null) {
@@ -111,6 +113,12 @@ class MyHomePageState extends State<MyHomePage> {
     //     imageFile = File.fromRawPath(imageData);
     //   });
     // }
+
+    try {
+      friendCount = await ApiService.fetchFriendsCount(userIdValue ?? '');
+    } catch (e) {
+      print('フレンド数の取得に失敗しました: $e');
+    }
 
     // List<int> を List<String> に変換
     final capsulesIdListAsString =
@@ -129,6 +137,7 @@ class MyHomePageState extends State<MyHomePage> {
       capsulesIdList = capsulesIdListAsString;
       capsuleLatList = capsulesLatListValue.cast<double>();
       capsuleLonList = capsulesLonListValue.cast<double>();
+      postsCount = capsulesCountValue ?? 0;
       if (base64Image != null) {
         decodedprofile = base64.decode(base64Image);
       } else {
@@ -202,7 +211,7 @@ class MyHomePageState extends State<MyHomePage> {
                       Column(
                         children: [
                           const Text(
-                            '投稿数',
+                            'カプセル数',
                             style: TextStyle(fontSize: 16),
                           ),
                           Text(
@@ -226,7 +235,8 @@ class MyHomePageState extends State<MyHomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const FriendList(),
+                                  builder: (context) =>
+                                      FriendList(userId: userId),
                                 ),
                               );
                             },

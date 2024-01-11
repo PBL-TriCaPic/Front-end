@@ -241,4 +241,15 @@ class SharedPrefs {
     final pref = await SharedPreferences.getInstance();
     await pref.setBool('isLoggedIn', isLoggedIn);
   }
+
+  static Future<void> setCapsulesCount(int count) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('capsulesCount', count);
+    print("Capsules count saved to SharedPreferences");
+  } //カプセルの要素数を保存
+
+  static Future<int?> getCapsulesCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('capsulesCount');
+  } //カプセルの要素数を参照
 }
