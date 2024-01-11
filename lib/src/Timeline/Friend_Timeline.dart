@@ -35,41 +35,59 @@ class FriendTabState extends State<FriendTab> {
   }
 
   Future<void> _loadfriendcapdata() async {
-    // final userNameValue = await SharedPrefs.getUsername();
-    // final userIdValue = await SharedPrefs.getUserId();
+    final myuserId = await SharedPrefs.getUserId();
 
-    // final capsulesIdListValue = await SharedPrefs.getCapsulesIdList();
-    // final capsulesLatListValue = await SharedPrefs.getCapsulesLatList();
-    // final capsulesLonListValue = await SharedPrefs.getCapsulesLonList();
-    //ここでバックエンドにリクエスト
-    final userNameValue = ['John Doe', 'もちゃ', 'ねこま', 'なさき', 'ねこま'];
-    final userIdValue = ['@123456', '@momo', '@nekoma', '@n_saki', '@nekoma'];
-    final capsulesIdListValue = [100, 101, 102, 103, 104];
-    final capsulesLatListValue = [
-      41.815494446200134,
-      41.83820963121419,
-      41.851328225527055,
-      41.84591764182999,
-      41.848258151796124
-    ];
-    final capsulesLonListValue = [
-      140.7534832958439,
-      140.76897688843917,
-      140.76695664722564,
-      140.76611795200157,
-      140.76781910626528,
-    ];
-    currentPosition = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
-    );
+    try {
+      final frienddata = await ApiService.fetchFriendsCapsules(myuserId!);
 
-    setState(() {
-      userName = userNameValue;
-      userId = userIdValue;
-      friendcapsulesIdList = capsulesIdListValue;
-      friendcapsuleLatList = capsulesLatListValue;
-      friendcapsuleLonList = capsulesLonListValue;
-    });
+      // フレンドのカプセルデータを取得
+      List<String> userIdValue = [];
+      List<String> userNameValue = [];
+      List<int> capsulesIdListValue = [];
+      List<double> capsulesLatListValue = [];
+      List<double> capsulesLonListValue = [];
+
+      frienddata.forEach((capsule) {
+        userIdValue.add(capsule["friendUserId"]);
+        userNameValue.add(capsule["friendName"]);
+        capsulesIdListValue.add(capsule["capsulesId"]);
+        capsulesLatListValue.add(capsule["capsulesLat"]);
+        capsulesLonListValue.add(capsule["capsulesLon"]);
+      });
+
+      // 以下の変数は消して構いません
+      // final userNameValue = ['John Doe', 'もちゃ', 'ねこま', 'なさき', 'ねこま'];
+      // final userIdValue = ['@123456', '@momo', '@nekoma', '@n_saki', '@nekoma'];
+      // final capsulesIdListValue = [100, 101, 102, 103, 104];
+      // final capsulesLatListValue = [
+      //   41.815494446200134,
+      //   41.83820963121419,
+      //   41.851328225527055,
+      //   41.84591764182999,
+      //   41.848258151796124
+      // ];
+      // final capsulesLonListValue = [
+      //   140.7534832958439,
+      //   140.76897688843917,
+      //   140.76695664722564,
+      //   140.76611795200157,
+      //   140.76781910626528,
+      // ];
+
+      currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      );
+
+      setState(() {
+        userName = userNameValue;
+        userId = userIdValue;
+        friendcapsulesIdList = capsulesIdListValue;
+        friendcapsuleLatList = capsulesLatListValue;
+        friendcapsuleLonList = capsulesLonListValue;
+      });
+    } catch (e) {
+      print('エラーが発生しました: $e');
+    }
   }
 
   Future<void> _refreshData() async {

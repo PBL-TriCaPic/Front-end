@@ -146,6 +146,8 @@ class _LoginState extends State<Login> {
           await SharedPrefs.setEmail(email);
           await SharedPrefs.setPassword(password);
           await SharedPrefs.setUsername(success['username']);
+          //await SharedPrefs.setProfileImage(success['iconImage']);
+          //await SharedPrefs.setMyBio(success['profile']);
           await SharedPrefs.setUserId(success['userId']);
           final List<int> capsulesIdList =
               List<int>.from(success['capsulesIdList'] ?? []);
@@ -157,6 +159,18 @@ class _LoginState extends State<Login> {
           await SharedPrefs.setCapsulesIdList(capsulesIdList);
           await SharedPrefs.setCapsulesLatList(capsulesLatList);
           await SharedPrefs.setCapsulesLonList(capsulesLonList);
+          // profileとiconImageの値がnullでない場合に保存
+          if (success['profile'] != null) {
+            await SharedPrefs.setMyBio(success['profile']);
+          } else {
+            await SharedPrefs.setMyBio(''); // もしnullなら空の値を保存
+          }
+
+          if (success['iconImage'] != null) {
+            await SharedPrefs.setProfileImage(success['iconImage']);
+          } else {
+            await SharedPrefs.setProfileImage(''); // もしnullなら空の値を保存
+          }
           await SharedPrefs.saveLoginStatus(context, isLoggedIn);
           Navigator.push(
             context,

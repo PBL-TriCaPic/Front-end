@@ -1,43 +1,19 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously, empty_catches
 
 import 'package:flutter/material.dart';
-//import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
+import '../Friend/Friend_Profile.dart';
+import '../Profile/Profile.dart';
 import '../theme_setting/Color_Scheme.dart';
 import 'package:lottie/lottie.dart';
+import '../theme_setting/HTTP_request.dart';
+import '../theme_setting/SharedPreferences.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 // テキスト入力フィールドのコントローラ
 TextEditingController _textController = TextEditingController();
-// 検索状態を管理するプロバイダー
-
-final List<String> wordList = [
-  "Hello",
-  "Good morning",
-  "Good afternoon",
-  "Good evening",
-  "Good night",
-  "Good bye",
-  "Bye",
-  "See you later",
-  "taku",
-  "fun",
-  "Hakodate",
-  "kanagawa",
-  "Housei",
-  "Tokyo",
-  "Kyoto",
-  "PBL",
-  "TriCaPic",
-  "darui",
-  "はこだて未来大学",
-  "神奈川工科大学",
-  "法政大学",
-  "京都橘大学",
-  "ミライケータイプロジェクト",
-];
-// 検索結果のインデックスリストを管理するプロバイダー
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -46,12 +22,14 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: lightTheme,
-      home: SearchScreenpage(),
+      home: const SearchScreenpage(),
     );
   }
 }
 
 class SearchScreenpage extends StatefulWidget {
+  const SearchScreenpage({super.key});
+
   @override
   State<SearchScreenpage> createState() => MyHomePageState();
 }
@@ -79,8 +57,15 @@ class MyHomePageState extends State<SearchScreenpage> {
     return TextField(
       controller: textController,
       autofocus: false,
-      onChanged: (String text) {
-        // 入力テキストに一致する単語のインデックスを検索し、リストに追加
+      // onChanged: (String text) {
+      //   if (_debounce?.isActive ?? false) _debounce!.cancel();
+      //   _debounce = Timer(const Duration(milliseconds: 500), () {
+      //     _performSearch(text);
+      //   });
+      // },
+      onSubmitted: (String text) {
+        // キーボードの決定ボタンが押されたときの処理
+        _performSearch(text);
       },
       decoration: InputDecoration(
         filled: true,
@@ -137,5 +122,66 @@ class MyHomePageState extends State<SearchScreenpage> {
         ),
       ],
     );
+  }
+
+  Future<void> _performSearch(String entertext) async {
+    try {
+      String userId = entertext.startsWith('@') ? entertext : '@$entertext';
+      final userData = await ApiService.fetchUserData(userId);
+
+      // fetchUserDataが正常にデータを取得した場合
+      _navigateToUserDetails(context, userData['name'], userId);
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('エラー'),
+            content: const Text('ユーザーが見つかりませんでした。'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      // エラーが発生した場合
+    }
+  }
+
+  void _navigateToUserDetails(
+      BuildContext context, String username, String userID) async {
+    // SharedPreferencesから現在のログイン中のユーザーIDを取得
+    String? loggedInUserId = await SharedPrefs.getUserId();
+
+    try {
+      if (loggedInUserId != null && userID == loggedInUserId) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AccountScreen(),
+          ),
+        );
+
+        // 画面が戻ってきた際に再度データを取得
+        // _fetchFriendsList();
+      } else {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                UserDetailsScreen(username: username, userID: userID),
+          ),
+        );
+
+        // 画面が戻ってきた際に再度データを取得
+        // _fetchFriendsList();
+      }
+    } catch (e) {}
   }
 }
