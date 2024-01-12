@@ -62,8 +62,8 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
 
 
 //他の人のピン表示
-  List<double> latListother = [];
-  List<double> lonListother = [];
+  // List<double> latListother = [];
+  // List<double> lonListother = [];
 
   @override
   void initState() {
@@ -218,7 +218,8 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
       theme: selectedTheme,
       home: Scaffold(
        
-        body: Container(
+        body: RefreshIndicator(
+          onRefresh: _refreshData,
           child: FlutterMap(
             // マップ表示設定
             options: MapOptions(
