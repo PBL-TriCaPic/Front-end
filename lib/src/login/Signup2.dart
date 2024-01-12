@@ -90,6 +90,7 @@ class _Signup2State extends State<Signup2> {
       String password = passwordController.text;
       String rePassword = rePasswordController.text;
       String name = nameController.text;
+      int capsulecount = 0;
 
       if (password == rePassword &&
           passwordError.isEmpty &&
@@ -101,8 +102,11 @@ class _Signup2State extends State<Signup2> {
         await SharedPrefs.setCapsulesIdList(capsulesIdList);
         await SharedPrefs.setCapsulesLatList(capsulesLatList);
         await SharedPrefs.setCapsulesLonList(capsulesLonList);
+        await SharedPrefs.setCapsulesCount(capsulecount);
         // ignore: use_build_context_synchronously
         await SharedPrefs.saveLoginStatus(context, isLoggedIn);
+        await SharedPrefs.setMyBio('');
+        await SharedPrefs.setProfileImage('');
         await ApiService.createUser(userID, email, password, name)
             .then((success) {
           if (success) {

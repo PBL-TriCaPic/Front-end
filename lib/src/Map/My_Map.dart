@@ -15,9 +15,8 @@ import 'package:latlong2/latlong.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
 
-
 final ThemeData lightTheme =
-ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
+    ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 // class MyMapScreen extends StatelessWidget {
 //   // ignore: use_super_parameters
@@ -25,13 +24,13 @@ ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
 //   @override
 //   MyHomeScreen createState() => MyHomeScreen(title: '',);
-  
+
 //   @override
 //   Widget build(BuildContext context) {
 //     // TODO: implement build
 //     throw UnimplementedError();
 //   }
-  
+
 // }
 
 class MyHomeScreen extends StatefulWidget {
@@ -58,15 +57,13 @@ class _HomeScreen extends State<MyHomeScreen> {
   List<CircleMarker> circleMarkers = []; //中身ないけど、削除すると現在地の●表示されなくなる
   bool isLoading = true; // 追加: ローディング状態を管理
 
-
-
   @override
   void initState() {
     super.initState();
     initLocation();
     loadSavedCapsules(); // Load saved capsules on initialization
     //他の人のピン表示
-   
+
     //loadSavedCapsules(); // Load saved capsules on initialization
     startLocationUpdateTimer();
   }
@@ -91,20 +88,20 @@ class _HomeScreen extends State<MyHomeScreen> {
   //   });
   // }
   Future<void> updateLocation() async {
-  // ここで位置情報を取得して更新する
-  Position position = await Geolocator.getCurrentPosition(
-    desiredAccuracy: LocationAccuracy.high,
-  );
+    // ここで位置情報を取得して更新する
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
-  if (mounted) {
-    setState(() {
-      lat = position.latitude;
-      lng = position.longitude;
-      // 新しい位置情報で円マーカーを更新
-      updateCircleMarker(lat!, lng!);
-    });
+    if (mounted) {
+      setState(() {
+        lat = position.latitude;
+        lng = position.longitude;
+        // 新しい位置情報で円マーカーを更新
+        updateCircleMarker(lat!, lng!);
+      });
+    }
   }
-}
 
   void updateCircleMarker(double latitude, double longitude) {
     // 既存の円マーカーを新しい位置情報で更新
@@ -175,38 +172,39 @@ class _HomeScreen extends State<MyHomeScreen> {
       );
     }
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: selectedTheme,
       home: Scaffold(
         //appBar: AppBar(
-          //centerTitle: true,
-          // title: Image.asset(
-          //   'assets/TriCaPic_logo.png',
-          //   height: 200,
-          //   width: 200,
-          // ),
+        //centerTitle: true,
+        // title: Image.asset(
+        //   'assets/TriCaPic_logo.png',
+        //   height: 200,
+        //   width: 200,
+        // ),
         //  elevation: 3,
-          //shadowColor: Colors.black,
+        //shadowColor: Colors.black,
 
-          //ボタンの動きを追加Follow_mapへ
-          //  actions: [
-          //   // Wrap the IconButton with GestureDetector
-          //   GestureDetector(
-          //     onTap: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => FollowMapScreen(),
-          //         ),
-          //       );
-          //     },
-          //     child: Padding(
-          //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          //       child: Icon(Icons.people_alt_outlined),
-          //     ),
-          //   ),
-          // ],
-          
-       // ),
+        //ボタンの動きを追加Follow_mapへ
+        //  actions: [
+        //   // Wrap the IconButton with GestureDetector
+        //   GestureDetector(
+        //     onTap: () {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //           builder: (context) => FollowMapScreen(),
+        //         ),
+        //       );
+        //     },
+        //     child: Padding(
+        //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        //       child: Icon(Icons.people_alt_outlined),
+        //     ),
+        //   ),
+        // ],
+
+        // ),
         body: FlutterMap(
           // マップ表示設定
           options: MapOptions(

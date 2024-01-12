@@ -1,14 +1,14 @@
 // ignore_for_file: file_names, non_constant_identifier_names, avoid_types_as_parameter_names, avoid_print
 
 import 'dart:convert';
-import 'dart:io';
+//import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../Timeline/Timeline.dart';
-import '../theme_setting/SharedPreferences.dart';
+//import '../theme_setting/SharedPreferences.dart';
 import '../theme_setting/HTTP_request.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -37,13 +37,15 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   late SharedPreferences prefs;
   String? userName;
   String? userId;
-  File? imageFile;
+  //File? imageFile;
   String? place;
   String? capsuleContent;
 
   String? capsuleDate;
   String? textData;
   String? imageData;
+
+  String? profileimage;
 
   Uint8List? decodedImageData;
   Uint8List? decodedprofile;
@@ -59,21 +61,21 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
   Future<void> _loadPreferences() async {
     // userName = userName;
     // userId = userId;
-    _loadImage();
+    //_loadImage();
   }
 
-  Future<void> _loadImage() async {
-    String? base64Image = await SharedPrefs
-        .getProfileImage(); //これはシェアドプリファレンスで画像を保存したものを持ってきてるだけ。
-    //ここで
-    setState(() {
-      if (base64Image != null) {
-        decodedprofile = base64.decode(base64Image);
-      } else {
-        // imageDataがnullの場合の処理を行います（必要に応じて）。
-      }
-    });
-  } //profile image  使わなくなるかも
+  // Future<void> _loadImage() async {
+  //   String? base64Image = await SharedPrefs
+  //       .getProfileImage(); //これはシェアドプリファレンスで画像を保存したものを持ってきてるだけ。
+  //   //ここで
+  //   setState(() {
+  //     if (base64Image != null) {
+  //       decodedprofile = base64.decode(base64Image);
+  //     } else {
+  //       // imageDataがnullの場合の処理を行います（必要に応じて）。
+  //     }
+  //   });
+  // } //profile image  使わなくなるかも
 
   Future<void> _fetchCapsuleData(String capsuleId) async {
     try {
@@ -88,8 +90,15 @@ class _CapContentsScreenState extends State<CapContentsScreen> {
         userName = widget.userName;
         userId = widget.userId;
         imageData = data['imageData'];
+        profileimage = data['iconImage'];
 
         // imageDataがnullでない場合、Base64データをデコード
+        if (profileimage != null) {
+          decodedprofile = base64.decode(profileimage!);
+        } else {
+          // profileimageがnullの場合の処理を行います（必要に応じて）。
+        }
+
         if (imageData != null) {
           decodedImageData = base64.decode(imageData!);
         } else {

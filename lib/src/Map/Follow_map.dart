@@ -10,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
@@ -20,15 +19,14 @@ final ThemeData lightTheme =
 
 //   @override
 //   FollowHomeScreen createState() => FollowHomeScreen(title: '',);
-  
+
 //   @override
 //   Widget build(BuildContext context) {
 //     // TODO: implement build
 //     throw UnimplementedError();
 //   }
-  
-// }
 
+// }
 
 class FollowHomeScreen extends StatefulWidget {
   const FollowHomeScreen({super.key, required this.title});
@@ -215,11 +213,41 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
       );
     }
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: selectedTheme,
       home: Scaffold(
-       
-        body: RefreshIndicator(
-          onRefresh: _refreshData,
+        // appBar: AppBar(
+        //   centerTitle: true,
+        //   // title: Image.asset(
+        //   //   'assets/TriCaPic_logo.png',
+        //   //   height: 200,
+        //   //   width: 200,
+        //   // ),
+        //   elevation: 3,
+        //   shadowColor: Colors.black,
+
+
+
+        //   //ボタンの動きを追加Map.dartへ
+        //    actions: [
+        //     // Wrap the IconButton with GestureDetector
+        //     GestureDetector(
+        //       onTap: () {
+        //         Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //             builder: (context) => MapScreen(),
+        //           ),
+        //         );
+        //       },
+        //       child: Padding(
+        //         padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        //         child: Icon(Icons.people_alt_outlined),
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        body: Container(
           child: FlutterMap(
             // マップ表示設定
             options: MapOptions(
@@ -361,3 +389,7 @@ class _FollowHomeScreen extends State<FollowHomeScreen> {
 
   void pinSizeChange() {}
 }
+
+  
+  
+
