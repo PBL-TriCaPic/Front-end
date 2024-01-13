@@ -1,8 +1,11 @@
 // ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
-import 'package:flutter/material.dart';
-import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'src/app.dart';
 import 'src/login/start.dart';
 
@@ -15,6 +18,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    preventScreenshot(); // ここでpreventScreenshotメソッドを呼ぶ
     return const MaterialApp(
       home: SplashScreen(),
     );
@@ -56,5 +60,18 @@ class _SplashScreenState extends State<SplashScreen> {
         child: CircularProgressIndicator(),
       ),
     );
+  }
+}
+
+MethodChannel iosSecureScreenShotChannel =
+    const MethodChannel('secureScreenshotChannel');
+
+//スクショ不可にするメソッド
+void preventScreenshot() {
+  if (Platform.isAndroid) {
+    FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+  if (Platform.isIOS) {
+    iosSecureScreenShotChannel.invokeMethod('secureiOS');
   }
 }
