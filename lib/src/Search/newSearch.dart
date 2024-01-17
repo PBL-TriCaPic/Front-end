@@ -8,6 +8,7 @@ import '../theme_setting/Color_Scheme.dart';
 import 'package:lottie/lottie.dart';
 import '../theme_setting/HTTP_request.dart';
 import '../theme_setting/SharedPreferences.dart';
+import '../Friend/Friend_request.dart';
 
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
@@ -35,13 +36,45 @@ class SearchScreenpage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<SearchScreenpage> {
+  String? userId;
+
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final userIdValue = await SharedPrefs.getUserId();
+    setState(() {
+      userId = userIdValue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 3,
         shadowColor: Colors.black,
-        title: _searchTextField(_textController),
+        title: Row(
+          children: [
+            Expanded(
+              child: _searchTextField(_textController),
+            ),
+            IconButton(
+              onPressed: () {
+                // カスタム検索ボタンが押されたときの処理
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FriendrequestList(userId: userId),
+                  ),
+                );
+              },
+              icon: Icon(Icons.person_add_alt_outlined),
+            ),
+          ],
+        ),
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
