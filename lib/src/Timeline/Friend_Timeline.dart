@@ -55,25 +55,6 @@ class FriendTabState extends State<FriendTab> {
         capsulesLonListValue.add(capsule["capsulesLon"]);
       });
 
-      // 以下の変数は消して構いません
-      // final userNameValue = ['John Doe', 'もちゃ', 'ねこま', 'なさき', 'ねこま'];
-      // final userIdValue = ['@123456', '@momo', '@nekoma', '@n_saki', '@nekoma'];
-      // final capsulesIdListValue = [100, 101, 102, 103, 104];
-      // final capsulesLatListValue = [
-      //   41.815494446200134,
-      //   41.83820963121419,
-      //   41.851328225527055,
-      //   41.84591764182999,
-      //   41.848258151796124
-      // ];
-      // final capsulesLonListValue = [
-      //   140.7534832958439,
-      //   140.76897688843917,
-      //   140.76695664722564,
-      //   140.76611795200157,
-      //   140.76781910626528,
-      // ];
-
       currentPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best,
       );
@@ -91,33 +72,8 @@ class FriendTabState extends State<FriendTab> {
   }
 
   Future<void> _refreshData() async {
-    await _loadPreference();
+    await _loadfriendcapdata();
   }
-
-  Future<void> _loadPreference() async {
-    final Email = await SharedPrefs.getEmail();
-    final Password = await SharedPrefs.getPassword();
-
-    if (Email == null || Password == null) {
-      return;
-    }
-    final userData = await ApiService.loginUser(Email, Password);
-    final List<int> capsulesIdListnew =
-        List<int>.from(userData['capsulesIdList'] ?? []);
-    final List<double> capsulesLatListnew =
-        List<double>.from(userData['capsuleLatList'] ?? []);
-    final List<double> capsulesLonListnew =
-        List<double>.from(userData['capsuleLonList'] ?? []);
-    await SharedPrefs.setCapsulesIdList(capsulesIdListnew);
-    await SharedPrefs.setCapsulesLatList(capsulesLatListnew);
-    await SharedPrefs.setCapsulesLonList(capsulesLonListnew);
-
-    setState(() {
-      friendcapsulesIdList = capsulesIdListnew.cast<int>();
-      friendcapsuleLatList = capsulesLatListnew.cast<double>();
-      friendcapsuleLonList = capsulesLonListnew.cast<double>();
-    });
-  } //ここの処理まるまる変えてリフレッシュした時に友達のカプセルを更新できるようにする。
 
   @override
   Widget build(BuildContext context) {
