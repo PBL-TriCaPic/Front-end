@@ -90,8 +90,6 @@ class MyHomePageState extends State<FriendPage> {
       final userDataFuture = ApiService.fetchUserData(userID);
       final friendStatusget =
           ApiService.fetchFriendsStatus(myUserID!, widget.userID);
-      //final friendsCountFuture = ApiService.fetchFriendsCount(userID);
-      //_initStateAsync();
       // それぞれの結果を待つ
       final userData = await userDataFuture;
       final FSG = await friendStatusget;
@@ -106,13 +104,6 @@ class MyHomePageState extends State<FriendPage> {
       bio = userData['profile'];
       friendCount = userData['friendsCount'];
       friendStatus = FSG;
-      // List friendsList = await ApiService.fetchFriendsList(userID);
-      // userIDs =
-      //     friendsList.map((friend) => friend['userId'] as String).toList();
-      // // userIDがuserIDsに含まれているかどうかに基づいてisFollowingを更新
-      // setState(() {
-      //   isFollowing = userIDs.contains(myUserID);
-      // });//ここでフレンド状態か確認しようと思ってた
     } catch (e) {
       print('データの取得に失敗しました: $e');
     }
@@ -131,8 +122,6 @@ class MyHomePageState extends State<FriendPage> {
 
   void _showEnlargeDialog() {
     // 画像拡大ダイアログの表示ロジックを実装
-    // ...
-
     // 例: ダイアログを表示する際に使用する関数
     showDialog<void>(
       context: context,
@@ -162,55 +151,7 @@ class MyHomePageState extends State<FriendPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ElevatedButton followButton = ElevatedButton(
-    //   onPressed: () async {
-    //     try {
-    //       int friendStatus =
-    //           await ApiService.fetchFriendsStatus(myUserID!, widget.userID);
-    //       if (friendStatus == 1 || friendStatus == 3) {
-    //         // フォロー中の場合はアンフォロー
-    //         await ApiService.unfollowUser(myUserID!, widget.userID);
-    //         _reloadApiService();
-    //       } else {
-    //         // フォローしていない場合はフォロー
-    //         await ApiService.followUser(myUserID!, widget.userID);
-    //         _reloadApiService();
-    //       }
-    //       //_reloadApiService();
-    //       // フォロー状態をトグル
-    //       setState(() {
-    //         isFollowing = !isFollowing;
-    //       });
-    //     } catch (e) {
-    //       print('エラーが発生しました: $e');
-    //       // エラーハンドリングを追加することが適切です
-    //     }
-    //   },
-    //   style: ElevatedButton.styleFrom(
-    //     backgroundColor: isFollowing
-    //         ? const Color.fromARGB(255, 228, 255, 253)
-    //         : const Color(0xFFf2fcfc), // フォロー中かどうかで色を変更
-    //     elevation: 4, // 影の設定
-    //     shape: RoundedRectangleBorder(
-    //       borderRadius: BorderRadius.circular(8.0), // 四角い形状に設定
-    //     ),
-    //   ),
-    //   child: SizedBox(
-    //     width: MediaQuery.of(context).size.width * 0.8, // 幅を80%に設定
-    //     height: 50,
-    //     child: Center(
-    //       child: Text(
-    //         isFollowing ? 'フレンド' : 'フレンドになる',
-    //         style: const TextStyle(
-    //           fontSize: 25,
-    //           fontWeight: FontWeight.bold,
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
     Widget followButton = buildFriendButton(friendStatus);
-    //ThemeData selectedTheme = lightTheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text(''),

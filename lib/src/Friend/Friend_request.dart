@@ -39,9 +39,6 @@ class _FriendrequestListpageState extends State<FriendrequestList> {
   Future<void> _fetchFriendsList() async {
     try {
       // 非同期処理が開始したことを通知
-      // setState(() {
-      //   isLoading = true;
-      // });
 
       // ここでfetchFriendsListを呼び出してデータを取得
       List friendsList = await ApiService.fetchFriendRequestsList(userId);

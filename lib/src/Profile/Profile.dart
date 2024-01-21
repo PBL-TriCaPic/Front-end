@@ -1,20 +1,16 @@
 // ignore_for_file: file_names, use_key_in_widget_constructors, use_build_context_synchronously, avoid_print, unused_element
 
-//import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_develop/src/Friend/Friend_List.dart';
 import 'package:flutter_application_develop/src/Profile/Setting.dart';
-//import 'package:image_picker/image_picker.dart';
-//import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme_setting/HTTP_request.dart';
 import 'profile_edit.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
 import 'dart:async';
-//import '../Timeline/TimlineButton.dart';
 import 'dart:convert';
 
 final ThemeData lightTheme =
@@ -57,12 +53,6 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // ユーザー統計情報のデフォルト値を初期化
-    // followingCount = 100;
-    // followersCount = 100;
-    //friendCount = 100;
-    //postsCount = 100;
-    // ユーザーの設定をロードし、プロファイル画像を設定
     _loadPreferences();
   }
 
@@ -104,15 +94,6 @@ class MyHomePageState extends State<MyHomePage> {
     final capsulesCountValue = await SharedPrefs.getCapsulesCount();
     String? base64Image = await SharedPrefs.getProfileImage();
     print('Base64 Image: $base64Image'); // デバッグログ
-    // if (base64Image != null) {
-    //   List<int> imageBytes = base64Decode(base64Image);
-    //   print('デコードされた画像バイト: $imageBytes');
-    //   Uint8List imageData = Uint8List.fromList(imageBytes);
-    //   //print('Base64 Image: $base64Image'); // デバッグログ
-    //   setState(() {
-    //     imageFile = File.fromRawPath(imageData);
-    //   });
-    // }
 
     try {
       friendCount = await ApiService.fetchFriendsCount(userIdValue ?? '');
@@ -124,12 +105,6 @@ class MyHomePageState extends State<MyHomePage> {
     final capsulesIdListAsString =
         capsulesIdListValue.map((id) => id.toString()).toList();
 
-    // print('userName: $userNameValue');
-    // print('userId: $userIdValue');
-    // print('bio: $bioValue');
-    // print('capsulesIdList: $capsulesIdListValue');
-    // print('capsulesLatList: $capsulesLatListValue');
-    // print('capsulesLonList: $capsulesLonListValue');
     setState(() {
       userName = userNameValue;
       userId = userIdValue;
@@ -145,16 +120,6 @@ class MyHomePageState extends State<MyHomePage> {
       }
     });
   }
-
-  // Widget _buildImageWidget() {
-  //   return imageFile != null
-  //       ? Image.memory(
-  //           Uint8List.fromList(imageFile!.readAsBytesSync()),
-  //           height: 100, // 画像の高さを適切に設定
-  //           width: 100, // 画像の幅を適切に設定
-  //         )
-  //       : Container(); // 画像がない場合は空のContainerを表示
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -225,10 +190,6 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                       Column(
                         children: [
-                          // const Text(
-                          //   'フレンド数',
-                          //   style: TextStyle(fontSize: 16),
-                          // ),
                           TextButton(
                             onPressed: () {
                               // フレンドリスト画面に遷移
@@ -311,21 +272,4 @@ class MyHomePageState extends State<MyHomePage> {
 
     _loadPreferences();
   }
-
-  // 変更をSharedPreferencesに保存する関数(フォローフォロワー投稿数)
-  // void _saveChanges(
-  //   int? newFollowingCount,
-  //   int? newFollowersCount,
-  //   int? newPostsCount,
-  // ) async {
-  //   if (newFollowingCount != null) {
-  //     await prefs.setInt('followingCount', newFollowingCount);
-  //   }
-  //   if (newFollowersCount != null) {
-  //     await prefs.setInt('followersCount', newFollowersCount);
-  //   }
-  //   if (newPostsCount != null) await prefs.setInt('postsCount', newPostsCount);
-
-  //   _loadPreferences(); // 変更後の設定を再読み込み
-  // }
 }

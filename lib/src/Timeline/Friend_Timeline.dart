@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, library_prefixes, camel_case_types, non_constant_identifier_names
+// ignore_for_file: file_names, library_prefixes, camel_case_types, non_constant_identifier_names, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -47,13 +47,13 @@ class FriendTabState extends State<FriendTab> {
       List<double> capsulesLatListValue = [];
       List<double> capsulesLonListValue = [];
 
-      frienddata.forEach((capsule) {
+      for (var capsule in frienddata) {
         userIdValue.add(capsule["friendUserId"]);
         userNameValue.add(capsule["friendName"]);
         capsulesIdListValue.add(capsule["capsulesId"]);
         capsulesLatListValue.add(capsule["capsulesLat"]);
         capsulesLonListValue.add(capsule["capsulesLon"]);
-      });
+      }
 
       currentPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best,

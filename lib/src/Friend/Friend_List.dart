@@ -39,9 +39,6 @@ class _FriendListpageState extends State<FriendList> {
   Future<void> _fetchFriendsList() async {
     try {
       // 非同期処理が開始したことを通知
-      // setState(() {
-      //   isLoading = true;
-      // });
 
       // ここでfetchFriendsListを呼び出してデータを取得
       List friendsList = await ApiService.fetchFriendsList(userId);
@@ -93,7 +90,6 @@ class _FriendListpageState extends State<FriendList> {
                   leading: SizedBox(
                     width: 65, // アイコンの望ましい幅
                     height: 65, // アイコンの望ましい高さ
-                    //color: iconImage.isNotEmpty ? null : Colors.black,
                     child: iconImage.isNotEmpty
                         ? CircleAvatar(
                             radius: 20, // 望ましい半径
@@ -104,7 +100,6 @@ class _FriendListpageState extends State<FriendList> {
                         : const Icon(
                             Icons.account_circle_outlined,
                             size: 65,
-                            //color: Colors.
                           ), // iconImageが空の場合はデフォルトのアイコンを表示
                   ),
                   title: Text(

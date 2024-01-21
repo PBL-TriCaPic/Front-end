@@ -79,86 +79,16 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       userId = userIdValue;
       text_data = nakami;
-      //final text_data = nakami;
-      //ここでgetStringしないと中身nullになる
-      //text_data = pref.getString('nakami');
       //撮影してエンコードした写真のデコード
       image_pref = image_pref;
       if (image_pref != null) {
         decode_Image = base64.decode(image_pref!);
       }
-
-      // final String? imagePath = pref.getString('imagepath');
-      // print('loadPref関数起動');
-      // if (imagePath != null) {
-      //   //imageFile = File(imagePath);
-      // }
-      //final image = File(imageFile!.path);
     });
   }
 
-  // Future<void> _showConfirmationDialog() async {
-  //   return showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text('注意'),
-  //         content: const Text('以下の内容で埋めてもよろしいですか？'),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop(); // ダイアログを閉じる
-  //               _onPressedFunction(); // ボタンの処理を実行
-  //             },
-  //             child: const Text('OK'),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop(); // ダイアログを閉じる
-  //             },
-  //             child: const Text('キャンセル'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // Future<void> _showConfirmationDialog() async {
-    //   return showDialog(
-    //     context: context,
-    //     builder: (context) {
-    //       return AlertDialog(
-    //         title: const Text('注意'),
-    //         content: const Text('戻るとカプセルの文章が破棄されてしまいます\n本当に戻りますか？'),
-    //         actions: [
-    //           TextButton(
-    //             onPressed: () {
-    //               Navigator.push(
-    //                 context,
-    //                 MaterialPageRoute(builder: (context) {
-    //                   // カプセル作成画面に遷移
-    //                   return const capsel_Create();
-    //                 }),
-    //               ); // ダイアログを閉じる
-    //               //_onPressedFunction(); // ボタンの処理を実行
-    //             },
-    //             child: const Text('OK'),
-    //           ),
-    //           TextButton(
-    //             onPressed: () {
-    //               Navigator.of(context).pop(); // ダイアログを閉じる
-    //             },
-    //             child: const Text('キャンセル'),
-    //           ),
-    //         ],
-    //       );
-    //     },
-    //   );
-    // }
-
     Future<void> _onPressedFunction() async {
       screenTransitionAnimation(context, () {
         print("transition started");

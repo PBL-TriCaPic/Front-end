@@ -38,6 +38,7 @@ class SearchScreenpage extends StatefulWidget {
 class MyHomePageState extends State<SearchScreenpage> {
   String? userId;
 
+  @override
   void initState() {
     super.initState();
     _loadPreferences();
@@ -71,7 +72,7 @@ class MyHomePageState extends State<SearchScreenpage> {
                   ),
                 );
               },
-              icon: Icon(Icons.person_add_alt_outlined),
+              icon: const Icon(Icons.person_add_alt_outlined),
             ),
           ],
         ),

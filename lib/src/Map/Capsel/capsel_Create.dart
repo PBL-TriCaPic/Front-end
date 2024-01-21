@@ -1,11 +1,9 @@
 // ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously, camel_case_types, avoid_print
 
-//import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_application_develop/src/Map/Capsel/capsel_Check.dart';
 import 'package:flutter_application_develop/src/Map/Map.dart';
 import 'package:flutter_application_develop/src/theme_setting/SharedPreferences.dart';
-//import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../../theme_setting/Color_Scheme.dart';
 import 'dart:async';
@@ -47,51 +45,12 @@ class MyHomePageState extends State<MyHomePage> {
   Uint8List? decode_Image;
   String? image_pref = '';
 
-  /*追記：位置情報取得
-  String _location = "";
-  Future<void> getLocation() async {
-    // 現在の位置を返す
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    print("緯度: " + position.latitude.toString());
-    // 東経がプラス、西経がマイナス
-    print("経度: " + position.longitude.toString());
-
-    setState(() {
-      _location = position.toString();
-    });
-  }
-  追記部終わり*/
-
-  // void _incrementCounter() {
-  //   setState(() {
-  //     _counter++;
-  //   });
-  // }
-
-  //dynamic dateTime;
-
-  //ロード時に読み込まれる関数たち
   @override
   void initState() {
     super.initState();
     //dateTime = DateTime.now();
     loadPref();
   }
-
-//DatePicker設定画面
-  /*_datePicker(BuildContext context) async {
-    final DateTime? datePicked = await showDatePicker(
-        context: context,
-        initialDate: dateTime,
-        firstDate: DateTime(2003),
-        lastDate: DateTime(2100));
-    if (datePicked != null && datePicked != dateTime) {
-      setState(() {
-        dateTime = datePicked;
-      });
-    }
-  }*/
 
   //この画面を読み込んだ時に保存したタイトルや中身を読み込んでる
   Future<void> loadPref() async {
@@ -103,25 +62,15 @@ class MyHomePageState extends State<MyHomePage> {
       if (image_pref != null) {
         decode_Image = base64.decode(image_pref!);
       }
-
-      // final String? imagePath = pref.getString('imagepath');
-      // print('loadPref関数起動');
-      // if (imagePath != null) {
-      //   //imageFile = File(imagePath);
-      // }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    //カメラ表示追記
-    //final ImagePicker _picker = ImagePicker();
-    // ignore: prefer_typing_uninitialized_variables
     var textEditingController = TextEditingController(text: capsel_nakami);
     return Scaffold(
         //キーボードを出した時に、bottom～のトラテープみたいなエラーを封じる
         resizeToAvoidBottomInset: false,
-
         //columnで画面範囲を超えてbottom～エラーが出た時に封じるSingleChild～↓
         //画面を下に引っ張って更新することは不可?
         body: GestureDetector(
@@ -177,24 +126,6 @@ class MyHomePageState extends State<MyHomePage> {
                           color: const Color.fromARGB(255, 142, 189, 237)),
                     ],
                   ),
-                  /*Container(
-                    width:
-                        MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'タイトル',
-                      ),
-                      controller: _textEditingController,
-                      maxLines: null, // または必要な行数
-                      keyboardType: TextInputType.multiline,
-                      // テキストフィールドをスクロール可能にするためにSingleChildScrollViewを使用,
-                      onChanged: (text) {
-                        // ここで取得したtextを使う
-                        capsel_title = text;
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 20.0), // 適切な間隔を設定*/
                   SizedBox(
                     width:
                         MediaQuery.of(context).size.width * 0.9, // 画面幅の90%に設定
@@ -215,27 +146,6 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
                   const SizedBox(height: 10),
                   Image.memory(decode_Image!),
-                  //Text("$dateTime", style: TextStyle(fontSize: 25)),
-
-                  /*ElevatedButton(
-                    onPressed: () {
-                      _datePicker(
-                        context,
-                      );
-                    },
-                    child: const Text("日付を変更"),
-                  ),*/
-
-                  /*位置情報取得ボタン
-                  ElevatedButton(
-                    onPressed: () {
-                      getLocation();
-                    },
-                    child: const Text("位置情報取得"),
-                  ),
-
-                  位置情報テキスト
-                  Text('$_location'),*/
                 ],
               ),
             ),

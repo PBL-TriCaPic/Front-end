@@ -18,21 +18,6 @@ import '../theme_setting/SharedPreferences.dart';
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
-// class MyMapScreen extends StatelessWidget {
-//   // ignore: use_super_parameters
-//   const MyMapScreen({Key? key}) : super(key: key);
-
-//   @override
-//   MyHomeScreen createState() => MyHomeScreen(title: '',);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // TODO: implement build
-//     throw UnimplementedError();
-//   }
-
-// }
-
 class MyHomeScreen extends StatefulWidget {
   const MyHomeScreen({super.key, required this.title});
 
@@ -175,36 +160,6 @@ class _HomeScreen extends State<MyHomeScreen> {
       debugShowCheckedModeBanner: false,
       theme: selectedTheme,
       home: Scaffold(
-        //appBar: AppBar(
-        //centerTitle: true,
-        // title: Image.asset(
-        //   'assets/TriCaPic_logo.png',
-        //   height: 200,
-        //   width: 200,
-        // ),
-        //  elevation: 3,
-        //shadowColor: Colors.black,
-
-        //ボタンの動きを追加Follow_mapへ
-        //  actions: [
-        //   // Wrap the IconButton with GestureDetector
-        //   GestureDetector(
-        //     onTap: () {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) => FollowMapScreen(),
-        //         ),
-        //       );
-        //     },
-        //     child: Padding(
-        //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        //       child: Icon(Icons.people_alt_outlined),
-        //     ),
-        //   ),
-        // ],
-
-        // ),
         body: FlutterMap(
           // マップ表示設定
           options: MapOptions(
@@ -213,12 +168,6 @@ class _HomeScreen extends State<MyHomeScreen> {
             interactiveFlags: InteractiveFlag.all,
             enableScrollWheel: true,
             scrollWheelVelocity: 0.00001,
-            // onTap: (tapPosition, latLng) {
-            //   tapLatLng = latLng;
-            //   print(tapLatLng);
-            //   print("↑ピンを押したところの緯度経度");
-            //   cleatePin(tapLatLng!);
-            // },
           ),
           layers: [
             //背景地図読み込み (OSM)
@@ -333,15 +282,6 @@ class _HomeScreen extends State<MyHomeScreen> {
 //メモ：Geo~.get~で現在地の位置情報取得し、currentPositionに代入
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-
-    // double latitude = position.latitude; //メモ：現在地読み込み？
-    // double longitude = position.longitude;
-    // //取得した緯度経度からその地点の地名情報を取得する
-    // final placeMarks = await geoCoding.placemarkFromCoordinates(lat!, lng!);
-    // final placeMark = placeMarks[0];
-    // print("現在地の国は、${placeMark.country}");
-    // print("現在地の県は、${placeMark.administrativeArea}");
-    // print("現在地の市は、${placeMark.locality}");
     setState(() {
       lat = position.latitude;
       lng = position.longitude;

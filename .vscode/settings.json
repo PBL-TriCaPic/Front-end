@@ -18,6 +18,8 @@
     "entertext",
     "friendcapsule",
     "friendcapsules",
+    "frienddata",
+    "Friendrequest",
     "Geolocator",
     "handleclear",
     "hiro",
@@ -48,12 +50,14 @@
     "Saito",
     "sakaki",
     "Screenpage",
+    "securei",
     "Signup",
     "Statusget",
     "taku",
     "Timline",
     "toshima",
     "unfollow",
-    "vsync"
+    "vsync",
+    "windowmanager"
   ]
 }

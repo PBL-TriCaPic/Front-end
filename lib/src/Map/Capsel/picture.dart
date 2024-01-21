@@ -66,26 +66,5 @@ class PictureCheck extends StatelessWidget {
       ]),
     );
   }
-
-  /*Future<void> saveImagePath(File File) async {
-    getSharedPref();
-    //if (image != null) {
-    //await pref.setString('imagepath', image!.path);
-    //setState(() {});
-    final app_Dir = await getApplicationDocumentsDirectory();
-    const file_Name = 'profile_image.jpg';
-    final local_File = await File!.copy('${app_Dir.path}/$file_Name');
-    // SharedPreferencesに画像のパスを保存
-    await pref.setString('imagepath', local_File.path);
-    //}
-  }*/
-
-  /*Future<void> setTakeImage() async {
-    pref = await SharedPreferences.getInstance();
-    final String? image_Path = pref.getString('imagepath');
-    if (image_Path != null) {
-      image_File = File(image_Path);
-    }
-  }*/
 }
 //kotlinのverを1.7.0に変更(カメラ起動に関係する？)
