@@ -192,8 +192,10 @@ class MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      right: 16.0), // Adjust the value as needed
+                  padding: EdgeInsets.only(
+                    right: MediaQuery.of(context).size.width *
+                        0.05, // 必要に応じて倍率を調整してください
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -225,10 +227,6 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                       Column(
                         children: [
-                          // const Text(
-                          //   'フレンド数',
-                          //   style: TextStyle(fontSize: 16),
-                          // ),
                           TextButton(
                             onPressed: () {
                               // フレンドリスト画面に遷移
