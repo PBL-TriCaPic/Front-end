@@ -15,6 +15,8 @@ import 'package:latlong2/latlong.dart';
 import '../theme_setting/Color_Scheme.dart';
 import '../theme_setting/SharedPreferences.dart';
 
+import 'package:permission_handler/permission_handler.dart';
+
 final ThemeData lightTheme =
     ThemeData(useMaterial3: true, colorScheme: lightColorScheme);
 
@@ -246,7 +248,19 @@ class _HomeScreen extends State<MyHomeScreen> {
             color: const Color.fromARGB(255, 224, 224, 224), // カスタムアイコンの色を指定
           ),
           onPressed: () async {
-            //カメラ撮影画面に遷移
+            // カメラ権限の確認
+            PermissionStatus status = await Permission.camera.status;
+
+            // カメラ権限がない場合はリクエスト
+            if (status.isDenied) {
+              status = await Permission.camera.request();
+              if (status.isDenied) {
+                // ユーザーが権限を拒否した場合の処理を追加することができます
+                return;
+              }
+            }
+
+            // カメラ撮影画面に遷移
             final XFile? image = await picker.pickImage(
               source: ImageSource.camera,
             );
