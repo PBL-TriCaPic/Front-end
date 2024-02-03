@@ -193,8 +193,7 @@ class MyHomePageState extends State<MyHomePage> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(
-                    right: MediaQuery.of(context).size.width *
-                        0.05, // 必要に応じて倍率を調整してください
+                    right: MediaQuery.of(context).size.width * 0.03,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -212,14 +211,18 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                       Column(
                         children: [
-                          const Text(
+                          Text(
                             'カプセル数',
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width *
+                                  0.04, // フォントサイズを調整
+                            ),
                           ),
                           Text(
                             '$postsCount',
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width *
+                                  0.05, // フォントサイズを調整
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -235,17 +238,18 @@ class MyHomePageState extends State<MyHomePage> {
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 18,
+                                style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.width *
+                                      0.048, // フォントサイズを調整
                                   color: Colors.black,
                                 ),
                                 children: [
-                                  const TextSpan(
+                                  TextSpan(
                                     text: 'フレンド数\n',
                                   ),
                                   TextSpan(
                                     text: '$friendCount',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
